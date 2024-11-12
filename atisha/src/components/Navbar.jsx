@@ -18,13 +18,13 @@ const Navbar = () => {
             </div>
           </Link>
           <div className="center flex space-around ">
-            <Link to="/">
+            <Link to="/carrer/roadmaps/explore">
               <p className="px-12 cursor-pointer">ROADMAP</p>
             </Link>
             <Link to="/">
               <p className="px-12 cursor-pointer">RESOURCE</p>
             </Link>
-            <Link to="/">
+            <Link to="/sessions/explore">
               <p className="px-12 cursor-pointer">SESSIONS</p>
             </Link>
           </div>
