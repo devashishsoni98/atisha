@@ -1,11 +1,61 @@
 // Global css file - applicable on all files across the app
 
 // Define color variables
-$primary-color: #ffbb39;   
-$light-primary: #f6dba7;  
-$accent-green: #65db82;    
-$accent-red: #ff4b4b; 
+$primary-color: #ffbb39;
+$light-primary: #f6dba7;
+$accent-green: #65db82;
+$accent-red: #ff4b4b;
 $gray-bg: #f3f3f3;
 $dark-gray-bg: #d9d9d9;
 
+$background-image: url("../assets/login_bg.jpg");
 
+.primary_color {
+  color: $primary-color;
+}
+
+.bg_primary_color {
+  background-color: $primary-color;
+}
+
+.light_primary_color {
+  color: $light-primary;
+}
+
+.bg_light_primary_color {
+  background-color: $light-primary;
+}
+
+.accent_green {
+  color: $accent-green;
+}
+
+.bg_accent_green {
+  background-color: $accent-green;
+}
+
+.accent_red {
+  color: $accent-red;
+}
+
+.bg_accent_red {
+  background-color: $accent-red;
+}
+
+.bg_gray {
+  background-color: $gray-bg;
+}
+
+.bg_dark_gray {
+  background-color: $dark-gray-bg;
+}
+
+// background for AuthPage.jsx
+.bg_authpage {
+    background-color: #fcfcfc;
+  background-image: $background-image;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  height: 100vh;
+}

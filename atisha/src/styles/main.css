@@ -1,1 +1,48 @@
-/*# sourceMappingURL=main.css.map */
+.primary_color {
+  color: #ffbb39;
+}
+
+.bg_primary_color {
+  background-color: #ffbb39;
+}
+
+.light_primary_color {
+  color: #f6dba7;
+}
+
+.bg_light_primary_color {
+  background-color: #f6dba7;
+}
+
+.accent_green {
+  color: #65db82;
+}
+
+.bg_accent_green {
+  background-color: #65db82;
+}
+
+.accent_red {
+  color: #ff4b4b;
+}
+
+.bg_accent_red {
+  background-color: #ff4b4b;
+}
+
+.bg_gray {
+  background-color: #f3f3f3;
+}
+
+.bg_dark_gray {
+  background-color: #d9d9d9;
+}
+
+.bg_authpage {
+  background-color: #fcfcfc;
+  background-image: url("../assets/login_bg.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  height: 100vh;
+}/*# sourceMappingURL=main.css.map */
