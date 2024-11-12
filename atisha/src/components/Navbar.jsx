@@ -1,34 +1,50 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-
+import React from "react";
+import { Link } from "react-router-dom";
+import "../styles/navbar.css";
+import { FaBell } from "react-icons/fa";
 
 const Navbar = () => {
   return (
     <>
-        <header>
-          <div className='flex justify-between py-4 px-4 bg-slate-500'>
-          <div className="left">
-              <img src="" alt="" />
-              <p>Atisha</p>
+      <header>
+        <div className="flex justify-between py-4 px-6 bg-slate-50 items-center nav">
+          <Link to="/">
+            <div className="left flex items-center">
+              <img src="logo.jpg" alt="logo" className="w-12 cursor-pointer" />
+              <p className="pl-4 cursor-pointer logo-text text-2xl">
+                <span className="text-[#ffbb39]">ATI</span>
+                <span className="text-[#65db82]">SHA</span>
+              </p>
             </div>
-            <div className="center flex space-around">
-              <p className='px-2'>Roadmap</p>
-              <p className='px-2'>Resource</p>
-              <p className='px-2'>Sessions</p>
-            </div>
-            <div className="right">
-                <div className="bell">
-                </div>
-                <Link to='/signup'>
-                <div className="signup">
-                  <button>Signup</button>
-                </div>
-                </Link>
-            </div>
+          </Link>
+          <div className="center flex space-around ">
+            <Link to="/">
+              <p className="px-12 cursor-pointer">ROADMAP</p>
+            </Link>
+            <Link to="/">
+              <p className="px-12 cursor-pointer">RESOURCE</p>
+            </Link>
+            <Link to="/">
+              <p className="px-12 cursor-pointer">SESSIONS</p>
+            </Link>
           </div>
-        </header>
+          <div className="right flex">
+            <div className="bell flex items-center justify-center">
+              <FaBell className="w-12 mx-1" />
+            </div>
+            <Link to="/signup">
+              <div className="signup ml-4">
+                <button className="signup-btn ">SIGNUP</button>
+              </div>
+            </Link>
+          </div>
+        </div>
+        <hr />
+        <hr />
+        <hr />
+      </header>
     </>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

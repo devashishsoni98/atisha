@@ -1,3 +1,21 @@
-.hi {
-  background-color: yellow;
+@import url("https://fonts.googleapis.com/css2?family=Alkatra:wght@400..700&family=Comfortaa:wght@300..700&display=swap");
+.signup {
+  background-color: #65db82;
+  border-radius: 2rem;
+  padding: 0.65rem;
+  color: white;
+}
+
+.logo-text {
+  font-family: "Alkatra", cursive;
+}
+
+.nav {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.bell {
+  background-color: #d9d9d9;
+  border-radius: 50%;
 }/*# sourceMappingURL=navbar.css.map */
