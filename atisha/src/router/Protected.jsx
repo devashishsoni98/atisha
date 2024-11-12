@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 const Protected = ({ allowedRole }) => {
 //   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -15,7 +16,8 @@ const Protected = ({ allowedRole }) => {
 //   }, [allowedRole, navigator, isAuthenticated]);
 
   return (
-    <div className="flex">
+    <div>
+      <Navbar/>
       <Outlet />
     </div>
   );
