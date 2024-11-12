@@ -10,6 +10,7 @@ function App() {
     <>
     <div>
       {/* <Navbar/> */}
+      
       <RouterProvider router={Router}/>
     </div>
     </>
