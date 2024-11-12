@@ -14,7 +14,7 @@ const SignUp = () => {
       label: "Candidate",
       icon: User,
     },
-    {
+    {   
       id: "company",
       label: "Company",
       icon: Building2,
