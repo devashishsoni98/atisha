@@ -34,19 +34,26 @@ const Home = () => {
       <br />
       <br />
       {/* HEADLINE */}
-      <div className="flex justify-center items-center gap-5 p-3 bg-slate-300 center-2 text-xl ">
+      <div className="flex justify-center items-center gap-5 p-3 center-2 text-xl text-white">
         <p className="flex items-center gap-2 primary_color pl-3">
           <FaPlay />
           Watch
         </p>
         <p className="pr-3">Explore your best career options</p>
       </div>
-      <br />
+      <br /><br />
+      {/* HEADLINE */}
       <div className="flex justify-center items-center">
         <p className="font-bold headline">
           Discover Your Perfect Career Path with Our AI-Powered Quiz!
         </p>
       </div>
+      <br /><br />
+      {/* HEADLINE END */}
+        <div className="flex justify-center items-center p-4 bg_dark_gray max-w-fit ml-auto mr-auto rounded-full">
+          <button className="font-bold text-xl">Take Your Quiz</button>
+        </div>
+        <br /><br />
     </div>
   );
 };
