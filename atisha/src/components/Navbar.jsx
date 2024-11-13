@@ -7,10 +7,10 @@ const Navbar = () => {
   return (
     <>
       <header>
-        <div className="flex justify-between py-4 px-6 bg-slate-50 items-center nav">
+        <div className="flex justify-between py-2 px-6 bg-slate-50 items-center nav">
           <Link to="/">
             <div className="left flex items-center">
-              <img src="logo.jpg" alt="logo" className="w-12 cursor-pointer" />
+              <img src="logo.jpg" alt="logo" className="w-10 cursor-pointer" />
               <p className="pl-4 cursor-pointer logo-text text-2xl">
                 <span className="text-[#ffbb39]">ATI</span>
                 <span className="text-[#65db82]">SHA</span>

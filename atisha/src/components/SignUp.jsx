@@ -47,7 +47,7 @@ const SignUp = ({ setAuthType }) => {
 
   return (
     <div className="flex justify-center items-center w-full h-screen">
-      <div className="bg-[#D9D9D9] w-[65vh] h-[70vh] rounded-xl ">
+      <div className="bg_dark_gray w-[65vh] h-[70vh] rounded-xl ">
 
       <h1 className="my-6 text-center text-2xl " >Create your account with Atisha</h1>
 
