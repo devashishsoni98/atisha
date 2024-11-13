@@ -1,29 +1,45 @@
 import React, { useEffect, useState } from "react";
 import { User, Building2, GraduationCap } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { replace, useNavigate } from "react-router-dom";
 
 const SignUp = ({ setAuthType }) => {
-  const [selectedType, setSelectedType] = useState("candidate");
-
+  const [selectedType, setSelectedType] = useState("Student");
+  const id = 1;
   const navigator = useNavigate();
 
   const options = [
     {
-      id: "candidate",
-      label: "Candidate",
-      icon: User,
+      id: "Student",
+      label: "Student",
+      icon: GraduationCap,
     },
     {
-      id: "company",
-      label: "Company",
+      id: "Institute",
+      label: "Institute",
       icon: Building2,
     },
     {
-      id: "college",
-      label: "College",
-      icon: GraduationCap,
+      id: "Counselor",
+      label: "Counselor",
+      icon: User,
     },
   ];
+
+  const handleRegister= async()=>{
+    if(selectedType==="Student"){
+      navigator(`/dashboard/student/${id}`)
+    }
+    else if(selectedType==="Institute"){
+      navigator(`/dashboard/institute/${id}`)
+    }
+    else if(selectedType==="Counselor"){
+      navigator(`/dashboard/counselor/${id}`)
+    }
+    else{
+      alert("Issue in redirecting")
+    }
+  }
+
 
   useEffect(() => {
     console.log(selectedType);
@@ -101,7 +117,7 @@ const SignUp = ({ setAuthType }) => {
         </div>
 
         <div className="my-4 flex py-2   justify-center">
-          <button className="bg-[#65DB82] px-6 py-2 font-semibold rounded ">
+          <button className="bg-[#65DB82] px-6 py-2 font-semibold rounded " onClick={()=>handleRegister()}>
             Register
           </button>
         </div>
