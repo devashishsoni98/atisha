@@ -18,13 +18,13 @@ const Home = () => {
         }}
         navigation={true} // Enables Swiper's own navigation buttons
         modules={[Pagination, Navigation]}
-        className="mySwiper z-0"
+        className="mySwiper z-0 "
       >
         <SwiperSlide>
           <img
             src="banner.jpg"
             alt="banner"
-            className="object-cover w-full h-full pb-8 "
+            className="object-cover w-full h-full pb-8  "
           />
         </SwiperSlide>
         <SwiperSlide>Slide 2</SwiperSlide>
@@ -34,7 +34,7 @@ const Home = () => {
       <br />
       <br />
       {/* HEADLINE */}
-      <div className="flex justify-center items-center gap-5 p-3 center-2 text-xl text-white">
+      <div className="flex justify-center items-center gap-5 p-2 cursor-pointer center-2 text-sm text-white">
         <p className="flex items-center gap-2 primary_color pl-3">
           <FaPlay />
           Watch
@@ -44,7 +44,7 @@ const Home = () => {
       <br /><br />
       {/* HEADLINE */}
       <div className="flex justify-center items-center">
-        <p className="font-bold headline">
+        <p className="font-bold headline ">
           Discover Your Perfect Career Path with Our AI-Powered Quiz!
         </p>
       </div>

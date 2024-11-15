@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import StudnetImage from "../../public/logo.jpg";
+import StudnetImage from "../assets/logo.jpg";
 import Sidebar from "../components/Sidebar";
 const DashboardStudnet = () => {
   const [selectedTab, setSelectedTab] = useState("Profile");

@@ -1,26 +1,66 @@
 @import url("https://fonts.googleapis.com/css2?family=Alkatra:wght@400..700&family=Comfortaa:wght@300..700&display=swap");
-.navi {
-  z-index: 9;
-  position: relative;
-}
-
-.signup {
-  background-color: #65db82;
-  border-radius: 2rem;
-  padding: 0.65rem;
-  color: white;
-}
-
-.logo-text {
+.font-alkatra {
   font-family: "Alkatra", cursive;
 }
 
-.nav {
-  font-size: 1rem;
-  font-weight: 500;
+/* Headroom styles */
+.headroom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  will-change: transform;
+  transition: transform 200ms linear;
 }
 
-.bell {
-  background-color: #d9d9d9;
-  border-radius: 50%;
+.headroom--pinned {
+  transform: translateY(0%);
+}
+
+.headroom--unpinned {
+  transform: translateY(-100%);
+}
+
+/* Ensure smooth transitions */
+.headroom-wrapper {
+  position: relative;
+  z-index: 50;
+}
+
+/* Additional mobile menu animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+/* Custom scrollbar for mobile menu */
+.mobile-menu {
+  scrollbar-width: thin;
+  scrollbar-color: #65db82 #ffffff;
+}
+.mobile-menu::-webkit-scrollbar {
+  width: 6px;
+}
+.mobile-menu::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+.mobile-menu::-webkit-scrollbar-thumb {
+  background-color: #65db82;
+  border-radius: 20px;
 }/*# sourceMappingURL=navbar.css.map */
