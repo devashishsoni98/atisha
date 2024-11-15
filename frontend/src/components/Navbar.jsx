@@ -130,21 +130,35 @@ const Navbar = () => {
                     className="px-6 py-3 text-gray-700 hover:bg-gray-50"
                     onClick={closeMenu}
                   >
-                    ROADMAP
-                  </Link>
-                  <Link
-                    to="/"
-                    className="px-6 py-3 text-gray-700 hover:bg-gray-50"
-                    onClick={closeMenu}
-                  >
-                    RESOURCE
+                    Explore Career
                   </Link>
                   <Link
                     to="/sessions/explore"
                     className="px-6 py-3 text-gray-700 hover:bg-gray-50"
                     onClick={closeMenu}
                   >
-                    SESSIONS
+                    Workshop & Events
+                  </Link>
+                  <Link
+                    to="/testimonials"
+                    className="px-6 py-3 text-gray-700 hover:bg-gray-50"
+                    onClick={closeMenu}
+                  >
+                    Testimonials
+                  </Link>
+                  <Link
+                    to="/about"
+                    className="px-6 py-3 text-gray-700 hover:bg-gray-50"
+                    onClick={closeMenu}
+                  >
+                    About Us
+                  </Link>
+                  <Link
+                    to="/contactus"
+                    className="px-6 py-3 text-gray-700 hover:bg-gray-50"
+                    onClick={closeMenu}
+                  >
+                    Contact Us
                   </Link>
                 </div>
                 <div className="px-6 py-3 flex items-center justify-between border-t">
@@ -152,7 +166,7 @@ const Navbar = () => {
                     <FaBell className="text-gray-600" />
                   </button>
                   <Link to="/signup" onClick={closeMenu}>
-                    <button className="bg-[#65db82] text-white px-6 py-2 rounded-full font-medium">
+                    <button className="bg_primary_color text-white px-6 py-2 rounded-full font-medium">
                       SIGNUP
                     </button>
                   </Link>
