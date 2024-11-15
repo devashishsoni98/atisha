@@ -18,13 +18,13 @@ const Home = () => {
         }}
         navigation={true} // Enables Swiper's own navigation buttons
         modules={[Pagination, Navigation]}
-        className="mySwiper"
+        className="mySwiper z-0"
       >
         <SwiperSlide>
           <img
             src="banner.jpg"
             alt="banner"
-            className="object-cover w-full h-full pb-8"
+            className="object-cover w-full h-full pb-8 "
           />
         </SwiperSlide>
         <SwiperSlide>Slide 2</SwiperSlide>
@@ -54,6 +54,9 @@ const Home = () => {
           <button className="font-bold text-xl">Take Your Quiz</button>
         </div>
         <br /><br />
+        <br /><br />
+        <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+        <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
     </div>
   );
 };
