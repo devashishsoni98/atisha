@@ -1,7 +1,7 @@
 // Protected.jsx
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
 const Protected = ({ allowedRole }) => {
@@ -15,9 +15,16 @@ const Protected = ({ allowedRole }) => {
 //     }
 //   }, [allowedRole, navigator, isAuthenticated]);
 
+const pathname = useLocation();
+
+useEffect(()=>{
+  console.log(pathname);
+  
+},[])
+
   return (
     <div>
-      <Navbar/>
+      { pathname==="/quiz/**" ?<Navbar/>:""}
       <Outlet />
     </div>
   );

@@ -2,7 +2,8 @@ import React from 'react'
 
 const DashboardInstitute = () => {
   return (
-    <div>DashboardInstitute</div>
+    <div className='w-full min-h-screen px-6"'>
+      DashboardInstitute</div>
   )
 }
 

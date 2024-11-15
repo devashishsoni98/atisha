@@ -43,7 +43,7 @@ const DashboardStudnet = () => {
 
 
   return (
-    <div className="w-full h-screen ">
+    <div className='w-full min-h-screen px-6"'>
       <div className="flex ">
         <aside className="w-[15%] h-[86vh] m-2  p-2  ">
           <div className="flex justify-center my-3 ">

@@ -8,7 +8,7 @@ import { FaPlay } from "react-icons/fa";
 
 const Home = () => {
   return (
-    <div>
+    <div className='w-full min-h-screen '>
       {/* SWIPER */}
       <Swiper
         direction="horizontal"
@@ -18,13 +18,13 @@ const Home = () => {
         }}
         navigation={true} // Enables Swiper's own navigation buttons
         modules={[Pagination, Navigation]}
-        className="mySwiper z-0 "
+        className="mySwiper z-0 h-[40vh] "
       >
         <SwiperSlide>
           <img
             src="banner.jpg"
             alt="banner"
-            className="object-cover w-full h-full pb-8  "
+            className="object-contain w-full h-full pb-8 "
           />
         </SwiperSlide>
         <SwiperSlide>Slide 2</SwiperSlide>

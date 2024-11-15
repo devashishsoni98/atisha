@@ -31,7 +31,7 @@ const SignUp = () => {
   });
 
   return (
-    <div className="flex justify-center items-center w-full h-screen">
+    <div className='w-full min-h-screen px-6 flex justify-center items-center'>
       <div className="bg-[#D9D9D9] w-[65vh] h-[70vh] rounded-xl ">
         <div className="my-4 grid gap-2 px-2">
           <h3 className="text-sm ">Create account as</h3>
