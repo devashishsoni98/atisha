@@ -1,13 +1,15 @@
-import React from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-import { Pagination, Navigation } from 'swiper/modules';
+import React from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Pagination, Navigation } from "swiper/modules";
+import { FaPlay } from "react-icons/fa";
 
 const Home = () => {
   return (
     <div>
+      {/* SWIPER */}
       <Swiper
         direction="horizontal"
         loop={true}
@@ -18,10 +20,40 @@ const Home = () => {
         modules={[Pagination, Navigation]}
         className="mySwiper"
       >
-        <SwiperSlide><img src="banner.jpg" alt="banner" className='object-cover w-full h-full pb-8' /></SwiperSlide>
+        <SwiperSlide>
+          <img
+            src="banner.jpg"
+            alt="banner"
+            className="object-cover w-full h-full pb-8"
+          />
+        </SwiperSlide>
         <SwiperSlide>Slide 2</SwiperSlide>
         <SwiperSlide>Slide 3</SwiperSlide>
       </Swiper>
+      {/* Swiper end */}
+      <br />
+      <br />
+      {/* HEADLINE */}
+      <div className="flex justify-center items-center gap-5 p-3 center-2 text-xl text-white">
+        <p className="flex items-center gap-2 primary_color pl-3">
+          <FaPlay />
+          Watch
+        </p>
+        <p className="pr-3">Explore your best career options</p>
+      </div>
+      <br /><br />
+      {/* HEADLINE */}
+      <div className="flex justify-center items-center">
+        <p className="font-bold headline">
+          Discover Your Perfect Career Path with Our AI-Powered Quiz!
+        </p>
+      </div>
+      <br /><br />
+      {/* HEADLINE END */}
+        <div className="flex justify-center items-center p-4 bg_dark_gray max-w-fit ml-auto mr-auto rounded-full">
+          <button className="font-bold text-xl">Take Your Quiz</button>
+        </div>
+        <br /><br />
     </div>
   );
 };
