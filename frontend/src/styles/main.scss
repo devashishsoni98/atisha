@@ -1,10 +1,10 @@
 // Global css file - applicable on all files across the app
 
 // Define color variables
-$primary-color: #39baff;
-$light-primary: #8ecef0;
-$accent-green: #65db82;
-$accent-red: #ff4b4b;
+$primary-color: #0F67B1;
+$light-primary: #3FA2F6;
+$accent-one: #96C9F4;
+$accent-two: #EEF5FF;
 $gray-bg: #f3f3f3;
 $dark-gray-bg: #d9d9d9;
 
@@ -26,20 +26,20 @@ $background-image: url("../assets/login_bg.jpg");
   background-color: $light-primary;
 }
 
-.accent_green {
-  color: $accent-green;
+.accent_one {
+  color: $accent-one;
 }
 
-.bg_accent_green {
-  background-color: $accent-green;
+.bg_accent_one {
+  background-color: $accent-one;
 }
 
-.accent_red {
-  color: $accent-red;
+.accent_two {
+  color: $accent-two;
 }
 
-.bg_accent_red {
-  background-color: $accent-red;
+.bg_accent_two {
+  background-color: $accent-two;
 }
 
 .bg_gray {
@@ -66,8 +66,12 @@ $background-image: url("../assets/login_bg.jpg");
   max-width: fit-content;
   margin-left: auto;
   margin-right: auto;
-  background-color: #6E6E6E;
+  // background-color: #6E6E6E;
   border-radius: 2rem;
+}
+
+.home-height{
+  min-height: 80vh;
 }
 
 .headline {

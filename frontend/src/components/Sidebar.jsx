@@ -24,7 +24,7 @@ const Sidebar = ({ items }) => {
         ))}
 
         <li
-          className={`p-4 rounded-lg text-center cursor-pointer bg_accent_red hover:bg-red-500 `}
+          className={`p-4 rounded-lg text-center cursor-pointer bg-red-600 hover:bg-red-500 `}
           onClick={()=>handleLogout()}
         >
           <div className={`text-xl font-semibold text-white `}>Logout</div>

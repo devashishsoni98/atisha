@@ -14,6 +14,9 @@ import DashboardInstitute from "../pages/DashboardInstitute";
 import QuizPage from "../pages/QuizPage";
 import QuizFormsPage from "../pages/QuizFormsPage";
 import ResultPage from "../pages/ResultPage";
+import About from "../pages/About";
+import ContactUs from "../pages/ContactUs";
+import Testimonials from "../pages/Testimonials";
 
 
 
@@ -66,6 +69,18 @@ const Router = createBrowserRouter([
       {
         path: "/sessions/explore",
         element: <Sessions />,
+      },
+      {
+        path: "/about",
+        element: <About />,
+      },
+      {
+        path: "/contactus",
+        element: <ContactUs />,
+      },
+      {
+        path: "/testimonials",
+        element: <Testimonials />,
       },
     ],
   },

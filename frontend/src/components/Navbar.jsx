@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { FaBell, FaBars, FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import Headroom from "react-headroom";
-import Logo1 from "../assets/logo1.png"
+import Logo1 from "../assets/logo1.png";
+import "../styles/navbar.css"
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -57,45 +58,53 @@ const Navbar = () => {
               </div>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center justify-center flex-1 mx-8">
-              <nav className="flex gap-8">
-                <Link 
-                  to="/carrer/roadmaps/explore" 
-                  className="text-gray-700 hover:text-[#65db82] transition-colors font-medium"
+            {/* Desktop Navigation and Right Section */}
+            <div className="hidden md:flex items-center justify-end space-x-4 flex-1">
+              <nav className="flex gap-8 mr-8">
+                <Link
+                  to="/carrer/roadmaps/explore"
+                  className="text-gray-700 nav-lin transition-colors font-medium"
                 >
-                  ROADMAP
+                  Explore Career
                 </Link>
-                <Link 
-                  to="/" 
-                  className="text-gray-700 hover:text-[#65db82] transition-colors font-medium"
+                <Link
+                  to="/sessions/explore"
+                  className="text-gray-700 nav-lin transition-colors font-medium"
                 >
-                  RESOURCE
+                  Workshop & Events
                 </Link>
-                <Link 
-                  to="/sessions/explore" 
-                  className="text-gray-700 hover:text-[#65db82] transition-colors font-medium"
+                <Link
+                  to="/testimonials"
+                  className="text-gray-700 nav-lin transition-colors font-medium"
                 >
-                  SESSIONS
+                 Testimonials
+                </Link>
+                <Link
+                  to="/about"
+                  className="text-gray-700 nav-lin transition-colors font-medium"
+                >
+                  About Us
+                </Link>
+                <Link
+                  to="/contactus"
+                  className="text-gray-700 nav-lin transition-colors font-medium"
+                >
+                  Contact
                 </Link>
               </nav>
-            </div>
-
-            {/* Right Section */}
-            <div className="hidden md:flex items-center space-x-4">
               <button className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
                 <FaBell className="text-gray-600" />
               </button>
               <Link to="/signup">
-                <button className="bg-[#65db82] text-white px-6 py-2 rounded-full font-medium hover:bg-[#50c76d] transition-colors">
+                <button className="bg_primary_color text-white px-6 py-2 rounded-full font-medium nav-lin-bg transition-colors">
                   SIGNUP
                 </button>
               </Link>
             </div>
 
             {/* Mobile Menu Button */}
-            <button 
-              className="md:hidden p-2 focus:outline-none" 
+            <button
+              className="md:hidden p-2 focus:outline-none"
               onClick={toggleMenu}
               aria-label="Toggle menu"
             >
@@ -116,27 +125,27 @@ const Navbar = () => {
             >
               <nav className="flex flex-col">
                 <div className="flex flex-col items-center">
-                <Link
-                  to="/carrer/roadmaps/explore"
-                  className="px-6 py-3 text-gray-700 hover:bg-gray-50"
-                  onClick={closeMenu}
-                >
-                  ROADMAP
-                </Link>
-                <Link
-                  to="/"
-                  className="px-6 py-3 text-gray-700 hover:bg-gray-50"
-                  onClick={closeMenu}
-                >
-                  RESOURCE
-                </Link>
-                <Link
-                  to="/sessions/explore"
-                  className="px-6 py-3 text-gray-700 hover:bg-gray-50"
-                  onClick={closeMenu}
-                >
-                  SESSIONS
-                </Link>
+                  <Link
+                    to="/carrer/roadmaps/explore"
+                    className="px-6 py-3 text-gray-700 hover:bg-gray-50"
+                    onClick={closeMenu}
+                  >
+                    ROADMAP
+                  </Link>
+                  <Link
+                    to="/"
+                    className="px-6 py-3 text-gray-700 hover:bg-gray-50"
+                    onClick={closeMenu}
+                  >
+                    RESOURCE
+                  </Link>
+                  <Link
+                    to="/sessions/explore"
+                    className="px-6 py-3 text-gray-700 hover:bg-gray-50"
+                    onClick={closeMenu}
+                  >
+                    SESSIONS
+                  </Link>
                 </div>
                 <div className="px-6 py-3 flex items-center justify-between border-t">
                   <button className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">

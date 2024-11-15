@@ -63,4 +63,12 @@
 .mobile-menu::-webkit-scrollbar-thumb {
   background-color: #65db82;
   border-radius: 20px;
+}
+
+.nav-lin:hover {
+  color: #0F67B1;
+}
+
+.nav-lin-bg:hover {
+  background-color: #3FA2F6;
 }/*# sourceMappingURL=navbar.css.map */
