@@ -4,11 +4,11 @@ import { createBrowserRouter } from "react-router-dom";
 import Unprotected from "./Unprotected";
 import Home from "../pages/Home";
 import AuthPage from "../pages/AuthPage";
-import CarrerRoadmaps from "../pages/CarrerRoadmaps";
+import CareerRoadmaps from "../pages/CareerRoadmaps";
 import Roadmap from "../pages/Roadmap";
 import Sessions from "../pages/Sessions";
 import Protected from "./Protected";
-import DashboardStudnet from "../pages/DashboardStudnet";
+import DashboardStudent from "../pages/DashboardStudent";
 import DashBoardCounselor from "../pages/DashBoardCounselor";
 import DashboardInstitute from "../pages/DashboardInstitute";
 import QuizPage from "../pages/QuizPage";
@@ -23,7 +23,7 @@ const Router = createBrowserRouter([
     children: [
       {
         path: "/dashboard/student/:id",
-        element: <DashboardStudnet />,
+        element: <DashboardStudent />,
       },
       {
         path: "/dashboard/counselor/:id",
@@ -57,7 +57,7 @@ const Router = createBrowserRouter([
       },
       {
         path: "/carrer/roadmaps/explore",
-        element: <CarrerRoadmaps />,
+        element: <CareerRoadmaps />,
       },
       {
         path: "/roadmap/:id",

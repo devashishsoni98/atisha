@@ -19,7 +19,7 @@ const quizData = [
     id: 1,
     question:
       "A man is looking at a photograph of someone. His friend asks, 'Who is it you are looking at?' The man replies, 'Brothers and sisters, I have none. But that man's father is my father's son.' Who is in the photograph?",
-    options: ["His son", "His Father", "Himself", "His Grandfather"],
+    options: ["His son", "His Father", "Himself", "His Grandfather", "hiii"],
     timeLimit: QUESTION_TIME_LIMIT,
   },
   {

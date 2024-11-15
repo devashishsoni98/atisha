@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaBell, FaBars, FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import Headroom from "react-headroom";
-import Logo from "../assets/logo.jpg"
+import Logo1 from "../assets/logo1.png"
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -46,13 +46,13 @@ const Navbar = () => {
             <Link to="/" onClick={closeMenu} className="flex-shrink-0">
               <div className="flex items-center">
                 <img
-                  src={Logo}
+                  src={Logo1}
                   alt="logo"
-                  className="w-10 h-10 object-contain"
+                  className="w-10 h-10 object-contain rounded"
                 />
                 <p className="pl-4 font-alkatra text-2xl whitespace-nowrap">
-                  <span className="text-[#ffbb39]">ATI</span>
-                  <span className="text-[#65db82]">SHA</span>
+                  <span className="text-[#0F67B1]">ATI</span>
+                  <span className="text-[#0F67B1]">SHA</span>
                 </p>
               </div>
             </Link>
