@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import StudnetImage from "../assets/logo.jpg";
 import Sidebar from "../components/Sidebar";
-const DashboardStudnet = () => {
+const DashboardStudent = () => {
   const [selectedTab, setSelectedTab] = useState("Profile");
 
 
@@ -71,4 +71,4 @@ const DashboardStudnet = () => {
   );
 };
 
-export default DashboardStudnet;
+export default DashboardStudent;
