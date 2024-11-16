@@ -11,15 +11,10 @@ const getRoleByAccountType = async (accountType) => {
 const createUser = async (fullName, email, hashedPassword, roleId) => {
     const userQuery = `
         INSERT INTO users (name, email, password, role_id) 
-        VALUES ($1, $2, $3 ) RETURNING id
+        VALUES ($1, $2, $3, $4) RETURNING id
     `;
     const userResult = await con.query(userQuery, [fullName, email, hashedPassword, roleId]);
     return userResult.rows[0];
-};
-
-module.exports = {
-    getRoleByAccountType,
-    createUser,
 };
 
 // Fetch user by email

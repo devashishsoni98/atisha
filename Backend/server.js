@@ -1,5 +1,5 @@
+
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -8,7 +8,7 @@ const userRoutes = require('./routes/userRoutes'); // Import routes
 const app = express();
 
 // Middleware
-app.use(bodyParser.json());
+app.use(express.json());  // Built-in middleware to parse JSON bodies
 app.use(cors());
 
 // Routes

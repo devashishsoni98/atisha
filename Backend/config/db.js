@@ -6,7 +6,7 @@ const con = new Client({
     user: process.env.DB_USER || 'postgres',
     port: process.env.DB_PORT || 5432,
     password: process.env.DB_PASSWORD || 'lavi204',
-    database: process.env.DB_NAME || 'db_atisha',
+    database: process.env.DB_NAME || 'atisha_db',
 });
 
 con.connect()
