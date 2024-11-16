@@ -45,7 +45,7 @@ const Router = createBrowserRouter([
         element: <QuizFormsPage />,
       },
       {
-        path: "/result",
+        path: "/quiz/result",
         element: <ResultPage />,
       },
     ],
