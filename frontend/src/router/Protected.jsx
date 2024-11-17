@@ -24,7 +24,7 @@ useEffect(()=>{
 
   return (
     <div>
-      { pathname==="/quiz/**" ?<Navbar/>:""}
+      { pathname==="/quiz/**"||"/create=profile/**" ?<Navbar/>:""}
       <Outlet />
     </div>
   );

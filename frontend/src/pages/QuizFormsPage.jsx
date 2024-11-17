@@ -11,6 +11,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import logo from "../assets/logo1.png"
 
 const QUESTION_TIME_LIMIT = 60; // 60 seconds per question
 
@@ -65,7 +66,7 @@ const GuidelinesDialog = ({ isOpen, onClose }) => {
           <p>5. Color indicators:</p>
           <ul className="ml-6">
             <li className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-orange-400"></span>
+              <span className="w-3 h-3 rounded-full bg_primary_color"></span>
               <span>Current question</span>
             </li>
             <li className="flex items-center gap-2">
@@ -73,14 +74,14 @@ const GuidelinesDialog = ({ isOpen, onClose }) => {
               <span>Answered question</span>
             </li>
             <li className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-gray-200"></span>
+              <span className="w-3 h-3 rounded-full bg_gray"></span>
               <span>Unvisited question</span>
             </li>
           </ul>
         </div>
         <button
           onClick={onClose}
-          className="mt-6 w-full px-4 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500 transition-colors"
+          className="mt-6 w-full px-4 py-2 bg_light_primary_color text-white rounded-lg hover:bg-blue-500 transition-colors"
         >
           Got it
         </button>
@@ -100,13 +101,13 @@ const Header = ({
 
   const getQuestionStyle = (questionNumber) => {
     if (questionNumber === currentQuestion) {
-      return "bg-orange-400 text-white";
+      return "bg-blue-500 text-white";
     }
     if (answeredQuestions.includes(questionNumber)) {
       return "bg-green-400 text-white";
     }
     if (visitedQuestions.includes(questionNumber)) {
-      return "bg-orange-200";
+      return "bg-blue-200";
     }
     return "bg-gray-200";
   };
@@ -115,14 +116,14 @@ const Header = ({
     <>
       <div className="flex items-center justify-between px-4 py-2 bg-white border-b shadow-sm">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8">
+          <div className="w-8 h-8 flex items-center justify-center">
             <img
-              src="/api/placeholder/32/32"
+              src={logo}
               alt="Atisha Logo"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover rounded"
             />
           </div>
-          <span className="text-xl font-bold">ATISHA</span>
+          <span className="text-xl font-bold primary_color">ATISHA</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -205,7 +206,7 @@ const QuestionTimer = ({ seconds, onTimeUp }) => {
   }, [timeLeft, onTimeUp]);
 
   return (
-    <div className="bg-orange-50 text-center py-1 text-sm text-gray-600">
+    <div className="bg-blue-50 text-center py-1 text-md text-gray-600 font-bold">
       Remaining time: {timeLeft} sec
     </div>
   );
@@ -216,22 +217,22 @@ const QuestionCard = ({ question, options, onAnswer, onSkip }) => {
 
   return (
     <div className="w-full min-h-screen mx-auto p-6 ">
-      <h1 className="text-3xl font-bold text-orange-400 text-center mb-8">
+      <h1 className="text-3xl font-bold primary_color text-center mb-8">
         Sample Quiz Name
       </h1>
       <div className="grid grid-cols-2 gap-4 ">
-        <div className="bg-orange-50 h-[55vh] border  rounded-lg p-6 mb-6">
+        <div className="bg-blue-50 h-[55vh] border  rounded-lg p-6 mb-6">
           <h2 className="font-bold mb-4">Question {question.id}:</h2>
           <p className="text-gray-800">{question.question}</p>
         </div>
 
-        <div className="h-[55vh] bg-orange-50 rounded-lg p-6 border">
+        <div className="h-[55vh] bg-blue-50 rounded-lg p-6 border">
           <h2 className="font-bold mb-4">Answers:</h2>
           <form onSubmit={handleSubmit(onAnswer)} className="space-y-3">
             {options.map((option, index) => (
               <label
                 key={index}
-                className="block bg-orange-300 hover:bg-orange-400 transition-colors rounded-lg p-3 cursor-pointer"
+                className="block bg-gray-300 hover:bg-blue-400 transition-colors rounded-lg p-3 cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <input
@@ -250,13 +251,13 @@ const QuestionCard = ({ question, options, onAnswer, onSkip }) => {
       <div className="flex justify-between mt-6">
         <button
           onClick={onSkip}
-          className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+          className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
         >
           Skip
         </button>
         <button
           onClick={handleSubmit(onAnswer)}
-          className="px-6 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500 transition-colors"
+          className="px-6 py-2 bg_light_primary_color text-white rounded-lg hover:bg-blue-600 transition-colors"
         >
           Next
         </button>
@@ -332,7 +333,7 @@ const QuizFormsPage = () => {
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="w-full px-6 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500 transition-colors"
+              className="w-full px-6 py-2 bg_primary_color text-white rounded-lg hover:bg-blue-500 transition-colors"
             >
               Try Again
             </button>

@@ -17,6 +17,7 @@ import ResultPage from "../pages/ResultPage";
 import About from "../pages/About";
 import ContactUs from "../pages/ContactUs";
 import Testimonials from "../pages/Testimonials";
+import CreateProfile from "../pages/CreateProfile";
 
 
 
@@ -47,6 +48,10 @@ const Router = createBrowserRouter([
       {
         path: "/quiz/result",
         element: <ResultPage />,
+      },
+      {
+        path: "/create-profile",
+        element: <CreateProfile userRole="institute" userId={123} userEmail="student@example.com" />, 
       },
     ],
   },

@@ -67,4 +67,9 @@
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
   font-size: 2.65rem;
   width: 85%;
+}
+
+.res-box:hover {
+  background-color: #0F67B1;
+  color: #f3f3f3;
 }/*# sourceMappingURL=main.css.map */
