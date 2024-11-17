@@ -56,7 +56,7 @@ const CreateProfile = ({ userRole, userId, userEmail }) => {
       } else if (userRole === 'counselor') {
         requiredFields.push('degree', 'certificate', 'association', 'bio', 'yearOfExperience', 'domain');
       } else if (userRole === 'institute') {
-        requiredFields.push('address', 'establishYear', 'instituteType', 'studentBody', 'subjects');
+        requiredFields.push('address', 'establishYear', 'instituteType', 'studentBody', 'subjects', 'specialPrograms', 'languageOffer', 'certificateAndAffiliation');
       }
 
       const isValid = requiredFields.every(field => formData[field] !== '');
@@ -461,7 +461,7 @@ const CreateProfile = ({ userRole, userId, userEmail }) => {
                 type="submit"
                 className={`w-full inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-lg font-medium rounded-full text-white ${
                   isFormValid
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
                     : 'bg-gray-300 cursor-not-allowed'
                 } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out`}
                 disabled={!isFormValid}
