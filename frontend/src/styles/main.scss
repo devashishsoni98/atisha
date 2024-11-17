@@ -83,3 +83,32 @@ $background-image: url("../assets/login_bg.jpg");
   font-size: 2.65rem;
   width: 85%;
 }
+
+//  Results page
+.res-box:hover{
+  background-color: $primary-color;
+  color: $gray-bg;
+}
+
+
+
+// Roadmap
+
+.roadmap {
+  &-container {
+    @apply transition-all duration-300 ease-in-out;
+
+    &:hover {
+      @apply transform scale-105;
+    }
+  }
+
+  &-title {
+    @apply relative;
+
+    &::after {
+      content: '';
+      @apply absolute bottom-0 left-0 h-1 w-20 bg-blue-500;
+    }
+  }
+}

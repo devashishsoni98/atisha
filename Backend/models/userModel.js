@@ -1,3 +1,4 @@
+//userModel.js
 const con = require('../config/db');
 
 // Fetch role by account type

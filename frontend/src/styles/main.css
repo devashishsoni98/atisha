@@ -67,4 +67,23 @@
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
   font-size: 2.65rem;
   width: 85%;
+}
+
+.res-box:hover {
+  background-color: #0F67B1;
+  color: #f3f3f3;
+}
+
+.roadmap-container {
+  @apply transition-all duration-300 ease-in-out;
+}
+.roadmap-container:hover {
+  @apply transform scale-105;
+}
+.roadmap-title {
+  @apply relative;
+}
+.roadmap-title::after {
+  content: "";
+  @apply absolute bottom-0 left-0 h-1 w-20 bg-blue-500;
 }/*# sourceMappingURL=main.css.map */

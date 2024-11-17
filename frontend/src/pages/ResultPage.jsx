@@ -54,13 +54,13 @@ const Result=()=> {
     >
       {/* Decorative corners */}
       <motion.div 
-        className="absolute top-0 right-0 w-48 h-48 bg-amber-200 -rotate-45 transform translate-x-24 -translate-y-24"
+        className="absolute top-0 right-0 w-48 h-48 bg_primary_color -rotate-45 transform translate-x-24 -translate-y-24"
         initial={{ scale: 0, rotate: 0 }}
         animate={{ scale: 1, rotate: -45 }}
         transition={{ duration: 0.5, type: 'spring' }}
       />
       <motion.div 
-        className="absolute bottom-0 left-0 w-48 h-48 bg-amber-200 -rotate-45 transform -translate-x-24 translate-y-24"
+        className="absolute bottom-0 left-0 w-48 h-48 bg_primary_color -rotate-45 transform -translate-x-24 translate-y-24"
         initial={{ scale: 0, rotate: 0 }}
         animate={{ scale: 1, rotate: -45 }}
         transition={{ duration: 0.5, type: 'spring', delay: 0.2 }}
@@ -75,15 +75,15 @@ const Result=()=> {
           transition={{ duration: 0.5 }}
         >
           <Link to="/" className="inline-block">
-            <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-              <Home className="w-6 h-6 text-amber-600" />
+            <div className="w-12 h-12 bg_light_primary_color rounded-full flex items-center justify-center">
+              <Home className="w-6 h-6 text-white" />
             </div>
           </Link>
         </motion.div>
 
         {/* Results Section */}
         <motion.div className="text-center mt-8" variants={itemVariants}>
-          <motion.h1 className="text-4xl font-bold text-amber-600 mb-4" variants={itemVariants}>Your Result</motion.h1>
+          <motion.h1 className="text-4xl font-bold primary_color mb-4" variants={itemVariants}>Your Result</motion.h1>
           <motion.p className="text-lg text-gray-600 mb-8" variants={itemVariants}>Your result will show your interested careers</motion.p>
           
           <motion.div 
@@ -102,7 +102,7 @@ const Result=()=> {
           {/* Interests */}
           <motion.div className="mb-12" variants={containerVariants}>
             <motion.div 
-              className="bg-amber-400 text-white font-semibold py-2 px-6 rounded-full inline-block mb-8"
+              className="bg_light_primary_color text-white font-semibold py-2 px-6 rounded-full inline-block mb-8"
               variants={itemVariants}
             >
               Your Interests
@@ -111,7 +111,7 @@ const Result=()=> {
               {interests.map((interest, index) => (
                 <motion.div 
                   key={index}
-                  className="bg-amber-50 rounded-lg p-4 text-amber-800 font-medium hover:bg-amber-100 transition-colors cursor-pointer"
+                  className="bg_accent_one rounded-lg p-4 text-blue-950 font-medium res-box transition-colors cursor-pointer"
                   variants={itemVariants}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -128,7 +128,7 @@ const Result=()=> {
             <motion.div className="flex flex-col sm:flex-row gap-4 justify-center" variants={containerVariants}>
               <motion.button 
                 onClick={() => setIsBookingOpen(true)}
-                className="bg-amber-400 hover:bg-amber-500 text-white font-semibold py-2 px-6 rounded-full transition-colors"
+                className="bg_accent_one res-box text-blue-950 font-semibold py-2 px-6 rounded-full transition-colors"
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -138,7 +138,7 @@ const Result=()=> {
               <motion.div variants={itemVariants} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link 
                   href="/careers"
-                  className="bg-amber-400 hover:bg-amber-500 text-white font-semibold py-2 px-6 rounded-full transition-colors inline-block"
+                  className="bg_accent_one res-box text-blue-950 font-semibold py-2 px-6 rounded-full transition-colors inline-block"
                 >
                   Explore more Careers
                 </Link>
@@ -146,7 +146,7 @@ const Result=()=> {
               <motion.div variants={itemVariants} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link 
                   to="/quiz"
-                  className="bg-amber-400 hover:bg-amber-500 text-white font-semibold py-2 px-6 rounded-full transition-colors inline-block"
+                  className="bg_accent_one res-box text-blue-950 font-semibold py-2 px-6 rounded-full transition-colors inline-block"
                 >
                   Retake Quiz
                 </Link>
@@ -177,7 +177,7 @@ const Result=()=> {
                   <input
                     type="text"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                   />
@@ -187,7 +187,7 @@ const Result=()=> {
                   <input
                     type="email"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                   />
@@ -197,7 +197,7 @@ const Result=()=> {
                   <input
                     type="date"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"
                     value={formData.date}
                     onChange={(e) => setFormData({...formData, date: e.target.value})}
                   />
@@ -207,7 +207,7 @@ const Result=()=> {
                   <input
                     type="time"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"
                     value={formData.time}
                     onChange={(e) => setFormData({...formData, time: e.target.value})}
                   />
@@ -222,7 +222,7 @@ const Result=()=> {
                   </button>
                   <button
                     type="submit"
-                    className="bg-amber-400 hover:bg-amber-500 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+                    className="bg_primary_color hover:bg-blue-400 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
                   >
                     Book Session
                   </button>
