@@ -1,8 +1,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom'
 
 const CareerRoadmap = () => {
   const categories = [
+    {
+      title: "Most Trending Pathways",
+      options: [
+        { name: "Engineer", path: `/roadmap/engineer`, description: "Engages in visual arts such as painting, drawing, or sculpture" },
+        { name: "Doctor", path: "/roadmap/doctor", description: "Plays instruments or sings, creating music" },
+        { name: "CA", path: "/roadmap/doctor", description: "Plays instruments or sings, creating music" },
+        { name: "IAS", path: "/roadmap/doctor", description: "Plays instruments or sings, creating music" },
+        
+      ]
+    },
     {
       title: "Creative Arts Pathways",
       options: [
@@ -158,7 +169,7 @@ const CareerRoadmap = () => {
               variants={containerVariants}
             >
               {category.options.map((option, index) => (
-                <motion.div 
+                <motion.a 
                   key={index}
                   className="bg-[#e2e2e2] hover:bg_primary_color transition-colors duration-300 
                              rounded-lg p-6 cursor-pointer border border_primary_color
@@ -166,6 +177,7 @@ const CareerRoadmap = () => {
                   variants={itemVariants}
                   whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
                   whileTap={{ scale: 0.97 }}
+                  href={`/roadmap/${option.name}`}
                 >
                   <span className="text-dark_gray font-medium">{option.name}</span>
                   <motion.svg
@@ -183,7 +195,7 @@ const CareerRoadmap = () => {
                       d="M9 5l7 7-7 7"
                     />
                   </motion.svg>
-                </motion.div>
+                </motion.a>
               ))}
             </motion.div>
           </motion.div>

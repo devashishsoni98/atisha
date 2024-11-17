@@ -51,7 +51,7 @@ const Router = createBrowserRouter([
       },
       {
         path: "/create-profile",
-        element: <CreateProfile userRole="institute" userId={123} userEmail="student@example.com" />, 
+        element: <CreateProfile userRole="student" userId={123} userEmail="student@example.com" />, 
       },
     ],
   },
@@ -68,7 +68,7 @@ const Router = createBrowserRouter([
         element: <CareerRoadmaps />,
       },
       {
-        path: "/roadmap/:id",
+        path: "/roadmap/:topic",
         element: <Roadmap />,
       },
       {

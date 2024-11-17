@@ -1,7 +1,7 @@
 import './App.css'
 import { RouterProvider } from 'react-router-dom';
 import Router from './router/Router'
-import Navbar from './components/Navbar';
+import '@xyflow/react/dist/style.css';
 
 
 function App() {

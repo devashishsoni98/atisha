@@ -72,4 +72,18 @@
 .res-box:hover {
   background-color: #0F67B1;
   color: #f3f3f3;
+}
+
+.roadmap-container {
+  @apply transition-all duration-300 ease-in-out;
+}
+.roadmap-container:hover {
+  @apply transform scale-105;
+}
+.roadmap-title {
+  @apply relative;
+}
+.roadmap-title::after {
+  content: "";
+  @apply absolute bottom-0 left-0 h-1 w-20 bg-blue-500;
 }/*# sourceMappingURL=main.css.map */
