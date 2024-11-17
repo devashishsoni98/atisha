@@ -352,64 +352,221 @@ const CareerRoadmap = () => {
     },
   };
 
+  const floatingShapeVariants = {
+    animate: {
+      y: [0, -10, 0],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        repeatType: "reverse",
+      },
+    },
+  };
   return (
+    // <motion.div
+    //   className="min-h-screen p-6"
+    //   initial="hidden"
+    //   animate="visible"
+    //   variants={containerVariants}
+    // >
+    //   <div className="mx-auto">
+    //     {/* Header */}
+    //     <motion.div className="text-center mb-12" variants={itemVariants}>
+    //       <h1 className="text-4xl font-bold text-[#606060] mb-4">
+    //         Career Roadmaps
+    //       </h1>
+    //       <p className="text-gray-600 text-lg">
+    //         SIH is a community effort to create roadmaps, guides and other
+    //         educational content to help guide students in picking up a path and
+    //         guide their careers.
+    //       </p>
+    //     </motion.div>
+
+    //     {/* Categories */}
+    //     {categories.map((category, idx) => (
+    //       <motion.div key={idx} className="mb-12" variants={itemVariants}>
+    //         {/* Category Header */}
+    //         <div className="relative mb-8">
+    //           <div className="absolute inset-0 flex items-center">
+    //             <div className="w-full border-t-2 accent_two"></div>
+    //           </div>
+    //           <div className="relative flex justify-center">
+    //             <motion.span
+    //               className="bg_primary_color px-6 py-2 text-white rounded-full text-lg font-medium"
+    //               whileHover={{ scale: 1.05 }}
+    //               whileTap={{ scale: 0.95 }}
+    //             >
+    //               {category.title}
+    //             </motion.span>
+    //           </div>
+    //         </div>
+
+    //         {/* Bento Grid */}
+    //         {/* <motion.div 
+    //           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto"
+    //           variants={containerVariants}
+    //         >
+    //           {category.options.map((option, index) => (
+    //             <motion.a 
+    //               key={index}
+    //               className="bg-[#e2e2e2] hover:bg_primary_color transition-colors duration-300 
+    //                          rounded-lg p-6 cursor-pointer border border_primary_color
+    //                          flex items-center justify-between"
+    //               variants={itemVariants}
+    //               whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+    //               whileTap={{ scale: 0.97 }}
+    //               href={`/roadmap/${option.name}`}
+    //             >
+    //               <span className="text-dark_gray font-medium">{option.name}</span>
+    //               <motion.svg
+    //                 className="w-5 h-5 primary_color"
+    //                 fill="none"
+    //                 stroke="currentColor"
+    //                 viewBox="0 0 24 24"
+    //                 initial={{ x: -5 }}
+    //                 whileHover={{ x: 0 }}
+    //               >
+    //                 <path
+    //                   strokeLinecap="round"
+    //                   strokeLinejoin="round"
+    //                   strokeWidth={2}
+    //                   d="M9 5l7 7-7 7"
+    //                 />
+    //               </motion.svg>
+    //             </motion.a>
+    //           ))}
+    //         </motion.div> */}
+    //         <motion.div
+    //           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto"
+    //           variants={containerVariants}
+    //         >
+    //           {category.options.map((option, index) => (
+    //             <motion.div
+    //               key={index}
+    //               className="bg-[#e2e2e2] hover:bg_primary_color transition-colors duration-300 
+    //              rounded-lg  cursor-pointer border border_primary_color
+    //              flex items-center justify-between"
+    //               variants={itemVariants}
+    //               whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+    //               whileTap={{ scale: 0.97 }}
+    //             >
+    //               <Link
+    //                 to={`/roadmap/${option.name}`}
+    //                 className="flex items-center justify-between w-full h-full p-6"
+    //               >
+    //                 <span className="text-dark_gray font-medium">
+    //                   {option.name}
+    //                 </span>
+    //                 <motion.svg
+    //                   className="w-5 h-5 primary_color"
+    //                   fill="none"
+    //                   stroke="currentColor"
+    //                   viewBox="0 0 24 24"
+    //                   initial={{ x: -5 }}
+    //                   whileHover={{ x: 0 }}
+    //                 >
+    //                   <path
+    //                     strokeLinecap="round"
+    //                     strokeLinejoin="round"
+    //                     strokeWidth={2}
+    //                     d="M9 5l7 7-7 7"
+    //                   />
+    //                 </motion.svg>
+    //               </Link>
+    //             </motion.div>
+    //           ))}
+    //         </motion.div>
+    //       </motion.div>
+    //     ))}
+    //   </div>
+    // </motion.div>
     <motion.div
-      className="min-h-screen p-6"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      <div className="mx-auto">
-        {/* Header */}
-        <motion.div className="text-center mb-12" variants={itemVariants}>
-          <h1 className="text-4xl font-bold text-[#606060] mb-4">
-            Career Roadmaps
-          </h1>
-          <p className="text-gray-600 text-lg">
-            SIH is a community effort to create roadmaps, guides and other
-            educational content to help guide students in picking up a path and
-            guide their careers.
-          </p>
-        </motion.div>
+    className="min-h-screen p-6 bg-gradient-to-br from-blue-50 to-blue-100 overflow-hidden relative"
+    initial="hidden"
+    animate="visible"
+    variants={containerVariants}
+  >
+    {/* Floating shapes */}
+    <motion.div
+      className="absolute top-10 left-10 w-16 h-16 bg-blue-200 rounded-full opacity-50"
+      variants={floatingShapeVariants}
+      animate="animate"
+    />
+    <motion.div
+      className="absolute bottom-20 right-20 w-20 h-20 bg-blue-300 rounded-lg opacity-50 rotate-45"
+      variants={floatingShapeVariants}
+      animate="animate"
+    />
+    <motion.div
+      className="absolute top-1/3 right-1/4 w-12 h-12 border-4 border-blue-400 rounded-full opacity-50"
+      variants={floatingShapeVariants}
+      animate="animate"
+    />
 
-        {/* Categories */}
-        {categories.map((category, idx) => (
-          <motion.div key={idx} className="mb-12" variants={itemVariants}>
-            {/* Category Header */}
-            <div className="relative mb-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t-2 accent_two"></div>
-              </div>
-              <div className="relative flex justify-center">
-                <motion.span
-                  className="bg_primary_color px-6 py-2 text-white rounded-full text-lg font-medium"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {category.title}
-                </motion.span>
-              </div>
+    <div className="mx-auto max-w-7xl relative z-10">
+      {/* Header */}
+      <motion.div className="text-center mb-12" variants={itemVariants}>
+        <h1 className="text-5xl font-bold text-blue-800 mb-4">
+          Career Roadmaps
+        </h1>
+        <p className="text-blue-600 text-xl max-w-3xl mx-auto">
+          SIH is a community effort to create roadmaps, guides and other
+          educational content to help guide students in picking up a path and
+          guide their careers.
+        </p>
+      </motion.div>
+
+      {/* Interactive compass */}
+      <motion.div
+        className="w-24 h-24 mx-auto mb-8"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+      >
+        <svg viewBox="0 0 100 100" className="text-blue-600">
+          <path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor" />
+        </svg>
+      </motion.div>
+
+      {/* Categories */}
+      {categories.map((category, idx) => (
+        <motion.div key={idx} className="mb-12" variants={itemVariants}>
+          {/* Category Header */}
+          <div className="relative mb-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t-2 border-blue-200"></div>
             </div>
+            <div className="relative flex justify-center">
+              <motion.span
+                className="bg-blue-600 px-6 py-2 text-white rounded-full text-lg font-medium shadow-md"
+                whileHover={{ scale: 1.05, backgroundColor: "#2563EB" }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {category.title}
+              </motion.span>
+            </div>
+          </div>
 
-            {/* Bento Grid */}
-            {/* <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto"
-              variants={containerVariants}
-            >
-              {category.options.map((option, index) => (
-                <motion.a 
-                  key={index}
-                  className="bg-[#e2e2e2] hover:bg_primary_color transition-colors duration-300 
-                             rounded-lg p-6 cursor-pointer border border_primary_color
-                             flex items-center justify-between"
-                  variants={itemVariants}
-                  whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-                  whileTap={{ scale: 0.97 }}
-                  href={`/roadmap/${option.name}`}
+          {/* Bento Grid */}
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto"
+            variants={containerVariants}
+          >
+            {category.options.map((option, index) => (
+              <motion.div
+                key={index}
+                className="bg-white hover:bg-blue-50 transition-all duration-300 
+                           rounded-lg shadow-md overflow-hidden group"
+                variants={itemVariants}
+                whileHover={{ scale: 1.03, boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <Link
+                  to={option.path}
+                  className="flex items-center justify-between w-full h-full p-6 relative"
                 >
-                  <span className="text-dark_gray font-medium">{option.name}</span>
+                  <span className="text-blue-800 font-medium z-10">{option.name}</span>
                   <motion.svg
-                    className="w-5 h-5 primary_color"
+                    className="w-5 h-5 text-blue-600 z-10"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -423,53 +580,37 @@ const CareerRoadmap = () => {
                       d="M9 5l7 7-7 7"
                     />
                   </motion.svg>
-                </motion.a>
-              ))}
-            </motion.div> */}
-            <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto"
-              variants={containerVariants}
-            >
-              {category.options.map((option, index) => (
-                <motion.div
-                  key={index}
-                  className="bg-[#e2e2e2] hover:bg_primary_color transition-colors duration-300 
-                 rounded-lg  cursor-pointer border border_primary_color
-                 flex items-center justify-between"
-                  variants={itemVariants}
-                  whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  <Link
-                    to={`/roadmap/${option.name}`}
-                    className="flex items-center justify-between w-full h-full p-6"
-                  >
-                    <span className="text-dark_gray font-medium">
-                      {option.name}
-                    </span>
-                    <motion.svg
-                      className="w-5 h-5 primary_color"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      initial={{ x: -5 }}
-                      whileHover={{ x: 0 }}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </motion.svg>
-                  </Link>
-                </motion.div>
-              ))}
-            </motion.div>
+                  <motion.div
+                    className="absolute inset-0 bg-blue-100 origin-left"
+                    initial={{ scaleX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </Link>
+              </motion.div>
+            ))}
           </motion.div>
-        ))}
-      </div>
-    </motion.div>
+        </motion.div>
+      ))}
+
+      {/* Interactive footer element */}
+      <motion.div
+        className="text-center mt-12 p-6 bg-blue-600 text-white rounded-lg shadow-lg"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <h2 className="text-2xl font-bold mb-2">Ready to start your journey?</h2>
+        <p className="mb-4">Explore our roadmaps and find your perfect career path!</p>
+        <motion.button
+          className="bg-white text-blue-600 px-6 py-2 rounded-full font-medium"
+          whileHover={{ scale: 1.05, backgroundColor: "#f0f0f0" }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Get Started
+        </motion.button>
+      </motion.div>
+    </div>
+  </motion.div>
   );
 };
 

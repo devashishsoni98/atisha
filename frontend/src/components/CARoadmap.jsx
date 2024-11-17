@@ -237,87 +237,162 @@ const CARoadmap = () => {
     setEdges((eds) => addEdge(params, eds));
   };
 
-  return (
-    <div style={{ height: "150vh" }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onConnect={onConnect}
-        onNodeClick={onNodeClick}
-        fitView
-      >
-        <MiniMap />
-        <Controls />
-        <Background />
-      </ReactFlow>
+//   return (
+//     <div style={{ height: "150vh" }} className="border rounded-xl">
+//       <ReactFlow
+//         nodes={nodes}
+//         edges={edges}
+//         onConnect={onConnect}
+//         onNodeClick={onNodeClick}
+//         fitView
+//       >
+//         <MiniMap />
+//         <Controls />
+//         <Background />
+//       </ReactFlow>
 
-      <NodeDetailsPanel
-        node={selectedNode}
-        isOpen={isPanelOpen}
-        onClose={onClosePanel}
-      />
-    </div>
-  );
+//       <NodeDetailsPanel
+//         node={selectedNode}
+//         isOpen={isPanelOpen}
+//         onClose={onClosePanel}
+//       />
+//     </div>
+//   );
+// };
+
+// // NodeDetailsPanel Component
+// const NodeDetailsPanel = ({ node, isOpen, onClose }) => {
+//   if (!node) return null;
+
+//   return (
+//     <AnimatePresence>
+//       {isOpen && (
+//         <motion.div
+//           initial={{ x: "100%" }}
+//           animate={{ x: 0 }}
+//           exit={{ x: "100%" }}
+//           transition={{ type: "spring", damping: 20 }}
+//           className="fixed top-0 right-0 w-80 h-full bg-white shadow-lg z-50 overflow-y-auto"
+//         >
+//           <div className="p-6">
+//             <div className="flex justify-between items-center mb-6">
+//               <h2 className="text-2xl font-bold">{node.data.label}</h2>
+//               <button
+//                 onClick={onClose}
+//                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+//               >
+//                 <X className="w-6 h-6" />
+//               </button>
+//             </div>
+
+//             <div className="space-y-4">
+//               <div>
+//                 <h3 className="text-sm font-medium text-gray-500">
+//                   Description
+//                 </h3>
+//                 <p className="mt-1 text-gray-900">
+//                   {node.data.description || "No description available"}
+//                 </p>
+//               </div>
+// {/* 
+//               <div>
+//                 <h3 className="text-sm font-medium text-gray-500">Node ID</h3>
+//                 <p className="mt-1 text-gray-900">{node.id}</p>
+//               </div> */}
+
+//               {/* <div>
+//                 <h3 className="text-sm font-medium text-gray-500">Position</h3>
+//                 <p className="mt-1 text-gray-900">
+//                   X: {Math.round(node.position.x)}, Y:{" "}
+//                   {Math.round(node.position.y)}
+//                 </p>
+//               </div> */}
+
+//               <div
+//                 className="w-6 h-6 rounded"
+//                 style={{ backgroundColor: node.style.backgroundColor }}
+//               />
+//             </div>
+//           </div>
+//         </motion.div>
+//       )}
+//     </AnimatePresence>
+//   );
+// };
+
+return (
+  <div style={{height: '200vh' }} className=' border rounded-xl '>
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onConnect={onConnect}
+      onNodeClick={onNodeClick}
+      fitView
+    >
+      <MiniMap />
+      <Controls />
+      <Background />
+    </ReactFlow>
+
+    <NodeDetailsPanel node={selectedNode} isOpen={isPanelOpen} onClose={onClosePanel} />
+  </div>
+);
 };
 
 // NodeDetailsPanel Component
 const NodeDetailsPanel = ({ node, isOpen, onClose }) => {
-  if (!node) return null;
+if (!node) return null;
 
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ x: "100%" }}
-          animate={{ x: 0 }}
-          exit={{ x: "100%" }}
-          transition={{ type: "spring", damping: 20 }}
-          className="fixed top-0 right-0 w-80 h-full bg-white shadow-lg z-50 overflow-y-auto"
-        >
-          <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">{node.data.label}</h2>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500">
-                  Description
-                </h3>
-                <p className="mt-1 text-gray-900">
-                  {node.data.description || "No description available"}
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-medium text-gray-500">Node ID</h3>
-                <p className="mt-1 text-gray-900">{node.id}</p>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-medium text-gray-500">Position</h3>
-                <p className="mt-1 text-gray-900">
-                  X: {Math.round(node.position.x)}, Y:{" "}
-                  {Math.round(node.position.y)}
-                </p>
-              </div>
-
-              <div
-                className="w-6 h-6 rounded"
-                style={{ backgroundColor: node.style.backgroundColor }}
-              />
-            </div>
+return (
+  <AnimatePresence>
+    {isOpen && (
+      <motion.div
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ type: 'spring', damping: 20 }}
+        className="fixed top-0 right-0 w-80 h-full bg-white shadow-lg z-50 overflow-y-auto"
+      >
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">{node.data.label}</h2>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
 
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Description</h3>
+              <p className="mt-1 text-gray-900">
+                {node.data.description || 'No description available'}
+              </p>
+            </div>
+{/* 
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Node ID</h3>
+              <p className="mt-1 text-gray-900">{node.id}</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Position</h3>
+              <p className="mt-1 text-gray-900">
+                X: {Math.round(node.position.x)}, Y: {Math.round(node.position.y)}
+              </p>
+            </div> */}
+
+            <div
+              className="w-6 h-6 rounded"
+              style={{ backgroundColor: node.style.backgroundColor }}
+            />
+          </div>
+        </div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+};
 export default CARoadmap;

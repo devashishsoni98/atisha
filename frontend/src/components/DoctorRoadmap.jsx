@@ -113,7 +113,7 @@ const DoctorRoadmap = () => {
   };
 
   return (
-    <div style={{height: '200vh' }}>
+    <div style={{height: '200vh' }} className='border rounded-xl'>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -163,7 +163,7 @@ const NodeDetailsPanel = ({ node, isOpen, onClose }) => {
                   {node.data.description || 'No description available'}
                 </p>
               </div>
-
+{/* 
               <div>
                 <h3 className="text-sm font-medium text-gray-500">Node ID</h3>
                 <p className="mt-1 text-gray-900">{node.id}</p>
@@ -174,7 +174,7 @@ const NodeDetailsPanel = ({ node, isOpen, onClose }) => {
                 <p className="mt-1 text-gray-900">
                   X: {Math.round(node.position.x)}, Y: {Math.round(node.position.y)}
                 </p>
-              </div>
+              </div> */}
 
               <div
                 className="w-6 h-6 rounded"

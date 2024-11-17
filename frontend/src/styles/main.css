@@ -86,4 +86,27 @@
 .roadmap-title::after {
   content: "";
   @apply absolute bottom-0 left-0 h-1 w-20 bg-blue-500;
+}
+
+.heroSection {
+  position: relative;
+  overflow: hidden;
+}
+.heroSection::before, .heroSection::after {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  opacity: 0.1;
+}
+.heroSection::before {
+  background-color: #60a5fa;
+  top: -150px;
+  left: -150px;
+}
+.heroSection::after {
+  background-color: #a78bfa;
+  bottom: -150px;
+  right: -150px;
 }/*# sourceMappingURL=main.css.map */

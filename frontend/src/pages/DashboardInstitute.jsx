@@ -8,7 +8,7 @@ export default function InstituteDashboard() {
   const instituteData = {
     name: "Delhi Public School",
     email: "info@dps.edu",
-    profileImage: "/placeholder.svg?height=128&width=128",
+    profileImage: "https://th.bing.com/th/id/OIP.BrnoxxJl9iBDH5aKAz5ckAHaD8?w=337&h=180&c=7&r=0&o=5&dpr=1.4&pid=1.7",
     address: "123 Education Lane, New Delhi",
     location: "New Delhi, India",
     contactNumber: "+91 11 2345 6789",

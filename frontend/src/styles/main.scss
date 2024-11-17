@@ -112,3 +112,39 @@ $background-image: url("../assets/login_bg.jpg");
     }
   }
 }
+
+
+.heroSection {
+  position: relative;
+  overflow: hidden;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    opacity: 0.1;
+    animation: float 20s infinite ease-in-out;
+  }
+
+  &::before {
+    background-color: #60a5fa; // blue-400
+    top: -150px;
+    left: -150px;
+    animation-delay: -10s;
+  }
+
+  &::after {
+    background-color: #a78bfa; // purple-400
+    bottom: -150px;
+    right: -150px;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  
