@@ -18,6 +18,7 @@ import About from "../pages/About";
 import ContactUs from "../pages/ContactUs";
 import Testimonials from "../pages/Testimonials";
 import CreateProfile from "../pages/CreateProfile";
+import Mentors from "../pages/Mentors";
 
 
 
@@ -58,6 +59,10 @@ const Router = createBrowserRouter([
   {
     element: <Unprotected allowedRole="" />,
     children: [
+      {
+        path: "/mentors-students/:id",
+        element: <Mentors/>
+      },
       { path: "/", element: <Home /> },
       {
         path: "/signup",
