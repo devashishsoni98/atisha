@@ -48,6 +48,8 @@ export default function About() {
             </div>
           </motion.div>
 
+          
+
           <motion.div 
             className="bg-white rounded-lg shadow-xl overflow-hidden"
             {...fadeInUp}
