@@ -1,69 +1,64 @@
+import { useState } from "react";
+import { Home } from "lucide-react";
+import { motion } from "framer-motion";
+import Img from "../assets/illustration1.jpg";
+import { Link } from "react-router-dom";
 
-import { useState } from 'react'
-import { Home } from 'lucide-react'
-import { motion } from 'framer-motion'
-import Img from '../assets/illustration1.jpg'
-import { Link } from 'react-router-dom'
-
-const Result=()=> {
-  const [isBookingOpen, setIsBookingOpen] = useState(false)
+const Result = () => {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    date: '',
-    time: '',
-  })
+    name: "",
+    email: "",
+    date: "",
+    time: "",
+  });
 
-  const interests = [
-    'Software Development',
-    'DBA',
-    'Product Management'
-  ]
+  const interests = ["Engineer", "CA", "IAS"];
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     // Handle booking submission
-    console.log('Booking submitted:', formData)
-    setIsBookingOpen(false)
-  }
+    console.log("Booking submitted:", formData);
+    setIsBookingOpen(false);
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
-  }
+        staggerChildren: 0.1,
+      },
+    },
+  };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
-      opacity: 1
-    }
-  }
+      opacity: 1,
+    },
+  };
 
   return (
-    <motion.div 
+    <motion.div
       className="min-h-screen bg-white relative overflow-hidden"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
       {/* Decorative corners */}
-      <motion.div 
+      <motion.div
         className="absolute top-0 right-0 w-48 h-48 bg_primary_color -rotate-45 transform translate-x-24 -translate-y-24"
         initial={{ scale: 0, rotate: 0 }}
         animate={{ scale: 1, rotate: -45 }}
-        transition={{ duration: 0.5, type: 'spring' }}
+        transition={{ duration: 0.5, type: "spring" }}
       />
-      <motion.div 
+      <motion.div
         className="absolute bottom-0 left-0 w-48 h-48 bg_primary_color -rotate-45 transform -translate-x-24 translate-y-24"
         initial={{ scale: 0, rotate: 0 }}
         animate={{ scale: 1, rotate: -45 }}
-        transition={{ duration: 0.5, type: 'spring', delay: 0.2 }}
+        transition={{ duration: 0.5, type: "spring", delay: 0.2 }}
       />
 
       {/* Main content */}
@@ -83,16 +78,26 @@ const Result=()=> {
 
         {/* Results Section */}
         <motion.div className="text-center mt-8" variants={itemVariants}>
-          <motion.h1 className="text-4xl font-bold primary_color mb-4" variants={itemVariants}>Your Result</motion.h1>
-          <motion.p className="text-lg text-gray-600 mb-8" variants={itemVariants}>Your result will show your interested careers</motion.p>
-          
-          <motion.div 
+          <motion.h1
+            className="text-4xl font-bold primary_color mb-4"
+            variants={itemVariants}
+          >
+            Your Result
+          </motion.h1>
+          <motion.p
+            className="text-lg text-gray-600 mb-8"
+            variants={itemVariants}
+          >
+            Your result will show your interested careers
+          </motion.p>
+
+          <motion.div
             className="w-48 h-48 mx-auto mb-8"
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
-            transition={{ duration: 0.5, type: 'spring', bounce: 0.4 }}
+            transition={{ duration: 0.5, type: "spring", bounce: 0.4 }}
           >
-            < img
+            <img
               src={Img}
               alt="Thinking person illustration"
               className="w-full h-full object-contain"
@@ -101,22 +106,30 @@ const Result=()=> {
 
           {/* Interests */}
           <motion.div className="mb-12" variants={containerVariants}>
-            <motion.div 
+            <motion.div
               className="bg_light_primary_color text-white font-semibold py-2 px-6 rounded-full inline-block mb-8"
               variants={itemVariants}
             >
               Your Interests
             </motion.div>
-            <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-4" variants={containerVariants}>
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-3 gap-4"
+              variants={containerVariants}
+            >
               {interests.map((interest, index) => (
-                <motion.div 
+                <motion.div
                   key={index}
                   className="bg_accent_one rounded-lg p-4 text-blue-950 font-medium res-box transition-colors cursor-pointer"
                   variants={itemVariants}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {interest}
+                  <Link
+                    to={`/roadmap/${interest}`}
+                    className="w-full h-full"
+                  >
+                    {interest}
+                  </Link>
                 </motion.div>
               ))}
             </motion.div>
@@ -124,9 +137,17 @@ const Result=()=> {
 
           {/* Actions */}
           <motion.div className="space-y-8" variants={containerVariants}>
-            <motion.h2 className="text-2xl font-bold text-gray-800" variants={itemVariants}>Still not Satisfied ?</motion.h2>
-            <motion.div className="flex flex-col sm:flex-row gap-4 justify-center" variants={containerVariants}>
-              <motion.button 
+            <motion.h2
+              className="text-2xl font-bold text-gray-800"
+              variants={itemVariants}
+            >
+              Still not Satisfied ?
+            </motion.h2>
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+              variants={containerVariants}
+            >
+              <motion.button
                 onClick={() => setIsBookingOpen(true)}
                 className="bg_accent_one res-box text-blue-950 font-semibold py-2 px-6 rounded-full transition-colors"
                 variants={itemVariants}
@@ -135,16 +156,24 @@ const Result=()=> {
               >
                 Book a Session
               </motion.button>
-              <motion.div variants={itemVariants} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link 
-                  href="/careers"
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  to="/carrer/roadmaps/explore"
                   className="bg_accent_one res-box text-blue-950 font-semibold py-2 px-6 rounded-full transition-colors inline-block"
                 >
                   Explore more Careers
                 </Link>
               </motion.div>
-              <motion.div variants={itemVariants} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link 
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
                   to="/quiz"
                   className="bg_accent_one res-box text-blue-950 font-semibold py-2 px-6 rounded-full transition-colors inline-block"
                 >
@@ -157,20 +186,22 @@ const Result=()=> {
 
         {/* Booking Modal */}
         {isBookingOpen && (
-          <motion.div 
+          <motion.div
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div 
+            <motion.div
               className="bg-white rounded-lg p-6 max-w-md w-full"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 500 }}
+              transition={{ type: "spring", damping: 25, stiffness: 500 }}
             >
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Book a Career Guidance Session</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                Book a Career Guidance Session
+              </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-gray-700 mb-2">Name</label>
@@ -179,7 +210,9 @@ const Result=()=> {
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                   />
                 </div>
                 <div>
@@ -189,7 +222,9 @@ const Result=()=> {
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                   />
                 </div>
                 <div>
@@ -199,7 +234,9 @@ const Result=()=> {
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"
                     value={formData.date}
-                    onChange={(e) => setFormData({...formData, date: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, date: e.target.value })
+                    }
                   />
                 </div>
                 <div>
@@ -209,7 +246,9 @@ const Result=()=> {
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"
                     value={formData.time}
-                    onChange={(e) => setFormData({...formData, time: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, time: e.target.value })
+                    }
                   />
                 </div>
                 <div className="flex gap-4 justify-end">
@@ -233,8 +272,7 @@ const Result=()=> {
         )}
       </div>
     </motion.div>
-  )
-}
+  );
+};
 
-
-export default Result
+export default Result;

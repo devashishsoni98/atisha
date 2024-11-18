@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
 import { User, Mail, Calendar, MapPin, Phone, School, GraduationCap, LogOut } from 'lucide-react'
 import man from '../assets/man.png'
+import { Link } from 'react-router-dom'
+import study from "../assets/hash.png"
 
 export default function DashboardStudent() {
   const [activeTab, setActiveTab] = useState('Profile')
 
   // Static data for demonstration
   const studentData = {
-    name: "Aman Jain",
-    email: "aman.jain@example.com",
+    name: "Devashish Soni",
+    email: "devashish@gmail.com",
     profileImage: man,
     dob: "2000-01-15",
     gender: "Male",
@@ -84,13 +86,13 @@ export default function DashboardStudent() {
                 {tab}
               </button>
             ))}
-            <button
+            <Link to="/"
               onClick={() => console.log('Logout clicked')}
               className="w-full py-3 px-4 rounded-xl text-left text-red-500 hover:bg-red-50 mt-4 flex items-center"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Logout
-            </button>
+            </Link>
           </nav>
         </div>
 
@@ -168,7 +170,7 @@ function SessionContent({ sessions }) {
         <div className="flex items-center justify-between mb-8">
           <div className="w-1/3">
             <img
-              src="/placeholder.svg?height=200&width=200"
+              src={study}
               alt="Study illustration"
               className="w-full"
             />

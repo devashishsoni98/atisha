@@ -261,6 +261,9 @@
 import React from "react";
 import {Link } from 'react-router-dom'
 import { motion } from "framer-motion";
+import illus from "../assets/home.png";
+import illus2 from "../assets/home2.png";
+import illus3 from "../assets/home3.png";
 import { ArrowRight, MessageCircle, BookOpen, Zap, Calendar, Users, ChevronRight } from 'lucide-react';
 
 
@@ -340,10 +343,10 @@ export default function Home() {
               className="flex flex-wrap gap-4"
               variants={fadeInUp}
             >
-              <Link href="#" className="bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-50 transition duration-300 ease-in-out transform hover:scale-105">
+              <Link to="/quiz" className="bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-50 transition duration-300 ease-in-out transform hover:scale-105">
                 Take Your Career Quiz
               </Link>
-              <Link href="#" className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-blue-600 transition duration-300 ease-in-out transform hover:scale-105">
+              <Link to="/carrer/roadmaps/explore" className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-blue-600 transition duration-300 ease-in-out transform hover:scale-105">
                 Explore Careers
               </Link>
             </motion.div>
@@ -355,11 +358,11 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <img
-              src="/placeholder.svg?height=400&width=400"
+              src={illus}
               alt="Career guidance illustration"
-              width={400}
-              height={400}
-              className="max-w-full h-auto"
+              // width={400}
+              // height={400}
+              className="max-w-full h-auto ml-8"
             />
           </motion.div>
         </div>
@@ -432,7 +435,7 @@ export default function Home() {
               Discover a world of opportunities and find the perfect career match for your skills and passions.
             </motion.p>
             <motion.div variants={fadeInUp} initial="initial" animate="animate">
-              <Link href="#" className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold text-lg hover:bg-blue-700 transition duration-300 ease-in-out inline-flex items-center group">
+              <Link to="/carrer/roadmaps/explore" className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold text-lg hover:bg-blue-700 transition duration-300 ease-in-out inline-flex items-center group">
                 Explore Careers
                 <ArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
@@ -445,11 +448,11 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <img
-              src="/placeholder.svg?height=300&width=400"
+              src={illus2}
               alt="Career exploration illustration"
-              width={400}
-              height={300}
-              className="max-w-full h-auto"
+              // width={400}
+              // height={300}
+              className="max-w-full h-auto ml-6"
             />
           </motion.div>
         </div>
@@ -498,7 +501,7 @@ export default function Home() {
             initial="initial"
             animate="animate"
           >
-            <Link href="#" className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold text-lg hover:bg-blue-700 transition duration-300 ease-in-out inline-flex items-center group">
+            <Link to="/sessions/explore" className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold text-lg hover:bg-blue-700 transition duration-300 ease-in-out inline-flex items-center group">
               View All Events
               <ArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
@@ -520,7 +523,7 @@ export default function Home() {
               <p className="text-gray-600 mb-6">
                 We are dedicated to helping individuals discover their ideal career paths through innovative AI-powered tools and expert guidance. Our mission is to empower you to make informed decisions about your professional future.
               </p>
-              <Link href="#" className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold text-lg hover:bg-blue-700 transition duration-300 ease-in-out inline-flex items-center group">
+              <Link to="/about" className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold text-lg hover:bg-blue-700 transition duration-300 ease-in-out inline-flex items-center group">
                 Learn More
                 <ArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
@@ -530,11 +533,11 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
                 <img
-                  src="/placeholder.svg?height=200&width=300"
+                  src={illus3}
                   alt="About us illustration"
                   width={300}
                   height={200}
-                  className="mt-8 max-w-full h-auto"
+                  className=" max-w-full h-auto"
                 />
               </motion.div>
             </motion.div>
@@ -567,7 +570,7 @@ export default function Home() {
                 ))}
               </motion.div>
               <motion.div variants={fadeInUp} initial="initial" animate="animate">
-                <Link href="#" className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold text-lg hover:bg-blue-700 transition duration-300 ease-in-out inline-flex items-center mt-4 group">
+                <Link to="/testimonials" className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold text-lg hover:bg-blue-700 transition duration-300 ease-in-out inline-flex items-center mt-4 group">
                   Read More Stories
                   <ArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>

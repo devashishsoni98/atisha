@@ -12,6 +12,7 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import logo from "../assets/logo1.png"
+import { useNavigate } from "react-router-dom";
 
 const QUESTION_TIME_LIMIT = 60; // 60 seconds per question
 
@@ -218,7 +219,7 @@ const QuestionCard = ({ question, options, onAnswer, onSkip }) => {
   return (
     <div className="w-full min-h-screen mx-auto p-6 ">
       <h1 className="text-3xl font-bold primary_color text-center mb-8">
-        Sample Quiz Name
+         Quiz 
       </h1>
       <div className="grid grid-cols-2 gap-4 ">
         <div className="bg-blue-50 h-[55vh] border  rounded-lg p-6 mb-6">
@@ -272,6 +273,7 @@ const QuizFormsPage = () => {
   const [answeredQuestions, setAnsweredQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [isFinished, setIsFinished] = useState(false);
+  const navigate = useNavigate();
 
   const totalTime = QUESTION_TIME_LIMIT * quizData.length;
 
@@ -292,6 +294,9 @@ const QuizFormsPage = () => {
       handleQuestionSelect(currentQuestion + 1);
     } else {
       setIsFinished(true);
+        // Navigate to results page when the last question is answered
+        navigate('/quiz/result');
+    
     }
   };
 
