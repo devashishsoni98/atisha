@@ -19,6 +19,7 @@ import ContactUs from "../pages/ContactUs";
 import Testimonials from "../pages/Testimonials";
 import CreateProfile from "../pages/CreateProfile";
 import Mentors from "../pages/Mentors";
+import Resources from "../pages/Resource";
 
 
 
@@ -62,6 +63,10 @@ const Router = createBrowserRouter([
       {
         path: "/mentors-students/:id",
         element: <Mentors/>
+      },
+      {
+        path: "/resources",
+        element: <Resources/>
       },
       { path: "/", element: <Home /> },
       {

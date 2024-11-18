@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useLocation, useNavigate } from 'react-router-dom';
 
-const CreateProfile = () => {
-  const location = useLocation();
-  const navigate = useNavigate(); 
-  
-  // Accessing the passed state
-  const { userRole, userId, userEmail, userName } = location.state || {};
+const CreateProfile = ({ userRole, userId, userEmail, userName }) => {
   const [formData, setFormData] = useState({
     name: userName,
     email: userEmail,
@@ -17,7 +11,7 @@ const CreateProfile = () => {
     location: "",
     contactNumber: "",
     schoolName: "",
-    classLevel: "",
+    class: "",
     subjectIds: [],
     sportIds: [],
     hobbyIds: [],
@@ -83,66 +77,61 @@ const CreateProfile = () => {
   const handleInterestChange = (type, id) => {
     setFormData((prev) => ({
       ...prev,
-      [${type}Ids]: prev[${type}Ids].includes(id)
-        ? prev[${type}Ids].filter((item) => item !== id)
-        : [...prev[${type}Ids], id],
+      [`${type}Ids`]: prev[`${type}Ids`].includes(id)
+        ? prev[`${type}Ids`].filter((item) => item !== id)
+        : [...prev[`${type}Ids`], id],
     }));
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (isFormValid) {
-        const formDataToSend = new FormData();
-        formDataToSend.append("userId", userId);
-        formDataToSend.append("image", formData.profileImage); // Append image file
-        formDataToSend.append("dob", formData.dob);
-        formDataToSend.append("gender", formData.gender);
-        formDataToSend.append("location", formData.location);
-        formDataToSend.append("contactNumber", formData.contactNumber);
-        formDataToSend.append("schoolName", formData.schoolName);
-        formDataToSend.append("classLevel", formData.classLevel); // Adjusted to match backend field name
-        formDataToSend.append("subjectIds", JSON.stringify(formData.subjectIds)); // Convert arrays to JSON strings
-        formDataToSend.append("sportIds", JSON.stringify(formData.sportIds));
-        formDataToSend.append("hobbyIds", JSON.stringify(formData.hobbyIds));
+      try {
+        const response = await fetch("/api/student/profile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId,
+            image: formData.profileImage,
+            dob: formData.dob,
+            gender: formData.gender,
+            location: formData.location,
+            contactNumber: formData.contactNumber,
+            schoolName: formData.schoolName,
+            classLevel: formData.class,
+            subjectIds: formData.subjectIds,
+            sportIds: formData.sportIds,
+            hobbyIds: formData.hobbyIds,
+          }),
+        });
 
-        try {
-            const response = await fetch("http://localhost:4000/api/students", { // Update with your actual endpoint
-                method: "POST",
-                body: formDataToSend,
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to update profile");
-            }
-
-            const responseData = await response.json(); // Assuming your API returns the updated user data
-            // Redirecting to the dashboard with account type and user ID
-            navigate(/dashboard/${userRole}/${responseData.id});
-
-            // Handle success (e.g., show notification, redirect)
-            console.log("Profile updated successfully");
-        } catch (error) {
-            console.error("Error updating profile:", error);
-            // Handle error (e.g., show error message)
+        if (!response.ok) {
+          throw new Error("Failed to update profile");
         }
+
+        // Handle success (e.g., show notification, redirect)
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        // Handle error (e.g., show error message)
+      }
     }
-};
+  };
 
   useEffect(() => {
     const validateForm = () => {
       const requiredFields = [
+        "name",
+        "email",
         "dob",
         "gender",
         "location",
         "contactNumber",
-        "schoolName",
-        "classLevel"
       ];
 
       if (userRole === "student") {
-        requiredFields.push("schoolName", "classLevel");
+        requiredFields.push("schoolName", "class");
         const hasInterests =
           formData.subjectIds.length > 0 ||
           formData.sportIds.length > 0 ||
