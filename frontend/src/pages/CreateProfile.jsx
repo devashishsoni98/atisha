@@ -83,9 +83,9 @@ const CreateProfile = () => {
   const handleInterestChange = (type, id) => {
     setFormData((prev) => ({
       ...prev,
-      [`${type}Ids`]: prev[`${type}Ids`].includes(id)
-        ? prev[`${type}Ids`].filter((item) => item !== id)
-        : [...prev[`${type}Ids`], id],
+      [${type}Ids]: prev[${type}Ids].includes(id)
+        ? prev[${type}Ids].filter((item) => item !== id)
+        : [...prev[${type}Ids], id],
     }));
   };
 
@@ -119,7 +119,7 @@ const CreateProfile = () => {
 
             const responseData = await response.json(); // Assuming your API returns the updated user data
             // Redirecting to the dashboard with account type and user ID
-            navigate(`/dashboard/${userRole}/${responseData.id}`);
+            navigate(/dashboard/${userRole}/${responseData.id});
 
             // Handle success (e.g., show notification, redirect)
             console.log("Profile updated successfully");

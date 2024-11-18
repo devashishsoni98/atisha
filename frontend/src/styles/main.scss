@@ -142,3 +142,23 @@ $background-image: url("../assets/login_bg.jpg");
     right: -150px;
   }
 }
+
+
+.gradientBackground {
+  background: linear-gradient(to bottom right, #e0f2fe, #ffffff, #f3e8ff);
+}
+
+.primaryBackground {
+  background-color: #3b82f6;
+}
+
+.lightPrimaryBackground {
+  background-color: #60a5fa;
+}
+
+.gradientButton {
+  background: linear-gradient(to right, #3b82f6, #60a5fa);
+  &:hover {
+    background: linear-gradient(to right, #2563eb, #3b82f6);
+  }
+}
