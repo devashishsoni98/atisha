@@ -1,31 +1,48 @@
-//userController.js
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const userModel = require('../models/userModel');
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
 
 const signupUser = async (req, res) => {
-    const { fullName, email, password, accountType } = req.body;
+        const { fullName, email, password, accountType } = req.body;
 
     if (!fullName || !email || !password || !accountType) {
         return res.status(400).json({ message: "All fields are required." });
     }
 
     try {
-        const role = await userModel.getRoleByAccountType(accountType);
+        // Fetch role based on accountType
+        const role = await prisma.role.findUnique({
+            where: { role_name: accountType },
+        });
+
         if (!role) {
             return res.status(400).json({ message: "Invalid account type" });
         }
 
+        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await userModel.createUser(fullName, email, hashedPassword, role.id);
 
+        // Create user in the database
+        const user = await prisma.user.create({
+            data: {
+                name: fullName,
+                email: email,
+                password: hashedPassword,
+                roleId: role.id,
+            },
+        });
+
+        // Create JWT token
         const token = jwt.sign(
             { id: user.id, email: user.email, roleId: role.id },
             process.env.JWT_SECRET || 'yourSecretKey',
             { expiresIn: '1h' }
         );
 
-        res.status(201).json({ 
+        res.status(201).json({
             message: "User created successfully",
             userId: user.id,
             token: token,
@@ -50,18 +67,24 @@ const loginUser = async (req, res) => {
     }
 
     try {
-        const user = await userModel.getUserByEmail(email);
+        // Fetch user by email
+        const user = await prisma.user.findUnique({
+            where: { email: email },
+        });
+
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }
 
+        // Validate password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: "Invalid credentials." });
         }
 
+        // Create JWT token
         const token = jwt.sign(
-            { id: user.id, email: user.email, roleId: user.role_id },
+            { id: user.id, email: user.email, roleId: user.roleId },
             process.env.JWT_SECRET || 'yourSecretKey',
             { expiresIn: '1h' }
         );
@@ -73,7 +96,7 @@ const loginUser = async (req, res) => {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                roleId: user.role_id,
+                roleId: user.roleId,
             },
         });
     } catch (error) {

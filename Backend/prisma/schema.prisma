@@ -1,0 +1,214 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Define the ENUM types
+enum RoleType {
+  student
+  counselor
+  institute
+  mentor
+}
+
+enum SessionTypeEnum {
+  online
+  offline
+}
+
+enum InstituteTypeEnum {
+  private
+  govt
+  semiGovt
+  public
+}
+
+enum GenderEnum {
+  female
+  male
+  other
+}
+
+// Define the Roles model
+model Role {
+  id        Int      @id @default(autoincrement())
+  role_name RoleType @unique
+  User      User[]
+}
+
+// Define the Users model
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(100)
+  password  String   @db.VarChar(255) // Ensure this line exists
+  roleId    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role                Role?                @relation(fields: [roleId], references: [id])
+  studentPersonalInfo StudentPersonalInfo?
+  studentEducation    StudentEducation?
+  studentInterest     StudentInterest?
+
+  counselorPersonalInfo CounselorPersonalInfo?
+  counselorEducation    CounselorEducation?
+  counselorProfessional CounselorProfessional?
+
+  instituteInfo InstituteInfo?
+  Session       Session[]
+  Program       Program[]
+
+  studentSessions Session[] @relation("StudentSessions")
+
+  counselorSessions Session[] @relation("CounselorSessions")
+}
+
+// Define the Master Subjects model
+model MasterSubject {
+  id          Int    @id @default(autoincrement())
+  subjectName String @unique @db.VarChar(100)
+}
+
+// Define the Master Sports model
+model MasterSport {
+  id        Int    @id @default(autoincrement())
+  sportName String @unique @db.VarChar(100)
+}
+
+// Define the Master Hobbies model
+model MasterHobby {
+  id        Int    @id @default(autoincrement())
+  hobbyName String @unique @db.VarChar(100)
+}
+
+// Define the Student Personal Info model
+model StudentPersonalInfo {
+  userId        Int        @id
+  image         String?
+  dob           DateTime?
+  gender        GenderEnum
+  location      String?
+  contactNumber String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Define the Student Education model
+model StudentEducation {
+  userId     Int    @id
+  schoolName String @db.VarChar(255)
+  class      Int
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Define the Student Interest model
+model StudentInterest {
+  userId     Int   @id
+  subjectIds Int[] @default([])
+  sportIds   Int[] @default([])
+  hobbyIds   Int[] @default([])
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Define the Counselor Personal Info model
+model CounselorPersonalInfo {
+  userId        Int        @id
+  image         String?
+  dob           DateTime?
+  gender        GenderEnum
+  location      String?
+  contactNumber String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Define the Counselor Education model
+model CounselorEducation {
+  userId      Int    @id
+  degree      String @db.VarChar(255)
+  certificate String @db.VarChar(50)
+  association String @db.VarChar(50)
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Define the Counselor Professional model
+model CounselorProfessional {
+  userId           Int     @id
+  bio              String?
+  yearOfExperience Int?
+  domain           String?
+  image            String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Define the Session model
+model Session {
+  sessionId   Int  @id @default(autoincrement())
+  studentId   Int?
+  counselorId Int?
+
+  sessionTime DateTime?
+  sessionDate DateTime?
+
+  sessionType SessionTypeEnum
+
+  location String @default("remote")
+
+  student User? @relation("StudentSessions", fields: [studentId], references: [id])
+
+  counselor User? @relation("CounselorSessions", fields: [counselorId], references: [id])
+
+  User User[]
+}
+
+// Define the Institute Info model
+model InstituteInfo {
+  userId        Int               @id
+  imageId       Int?
+  address       String?
+  contactNumber String?
+  establishYear Int?
+  instituteType InstituteTypeEnum
+
+  studentBody String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Define the Programs model
+model Program {
+  instituteId               Int     @id
+  subjects                  String?
+  specialPrograms           String?
+  languageOffer             String?
+  certificateAndAffiliation String?
+
+  institute User @relation(fields: [instituteId], references: [id])
+}
+
+model QuizQuestion {
+  id        Int      @id @default(autoincrement())
+  category  String
+  grade     Int
+  traits    String?
+  question  String   @unique
+  answer    String
+  options   String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
