@@ -1,18 +1,16 @@
-// // routes/studentRoutes.js
-// const express = require('express');
-// const router = express.Router();
-// const studentController = require('../controllers/studentController');
-
-// // Route to create or update student profile
-// router.post('/profile', studentController.createOrUpdateStudentProfile);
-
-// module.exports = router;
-// routes/studentRoutes.js
 const express = require('express');
 const router = express.Router();
 const studentController = require('../controllers/studentController');
+const verifyToken = require('../middleware/auth');
 
-// POST route for creating or updating student profile
-router.post('/', studentController.createOrUpdateStudentProfile);
+router.post('/', verifyToken, async (req, res) => {
+  try {
+    const result = await studentController.createOrUpdateStudentProfile(req.body);
+    res.json(result);
+  } catch (error) {
+    console.error('Error in student profile creation/update:', error);
+    res.status(500).json({ message: error.message, stack: error.stack });
+  }
+});
 
 module.exports = router;

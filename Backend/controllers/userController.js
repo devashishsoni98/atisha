@@ -19,7 +19,23 @@ const signupUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await userModel.createUser(fullName, email, hashedPassword, role.id);
 
-        res.status(201).json({ userId: user.id });
+        const token = jwt.sign(
+            { id: user.id, email: user.email, roleId: role.id },
+            process.env.JWT_SECRET || 'yourSecretKey',
+            { expiresIn: '1h' }
+        );
+
+        res.status(201).json({ 
+            message: "User created successfully",
+            userId: user.id,
+            token: token,
+            user: {
+                id: user.id,
+                name: fullName,
+                email: user.email,
+                roleId: role.id,
+            }
+        });
     } catch (error) {
         console.error("Error during registration:", error);
         res.status(500).json({ message: "Error during registration" });

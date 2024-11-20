@@ -1,70 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const CreateProfile = ({ userRole, userId, userEmail, userName }) => {
+const CreateProfile = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  const { userRole, userId, userEmail, userName } = location.state || {};
   const [formData, setFormData] = useState({
-    name: userName,
-    email: userEmail,
-    profileImage: null,
-    dob: "",
-    gender: "",
+    userId: userId || '',
+    name: userName || '',
+    email: userEmail || '',
+    image: null,
     location: "",
     contactNumber: "",
     schoolName: "",
-    class: "",
-    subjectIds: [],
-    sportIds: [],
-    hobbyIds: [],
-    degree: "",
-    certificate: "",
-    association: "",
-    bio: "",
-    yearOfExperience: "",
-    domain: "",
-    address: "",
-    establishYear: "",
-    instituteType: "",
-    studentBody: "",
-    subjects: "",
-    specialPrograms: "",
-    languageOffer: "",
-    certificateAndAffiliation: "",
+    classLevel: "",
+    subjects: [],
+    sports: [],
+    hobbies: [],
+    gender: "",
   });
 
   const [activeTab, setActiveTab] = useState("basic");
-  const [isFormValid, setIsFormValid] = useState(false);
+  const tabs = ["basic", "personal", "education", "interests"];
 
-  // Master data for interests
-  const subjects = [
-    { id: 1, name: "Mathematics" },
-    { id: 2, name: "Science" },
-    { id: 3, name: "Hindi" },
-    { id: 4, name: "English" },
-    { id: 5, name: "Computer Science" },
-    { id: 6, name: "Social Studies" },
-    { id: 7, name: "Sanskrit" },
-    { id: 8, name: "Arts" },
-    { id: 9, name: "Physics" },
-    { id: 10, name: "Chemistry" },
-  ];
-
-  const sports = [
-    { id: 1, name: "Cricket" },
-    { id: 2, name: "Football" },
-    { id: 3, name: "Basketball" },
-    { id: 4, name: "Badminton" },
-    { id: 5, name: "Tennis" },
-    { id: 6, name: "Swimming" },
-  ];
-
-  const hobbies = [
-    { id: 1, name: "Reading" },
-    { id: 2, name: "Painting" },
-    { id: 3, name: "Dancing" },
-    { id: 4, name: "Singing" },
-    { id: 5, name: "Photography" },
-    { id: 6, name: "Coding" },
-  ];
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error("No token found. Redirecting to signup.");
+      navigate('/signup');
+    }
+  }, [navigate]);
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -74,96 +41,140 @@ const CreateProfile = ({ userRole, userId, userEmail, userName }) => {
     }));
   };
 
-  const handleInterestChange = (type, id) => {
+  const handleInterestChange = (type, value) => {
     setFormData((prev) => ({
       ...prev,
-      [`${type}Ids`]: prev[`${type}Ids`].includes(id)
-        ? prev[`${type}Ids`].filter((item) => item !== id)
-        : [...prev[`${type}Ids`], id],
+      [type]: prev[type].includes(value)
+        ? prev[type].filter((item) => item !== value)
+        : [...prev[type], value],
     }));
+  };
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const img = new Image();
+        img.src = reader.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const maxWidth = 800;
+          const maxHeight = 600;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height *= maxWidth / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width *= maxHeight / height;
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.7));
+        };
+      };
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isFormValid) {
-      try {
-        const response = await fetch("/api/student/profile", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId,
-            image: formData.profileImage,
-            dob: formData.dob,
-            gender: formData.gender,
-            location: formData.location,
-            contactNumber: formData.contactNumber,
-            schoolName: formData.schoolName,
-            classLevel: formData.class,
-            subjectIds: formData.subjectIds,
-            sportIds: formData.sportIds,
-            hobbyIds: formData.hobbyIds,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to update profile");
-        }
-
-        // Handle success (e.g., show notification, redirect)
-      } catch (error) {
-        console.error("Error updating profile:", error);
-        // Handle error (e.g., show error message)
+    
+    if (activeTab !== tabs[tabs.length - 1]) {
+      handleNext();
+      return;
+    }
+  
+    if (!formData.userId) {
+      alert("User ID is missing. Please try signing up again.");
+      navigate('/signup');
+      return;
+    }
+  
+    const requiredFields = [
+      "userId", "image", "location", "contactNumber",
+      "schoolName", "classLevel", "subjects", "sports", "hobbies",
+      "gender"
+    ];
+    
+    const missingFields = requiredFields.filter(field => !formData[field]);
+    
+    if (missingFields.length > 0) {
+      alert(`Please fill in the following fields: ${missingFields.join(', ')}`);
+      return;
+    }
+  
+    try {
+      let imageBase64 = formData.image ? await convertToBase64(formData.image) : null;
+      
+      if (imageBase64 && imageBase64.length > 255) {
+        console.log("Image too large for direct insertion. Consider uploading separately.");
+        imageBase64 = null;
       }
+  
+      const dataToSend = {
+        userId: parseInt(formData.userId),
+        image: imageBase64,
+        location: formData.location,
+        contactNumber: formData.contactNumber,
+        schoolName: formData.schoolName,
+        classLevel: formData.classLevel,
+        subjects: formData.subjects.join(','),
+        sports: formData.sports.join(','),
+        hobbies: formData.hobbies.join(','),
+        gender: formData.gender,
+      };
+  
+      console.log("Sending data to server:", JSON.stringify(dataToSend, null, 2));
+  
+      const token = localStorage.getItem('token');
+      const response = await fetch("http://localhost:4000/api/students", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(dataToSend),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Server response:", errorData);
+        throw new Error(errorData.message || "Failed to update profile");
+      }
+  
+      const responseData = await response.json();
+      console.log("Profile updated successfully", responseData);
+      navigate(`/dashboard/student/${responseData.id}`);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert(`Error updating profile: ${error.message}. Please try again.`);
     }
   };
 
-  useEffect(() => {
-    const validateForm = () => {
-      const requiredFields = [
-        "name",
-        "email",
-        "dob",
-        "gender",
-        "location",
-        "contactNumber",
-      ];
+  const handleNext = () => {
+    const currentIndex = tabs.indexOf(activeTab);
+    if (currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1]);
+    }
+  };
 
-      if (userRole === "student") {
-        requiredFields.push("schoolName", "class");
-        const hasInterests =
-          formData.subjectIds.length > 0 ||
-          formData.sportIds.length > 0 ||
-          formData.hobbyIds.length > 0;
-      } else if (userRole === "counselor") {
-        requiredFields.push(
-          "degree",
-          "certificate",
-          "association",
-          "bio",
-          "yearOfExperience",
-          "domain"
-        );
-      } else if (userRole === "institute") {
-        requiredFields.push(
-          "address",
-          "establishYear",
-          "instituteType",
-          "studentBody",
-          "subjects",
-          "specialPrograms",
-          "languageOffer",
-          "certificateAndAffiliation"
-        );
-      }
-
-      const isValid = requiredFields.every((field) => formData[field] !== "");
-      setIsFormValid(isValid);
-    };
-
-    validateForm();
-  }, [formData, userRole]);
+  const handlePrevious = () => {
+    const currentIndex = tabs.indexOf(activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1]);
+    }
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -177,9 +188,9 @@ const CreateProfile = ({ userRole, userId, userEmail, userName }) => {
           >
             <div className="flex items-center space-x-6">
               <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden">
-                {formData.profileImage && (
+                {formData.image && (
                   <img
-                    src={URL.createObjectURL(formData.profileImage)}
+                    src={URL.createObjectURL(formData.image)}
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />
@@ -187,18 +198,19 @@ const CreateProfile = ({ userRole, userId, userEmail, userName }) => {
               </div>
               <div>
                 <label
-                  htmlFor="profileImage"
+                  htmlFor="image"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
                   Profile Image
                 </label>
                 <input
-                  id="profileImage"
-                  name="profileImage"
+                  id="image"
+                  name="image"
                   type="file"
                   onChange={handleInputChange}
                   className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition duration-300 ease-in-out"
                   accept="image/*"
+                  required
                 />
               </div>
             </div>
@@ -223,7 +235,7 @@ const CreateProfile = ({ userRole, userId, userEmail, userName }) => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-md font-medium text-gray-700 mb-1 "
+                  className="block text-md font-medium text-gray-700 mb-1"
                 >
                   Email
                 </label>
@@ -250,44 +262,6 @@ const CreateProfile = ({ userRole, userId, userEmail, userName }) => {
             className="space-y-6"
           >
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="dob"
-                  className="block text-md font-medium text-gray-700 mb-1"
-                >
-                  Date of Birth
-                </label>
-                <input
-                  id="dob"
-                  name="dob"
-                  type="date"
-                  value={formData.dob}
-                  onChange={handleInputChange}
-                  className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="gender"
-                  className="block text-md font-medium text-gray-700 mb-1"
-                >
-                  Gender
-                </label>
-                <select
-                  id="gender"
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleInputChange}
-                  className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                  required
-                >
-                  <option value="">Select gender</option>
-                  <option value="female">Female</option>
-                  <option value="male">Male</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
               <div>
                 <label
                   htmlFor="location"
@@ -321,356 +295,50 @@ const CreateProfile = ({ userRole, userId, userEmail, userName }) => {
                   required
                 />
               </div>
+              <div>
+                <label
+                  htmlFor="gender"
+                  className="block text-md font-medium text-gray-700 mb-1"
+                >
+                  Gender
+                </label>
+                <select
+                  id="gender"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleInputChange}
+                  className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
+                  required
+                >
+                  <option value="">Select gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
             </div>
           </motion.div>
         );
-      case "role-specific":
-        if (userRole === "student") {
-          return (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-6"
-            >
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                  <label
-                    htmlFor="schoolName"
-                    className="block text-md font-medium text-gray-700 mb-1"
-                  >
-                    School Name
-                  </label>
-                  <input
-                    id="schoolName"
-                    name="schoolName"
-                    value={formData.schoolName}
-                    onChange={handleInputChange}
-                    className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="class"
-                    className="block text-md font-medium text-gray-700 mb-1"
-                  >
-                    Class
-                  </label>
-                  <input
-                    id="class"
-                    name="class"
-                    type="number"
-                    value={formData.class}
-                    onChange={handleInputChange}
-                    className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                    required
-                  />
-                </div>
-              </div>
-            </motion.div>
-          );
-        }
-        return null;
-      case "interests":
-        if (userRole === "student") {
-          return (
-            // <motion.div
-            //   initial={{ opacity: 0, y: 20 }}
-            //   animate={{ opacity: 1, y: 0 }}
-            //   transition={{ duration: 0.5 }}
-            //   className="space-y-8"
-            // >
-            //   <div>
-            //     <h3 className="text-lg font-medium text-gray-700 mb-4">Favorite Subjects</h3>
-            //     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            //       {subjects.map(subject => (
-            //         <div
-            //           key={subject.id}
-            //           onClick={() => handleInterestChange('subject', subject.id)}
-            //           className={`p-3 rounded-lg cursor-pointer transition-all duration-300 ${
-            //             formData.subjectIds.includes(subject.id)
-            //               ? 'bg-blue-500 text-white'
-            //               : 'bg-gray-100 hover:bg-gray-200'
-            //           }`}
-            //         >
-            //           {subject.name}
-            //         </div>
-            //       ))}
-            //     </div>
-            //   </div>
-
-            //   <div>
-            //     <h3 className="text-lg font-medium text-gray-700 mb-4">Sports</h3>
-            //     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            //       {sports.map(sport => (
-            //         <div
-            //           key={sport.id}
-            //           onClick={() => handleInterestChange('sport', sport.id)}
-            //           className={`p-3 rounded-lg cursor-pointer transition-all duration-300 ${
-            //             formData.sportIds.includes(sport.id)
-            //               ? 'bg-blue-500 text-white'
-            //               : 'bg-gray-100 hover:bg-gray-200'
-            //           }`}
-            //         >
-            //           {sport.name}
-            //         </div>
-            //       ))}
-            //     </div>
-            //   </div>
-
-            //   <div>
-            //     <h3 className="text-lg font-medium text-gray-700 mb-4">Hobbies</h3>
-            //     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            //       {hobbies.map(hobby => (
-            //         <div
-            //           key={hobby.id}
-            //           onClick={() => handleInterestChange('hobby', hobby.id)}
-            //           className={`p-3 rounded-lg cursor-pointer transition-all duration-300 ${
-            //             formData.hobbyIds.includes(hobby.id)
-            //               ? 'bg-blue-500 text-white'
-            //               : 'bg-gray-100 hover:bg-gray-200'
-            //           }`}
-            //         >
-            //           {hobby.name}
-            //         </div>
-            //       ))}
-            //     </div>
-            //   </div>
-            // </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-8"
-            >
-              <div>
-                <h3 className="text-lg font-medium text-gray-700 mb-4">
-                  Favorite Subjects
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {subjects.map((subject) => (
-                    <div
-                      key={subject.id}
-                      onClick={() =>
-                        handleInterestChange("subject", subject.id)
-                      }
-                      className={`p-3 rounded-lg cursor-pointer transition-all duration-300 ${
-                        formData.subjectIds.includes(subject.id)
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-100 hover:bg-gray-200"
-                      }`}
-                    >
-                      {subject.name}
-                    </div>
-                  ))}
-                  {formData.showOtherSubject ? (
-                    <div className="p-2">
-                      <input
-                        type="text"
-                        name="otherSubject"
-                        value={formData.otherSubject}
-                        onChange={handleInputChange}
-                        placeholder="Enter subject"
-                        className="w-full p-2 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                        autoFocus
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          showOtherSubject: true,
-                        }))
-                      }
-                      className="p-3 rounded-lg cursor-pointer transition-all duration-300 bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
-                    >
-                      + Other
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-medium text-gray-700 mb-4">
-                  Sports
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {sports.map((sport) => (
-                    <div
-                      key={sport.id}
-                      onClick={() => handleInterestChange("sport", sport.id)}
-                      className={`p-3 rounded-lg cursor-pointer transition-all duration-300 ${
-                        formData.sportIds.includes(sport.id)
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-100 hover:bg-gray-200"
-                      }`}
-                    >
-                      {sport.name}
-                    </div>
-                  ))}
-                  {formData.showOtherSport ? (
-                    <div className="p-2">
-                      <input
-                        type="text"
-                        name="otherSport"
-                        value={formData.otherSport}
-                        onChange={handleInputChange}
-                        placeholder="Enter sport"
-                        className="w-full p-2 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                        autoFocus
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          showOtherSport: true,
-                        }))
-                      }
-                      className="p-3 rounded-lg cursor-pointer transition-all duration-300 bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
-                    >
-                      + Other
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-medium text-gray-700 mb-4">
-                  Hobbies
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {hobbies.map((hobby) => (
-                    <div
-                      key={hobby.id}
-                      onClick={() => handleInterestChange("hobby", hobby.id)}
-                      className={`p-3 rounded-lg cursor-pointer transition-all duration-300 ${
-                        formData.hobbyIds.includes(hobby.id)
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-100 hover:bg-gray-200"
-                      }`}
-                    >
-                      {hobby.name}
-                    </div>
-                  ))}
-                  {formData.showOtherHobby ? (
-                    <div className="p-2">
-                      <input
-                        type="text"
-                        name="otherHobby"
-                        value={formData.otherHobby}
-                        onChange={handleInputChange}
-                        placeholder="Enter hobby"
-                        className="w-full p-2 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                        autoFocus
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          showOtherHobby: true,
-                        }))
-                      }
-                      className="p-3 rounded-lg cursor-pointer transition-all duration-300 bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
-                    >
-                      + Other
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          );
-        } else if (userRole === "counselor") {
-          return (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-6"
-            >
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                  <label
-                    htmlFor="degree"
-                    className="block text-md font-medium text-gray-700 mb-1"
-                  >
-                    Degree
-                  </label>
-                  <input
-                    id="degree"
-                    name="degree"
-                    value={formData.degree}
-                    onChange={handleInputChange}
-                    className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="certificate"
-                    className="block text-md font-medium text-gray-700 mb-1"
-                  >
-                    Certificate
-                  </label>
-                  <input
-                    id="certificate"
-                    name="certificate"
-                    value={formData.certificate}
-                    onChange={handleInputChange}
-                    className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="association"
-                    className="block text-md font-medium text-gray-700 mb-1"
-                  >
-                    Association
-                  </label>
-                  <input
-                    id="association"
-                    name="association"
-                    value={formData.association}
-                    onChange={handleInputChange}
-                    className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="yearOfExperience"
-                    className="block text-md font-medium text-gray-700 mb-1"
-                  >
-                    Years of Experience
-                  </label>
-                  <input
-                    id="yearOfExperience"
-                    name="yearOfExperience"
-                    type="number"
-                    value={formData.yearOfExperience}
-                    onChange={handleInputChange}
-                    className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                    required
-                  />
-                </div>
-              </div>
+      case "education":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-6"
+          >
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
                 <label
-                  htmlFor="domain"
+                  htmlFor="schoolName"
                   className="block text-md font-medium text-gray-700 mb-1"
                 >
-                  Domain
+                  School Name
                 </label>
                 <input
-                  id="domain"
-                  name="domain"
-                  value={formData.domain}
+                  id="schoolName"
+                  name="schoolName"
+                  value={formData.schoolName}
                   onChange={handleInputChange}
                   className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
                   required
@@ -678,173 +346,109 @@ const CreateProfile = ({ userRole, userId, userEmail, userName }) => {
               </div>
               <div>
                 <label
-                  htmlFor="bio"
+                  htmlFor="classLevel"
                   className="block text-md font-medium text-gray-700 mb-1"
                 >
-                  Bio
+                  Class
                 </label>
-                <textarea
-                  id="bio"
-                  name="bio"
-                  value={formData.bio}
+                <input
+                  id="classLevel"
+                  name="classLevel"
+                  type="text"
+                  value={formData.classLevel}
                   onChange={handleInputChange}
-                  rows="4"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                  required
-                ></textarea>
-              </div>
-            </motion.div>
-          );
-        } else if (userRole === "institute") {
-          return (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-6"
-            >
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                  <label
-                    htmlFor="address"
-                    className="block text-md font-medium text-gray-700 mb-1"
-                  >
-                    Address
-                  </label>
-                  <input
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="establishYear"
-                    className="block text-md font-medium text-gray-700 mb-1"
-                  >
-                    Establishment Year
-                  </label>
-                  <input
-                    id="establishYear"
-                    name="establishYear"
-                    type="number"
-                    value={formData.establishYear}
-                    onChange={handleInputChange}
-                    className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="instituteType"
-                    className="block text-md font-medium text-gray-700 mb-1"
-                  >
-                    Institute Type
-                  </label>
-                  <select
-                    id="instituteType"
-                    name="instituteType"
-                    value={formData.instituteType}
-                    onChange={handleInputChange}
-                    className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                    required
-                  >
-                    <option value="">Select institute type</option>
-                    <option value="private">Private</option>
-                    <option value="govt">Government</option>
-                    <option value="semi-govt">Semi-Government</option>
-                    <option value="public">Public</option>
-                  </select>
-                </div>
-                <div>
-                  <label
-                    htmlFor="studentBody"
-                    className="block text-md font-medium text-gray-700 mb-1"
-                  >
-                    Student Body
-                  </label>
-                  <input
-                    id="studentBody"
-                    name="studentBody"
-                    value={formData.studentBody}
-                    onChange={handleInputChange}
-                    className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <label
-                  htmlFor="subjects"
-                  className="block text-md font-medium text-gray-700 mb-1"
-                >
-                  Subjects Offered
-                </label>
-                <textarea
-                  id="subjects"
-                  name="subjects"
-                  value={formData.subjects}
-                  onChange={handleInputChange}
-                  rows="3"
                   className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
                   required
-                ></textarea>
+                />
               </div>
-              <div>
-                <label
-                  htmlFor="specialPrograms"
-                  className="block text-md font-medium text-gray-700 mb-1"
-                >
-                  Special Programs
-                </label>
-                <textarea
-                  id="specialPrograms"
-                  name="specialPrograms"
-                  value={formData.specialPrograms}
-                  onChange={handleInputChange}
-                  rows="3"
-                  className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                ></textarea>
+            </div>
+          </motion.div>
+        );
+      case "interests":
+        const subjects = [
+          "Mathematics", "Science", "Hindi", "English", "Computer Science",
+          "Social Studies", "Sanskrit", "Arts", "Physics", "Chemistry"
+        ];
+
+        const sports = [
+          "Cricket", "Football", "Basketball", "Badminton", "Tennis", "Swimming"
+        ];
+
+        const hobbies = [
+          "Reading", "Painting", "Dancing", "Singing", "Photography", "Coding"
+        ];
+
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-8"
+          >
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">
+                Favorite Subjects
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {subjects.map((subject) => (
+                  <div
+                    key={subject}
+                    onClick={() => handleInterestChange("subjects", subject)}
+                    className={`p-3 rounded-lg cursor-pointer transition-all duration-300 ${
+                      formData.subjects.includes(subject)
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-100 hover:bg-gray-200"
+                    }`}
+                  >
+                    {subject}
+                  </div>
+                ))}
               </div>
-              <div>
-                <label
-                  htmlFor="languageOffer"
-                  className="block text-md font-medium text-gray-700 mb-1"
-                >
-                  Languages Offered
-                </label>
-                <textarea
-                  id="languageOffer"
-                  name="languageOffer"
-                  value={formData.languageOffer}
-                  onChange={handleInputChange}
-                  rows="3"
-                  className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                ></textarea>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">
+                Sports
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {sports.map((sport) => (
+                  <div
+                    key={sport}
+                    onClick={() => handleInterestChange("sports", sport)}
+                    className={`p-3 rounded-lg cursor-pointer transition-all duration-300 ${
+                      formData.sports.includes(sport)
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-100 hover:bg-gray-200"
+                    }`}
+                  >
+                    {sport}
+                  </div>
+                ))}
               </div>
-              <div>
-                <label
-                  htmlFor="certificateAndAffiliation"
-                  className="block text-md font-medium text-gray-700 mb-1"
-                >
-                  Certificates and Affiliations
-                </label>
-                <textarea
-                  id="certificateAndAffiliation"
-                  name="certificateAndAffiliation"
-                  value={formData.certificateAndAffiliation}
-                  onChange={handleInputChange}
-                  rows="3"
-                  className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-300 ease-in-out"
-                ></textarea>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">
+                Hobbies
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {hobbies.map((hobby) => (
+                  <div
+                    key={hobby}
+                    onClick={() => handleInterestChange("hobbies", hobby)}
+                    className={`p-3 rounded-lg cursor-pointer transition-all duration-300 ${
+                      formData.hobbies.includes(hobby)
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-100 hover:bg-gray-200"
+                    }`}
+                  >
+                    {hobby}
+                  </div>
+                ))}
               </div>
-            </motion.div>
-          );
-        }
-        return null;
+            </div>
+          </motion.div>
+        );
       default:
         return null;
     }
@@ -867,46 +471,46 @@ const CreateProfile = ({ userRole, userId, userEmail, userName }) => {
           <form onSubmit={handleSubmit} className="divide-y divide-gray-200">
             <div className="px-4 py-5 sm:p-6">
               <div className="flex justify-center mb-6">
-                {["basic", "personal", "role-specific", "interests"].map(
-                  (tab) => (
-                    <motion.button
-                      key={tab}
-                      type="button"
-                      onClick={() => setActiveTab(tab)}
-                      className={`px-4 mx-8 py-2 font-medium text-md rounded-full transition-all duration-300 ease-in-out ${
-                        activeTab === tab
-                          ? "bg_light_primary_color text-white shadow-lg"
-                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-                      }`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {tab === "role-specific"
-                        ? `${
-                            userRole.charAt(0).toUpperCase() + userRole.slice(1)
-                          } Info`
-                        : tab.charAt(0).toUpperCase() + tab.slice(1)}
-                    </motion.button>
-                  )
-                )}
+                {tabs.map((tab) => (
+                  <motion.button
+                    key={tab}
+                    type="button"
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-4 mx-8 py-2 font-medium text-md rounded-full transition-all duration-300 ease-in-out ${
+                      activeTab === tab
+                        ? "bg_light_primary_color text-white shadow-lg"
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </motion.button>
+                ))}
               </div>
               <div className="bg-gray-50 rounded-xl p-6 shadow-inner min-h-[400px]">
                 {renderTabContent()}
               </div>
             </div>
-            <div className="px-4 py-4 sm:px-6">
+            <div className="px-4 py-4 sm:px-6 flex justify-between">
+              {activeTab !== tabs[0] && (
+                <motion.button
+                  type="button"
+                  onClick={handlePrevious}
+                  className="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-lg font-medium rounded-full text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300 ease-in-out"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Previous
+                </motion.button>
+              )}
               <motion.button
                 type="submit"
-                className={`w-full inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-lg font-medium rounded-full text-white ${
-                  isFormValid
-                    ? "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                    : "bg-gray-300 cursor-not-allowed"
-                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out`}
-                disabled={!isFormValid}
+                className="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-lg font-medium rounded-full text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Create Profile
+                {activeTab === tabs[tabs.length - 1] ? "Submit" : "Next"}
               </motion.button>
             </div>
           </form>
