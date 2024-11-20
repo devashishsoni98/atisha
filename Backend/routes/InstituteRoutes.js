@@ -1,12 +1,16 @@
 // routes/instituteRoutes.js
 
 const express = require('express');
-const { createOrUpdateInstituteInfo } = require('../controllers/instituteController');
+const InstituteController = require('../controllers/InstituteController');
 
 const router = express.Router();
 
 // Route for creating or updating institute information
 // End point: POST /api/institute/info/create
-router.post('/info/create', createOrUpdateInstituteInfo);
+router.post('/info/create', InstituteController.createOrUpdateInstituteInfo);
+
+// Route for getting institute information by ID
+// End point: GET /api/institute/:id
+router.get('/:id', InstituteController.getInstituteById);
 
 module.exports = router;

@@ -42,6 +42,34 @@ const createOrUpdateInstituteInfo = async (req, res) => {
     }
 };
 
+const getInstituteById = async (req, res) => {
+    const { id } = req.params; // Get the institute ID from the request parameters
+
+    if (!id) {
+        return res.status(400).json({ message: "Institute ID is required." });
+    }
+
+    try {
+        // Fetch the institute by ID
+        const institute = await prisma.instituteInfo.findUnique({
+            where: { userId: parseInt(id) }, // Ensure the ID is an integer
+            include: {
+                user: true, // Include related user data if needed
+            },
+        });
+
+        if (!institute) {
+            return res.status(404).json({ message: "Institute not found." });
+        }
+
+        res.status(200).json(institute);
+    } catch (error) {
+        console.error("Error while fetching institute:", error);
+        res.status(500).json({ message: "Error while fetching institute." });
+    }
+};
+
 module.exports = {
     createOrUpdateInstituteInfo,
+    getInstituteById,
 };

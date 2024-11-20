@@ -146,6 +146,36 @@ const createOrUpdateStudentProfile = async (req, res) => {
     }
 };
 
+const getStudentById = async (req, res) => {
+    const { id } = req.params; // Get the student ID from the request parameters
+
+    if (!id) {
+        return res.status(400).json({ message: "Student ID is required." });
+    }
+
+    try {
+        // Fetch the student by ID
+        const student = await prisma.user.findUnique({
+            where: { id: parseInt(id) }, // Ensure the ID is an integer
+            include: {
+                studentPersonalInfo: true,
+                studentEducation: true,
+                studentInterest: true,
+            },
+        });
+
+        if (!student) {
+            return res.status(404).json({ message: "Student not found." });
+        }
+
+        res.status(200).json(student);
+    } catch (error) {
+        console.error("Error while fetching student:", error);
+        res.status(500).json({ message: "Error while fetching student." });
+    }
+};
+
 module.exports = {
     createOrUpdateStudentProfile,
+    getStudentById,
 };
