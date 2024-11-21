@@ -20,6 +20,8 @@ import Testimonials from "../pages/Testimonials";
 import CreateProfile from "../pages/CreateProfile";
 import Mentors from "../pages/Mentors";
 import Resources from "../pages/Resource";
+import StudentOnboarding from "../pages/Create Profile Components/StudentOnboarding";
+import CreateInstituteProfile from "../pages/CareerInstituteProfile";
 
 
 
@@ -54,6 +56,14 @@ const Router = createBrowserRouter([
       {
         path: "/create-profile",
         element: <CreateProfile  />, 
+      },
+      {
+        path: "/create-institute-profile",
+        element: <CreateInstituteProfile  />, 
+      },
+      {
+        path: "/onboarding",
+        element: <StudentOnboarding  />, 
       },
     ],
   },

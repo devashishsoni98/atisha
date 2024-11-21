@@ -191,7 +191,7 @@ const Login = ({ setAuthType }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/users/login", {
+      const response = await fetch("http://localhost:4000/api/auth/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

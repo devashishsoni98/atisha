@@ -1,92 +1,30 @@
-// // // controllers/studentController.js
-// // const studentModel = require('../models/studentModel');
-//
-// // const createOrUpdateStudentProfile = async (req, res) => {
-// //     const { userId, image, dob, gender, location, contactNumber, schoolName, classLevel, subjectIds, sportIds, hobbyIds } = req.body;
-//
-// //     if (!userId || !dob || !gender || !location || !contactNumber || !schoolName || !classLevel || !subjectIds || !sportIds || !hobbyIds) {
-// //         return res.status(400).json({ message: "All fields are required." });
-// //     }
-//
-// //     try {
-// //         // Create or update student personal info
-// //         const personalInfo = await studentModel.createOrUpdateStudentPersonalInfo(userId, image, dob, gender, location, contactNumber);
-//
-// //         // Create or update student education info
-// //         const educationInfo = await studentModel.createOrUpdateStudentEducation(userId, schoolName, classLevel);
-//
-// //         // Create or update student interests info
-// //         const interestsInfo = await studentModel.createOrUpdateStudentInterests(userId, subjectIds, sportIds, hobbyIds);
-//
-// //         res.status(201).json({
-// //             message: "Student profile created/updated successfully",
-// //             personalInfo,
-// //             educationInfo,
-// //             interestsInfo,
-// //         });
-// //     } catch (error) {
-// //         console.error("Error while creating/updating student profile:", error);
-// //         res.status(500).json({ message: "Error while creating/updating student profile." });
-// //     }
-// // };
-//
-// // module.exports = {
-// //     createOrUpdateStudentProfile,
-// // };
-// // controllers/studentController.js
-// const studentModel = require('../models/studentModel');
-//
-// const createOrUpdateStudentProfile = async (req, res) => {
-//     const { userId, image, dob, gender, location, contactNumber, schoolName, classLevel, subjectIds, sportIds, hobbyIds } = req.body;
-//
-//     if (!userId || !dob || !gender || !location || !contactNumber || !schoolName || !classLevel || !subjectIds || !sportIds || !hobbyIds) {
-//         return res.status(400).json({ message: "All fields are required." });
-//     }
-//
-//     try {
-//         // Create or update student personal info
-//         const personalInfo = await studentModel.createOrUpdateStudentPersonalInfo(userId, image, dob, gender, location, contactNumber);
-//
-//         // Create or update student education info
-//         const educationInfo = await studentModel.createOrUpdateStudentEducation(userId, schoolName, classLevel);
-//
-//         // Create or update student interests info
-//         const interestsInfo = await studentModel.createOrUpdateStudentInterests(userId, subjectIds, sportIds, hobbyIds);
-//
-//         res.status(201).json({
-//             message: "Student profile created/updated successfully",
-//             personalInfo,
-//             educationInfo,
-//             interestsInfo,
-//         });
-//     } catch (error) {
-//         console.error("Error while creating/updating student profile:", error);
-//         res.status(500).json({ message: "Error while creating/updating student profile." });
-//     }
-// };
-//
-// module.exports = {
-//     createOrUpdateStudentProfile,
-// };
-
-
-// controllers/studentController.js
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const createOrUpdateStudentProfile = async (req, res) => {
     const { userId, image, dob, gender, location, contactNumber, schoolName, classLevel, subjectIds, sportIds, hobbyIds } = req.body;
 
+    // Check for required fields
     if (!userId || !dob || !gender || !location || !contactNumber || !schoolName || !classLevel || !subjectIds || !sportIds || !hobbyIds) {
         return res.status(400).json({ message: "All fields are required." });
     }
 
     try {
-        const formattedDob = new Date(dob); // Ensure this is a valid date
+        // Ensure dob is a valid date
+        const formattedDob = new Date(dob);
+        if (isNaN(formattedDob.getTime())) {
+            return res.status(400).json({ message: "Invalid date of birth." });
+        }
+
+        // Ensure userId is an integer
+        const userIdInt = parseInt(userId);
+        if (isNaN(userIdInt)) {
+            return res.status(400).json({ message: "Invalid user ID." });
+        }
 
         // Create or update student personal info
         const personalInfo = await prisma.studentPersonalInfo.upsert({
-            where: { userId: userId },
+            where: { userId: userIdInt },
             update: {
                 image,
                 dob: formattedDob,
@@ -95,7 +33,7 @@ const createOrUpdateStudentProfile = async (req, res) => {
                 contactNumber,
             },
             create: {
-                userId,
+                userId: userIdInt,
                 image,
                 dob: formattedDob,
                 gender,
@@ -106,31 +44,36 @@ const createOrUpdateStudentProfile = async (req, res) => {
 
         // Create or update student education info
         const educationInfo = await prisma.studentEducation.upsert({
-            where: { userId: userId },
+            where: { userId: userIdInt },
             update: {
                 schoolName,
                 class: classLevel,
             },
             create: {
-                userId,
+                userId: userIdInt,
                 schoolName,
                 class: classLevel,
             },
         });
 
+        // Ensure subjectIds, sportIds, and hobbyIds are arrays
+        const subjectIdsArray = Array.isArray(subjectIds) ? subjectIds : [];
+        const sportIdsArray = Array.isArray(sportIds) ? sportIds : [];
+        const hobbyIdsArray = Array.isArray(hobbyIds) ? hobbyIds : [];
+
         // Create or update student interests info
         const interestsInfo = await prisma.studentInterest.upsert({
-            where: { userId: userId },
+            where: { userId: userIdInt },
             update: {
-                subjectIds: subjectIds,
-                sportIds: sportIds,
-                hobbyIds: hobbyIds,
+                subjectIds: subjectIdsArray,
+                sportIds: sportIdsArray,
+                hobbyIds: hobbyIdsArray,
             },
             create: {
-                userId,
-                subjectIds,
-                sportIds,
-                hobbyIds,
+                userId: userIdInt,
+                subjectIds: subjectIdsArray,
+                sportIds: sportIdsArray,
+                hobbyIds: hobbyIdsArray,
             },
         });
 
@@ -154,9 +97,14 @@ const getStudentById = async (req, res) => {
     }
 
     try {
+        const idInt = parseInt(id);
+        if (isNaN(idInt)) {
+            return res.status(400).json({ message: "Invalid student ID." });
+        }
+
         // Fetch the student by ID
         const student = await prisma.user.findUnique({
-            where: { id: parseInt(id) }, // Ensure the ID is an integer
+            where: { id: idInt },
             include: {
                 studentPersonalInfo: true,
                 studentEducation: true,
@@ -179,3 +127,4 @@ module.exports = {
     createOrUpdateStudentProfile,
     getStudentById,
 };
+

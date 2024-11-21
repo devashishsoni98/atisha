@@ -179,7 +179,7 @@ model Session {
 // Define the Institute Info model
 model InstituteInfo {
   userId        Int               @id
-  imageId       Int?
+  imageUrl      String?
   address       String?
   contactNumber String?
   establishYear Int?

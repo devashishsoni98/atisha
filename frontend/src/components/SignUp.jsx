@@ -18,91 +18,68 @@ const SignUp = ({ setAuthType }) => {
 
   // const handleRegister = async (data) => {
   //   const { fullName, email, password, confirmPassword } = data;
-
   //   if (password !== confirmPassword) {
-  //     alert("Passwords do not match.");
-  //     return;
+  //       alert("Passwords do not match.");
+  //       return;
   //   }
-
   //   const accountType = selectedType.toLowerCase();
+  //   const userData = { fullName, email, password, accountType };
 
-  //   const userData = {
-  //     fullName,
-  //     email,
-  //     password,
-  //     accountType,
-  //   };
+  //   console.log("Data sent to API:", userData);
 
   //   try {
-  //     const response = await axios.post("http://localhost:4000/api/users/signup", userData);
-  //     navigator(`/create-profile`);
-  //   } catch (error) {
-  //     console.error("Error during registration:", error);
-  //     alert("Registration failed. Please try again.");
-  //   }
-  // };
-
-
-  // const handleRegister = async (data) => {
-  //   const { fullName, email, password, confirmPassword } = data;
-  
-  //   if (password !== confirmPassword) {
-  //     alert("Passwords do not match.");
-  //     return;
-  //   }
-  
-  //   const accountType = selectedType.toLowerCase();
-  
-  //   const userData = {
-  //     fullName,
-  //     email,
-  //     password,
-  //     accountType,
-  //   };
-  
-  //   try {
-  //     const response = await axios.post("http://localhost:4000/api/users/signup", userData);
+  //     const response = await axios.post("http://localhost:4000/api/auth/users/signup", userData);
+  //     const { userId, token, user } = response.data;
       
-  //     // Pass dynamic user data to CreateProfile via state
-  //     navigator(`/create-profile`, { state: { 
-  //       userRole: accountType, 
-  //       userId: response.data.userId, // Assuming your API returns a userId
-  //       userEmail: email,
-  //       userName: fullName 
-  //     }});
+  //     // Store the token in localStorage
+  //     localStorage.setItem('token', token);
+  //     navigate(`/create-profile`, { 
+  //       state: { 
+  //         userRole: accountType, 
+  //         userId: userId, 
+  //         userEmail: email, 
+  //         userName: fullName 
+  //       } 
+  //     });
   //   } catch (error) {
   //     console.error("Error during registration:", error);
   //     alert("Registration failed. Please try again.");
   //   }
   // };
+
   const handleRegister = async (data) => {
     const { fullName, email, password, confirmPassword } = data;
     if (password !== confirmPassword) {
         alert("Passwords do not match.");
         return;
     }
+
     const accountType = selectedType.toLowerCase();
     const userData = { fullName, email, password, accountType };
+    console.log("Data sent to API:", userData);
 
     try {
-      const response = await axios.post("http://localhost:4000/api/users/signup", userData);
-      const { userId, token, user } = response.data;
-      
-      // Store the token in localStorage
-      localStorage.setItem('token', token);
-      navigate(`/create-profile`, { 
-        state: { 
-          userRole: accountType, 
-          userId: userId, 
-          userEmail: email, 
-          userName: fullName 
-        } 
-      });
+        const response = await axios.post("http://localhost:4000/api/auth/users/signup", userData);
+        const { userId, token, user } = response.data;
+
+        // Store the token in localStorage
+        localStorage.setItem('token', token);
+
+        // Navigate based on account type
+        if (accountType === "institute") {
+            navigate("/create-institute-profile", {
+                state: { userRole: accountType, userId: userId, userEmail: email, userName: fullName }
+            });
+        } else {
+            navigate(`/create-profile`, {
+                state: { userRole: accountType, userId: userId, userEmail: email, userName: fullName }
+            });
+        }
     } catch (error) {
-      console.error("Error during registration:", error);
-      alert("Registration failed. Please try again.");
+        console.error("Error during registration:", error);
+        alert("Registration failed. Please try again.");
     }
-  };
+};
 
   return (
     <motion.div

@@ -1,16 +1,44 @@
 "use client"
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import { GraduationCap, Users, Award, TrendingUp } from 'lucide-react'
+import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { GraduationCap, Users, Award, TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react'
 import image1 from "../assets/logo1.png"
 import image2 from "../assets/logo1.png"
+import karan from "../assets/karan.jpg"
+import aman from "../assets/aman.jpg"
+import hiya from "../assets/hiya.png"
+import jatin from "../assets/jatin.jpg"
+import lavina from "../assets/lavina.jpg"
+import devashish from "../assets/devashish.jpg"
+
+
+
 
 export default function About() {
+  const [activeIndex, setActiveIndex] = useState(0)
+
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.6 }
+  }
+
+  const teamMembers = [
+    { name: "Hiya Gurbani", role: "Career Counselor", image: hiya },
+    { name: "Lavina Sevani", role: "Industry Liaison", image: lavina },
+    { name: "Jatin Nama", role: "Student Advisor", image: jatin },
+    { name: "Devashish Soni", role: "Workshop Facilitator", image: devashish },
+    { name: "Aman Jain", role: "Data Analyst", image: aman },
+    { name: "Karan Sukhwal", role: "Marketing Specialist", image: karan }
+  ]
+
+  const nextSlide = () => {
+    setActiveIndex((prevIndex) => (prevIndex + 2) % teamMembers.length)
+  }
+
+  const prevSlide = () => {
+    setActiveIndex((prevIndex) => (prevIndex - 2 + teamMembers.length) % teamMembers.length)
   }
 
   return (
@@ -48,8 +76,6 @@ export default function About() {
             </div>
           </motion.div>
 
-          
-
           <motion.div 
             className="bg-white rounded-lg shadow-xl overflow-hidden"
             {...fadeInUp}
@@ -86,13 +112,70 @@ export default function About() {
           ))}
         </motion.div>
 
+        <motion.h2 
+          className="text-3xl font-bold text-center mb-12 text-blue-800"
+          {...fadeInUp}
+        >
+          Meet Our Team
+        </motion.h2>
+
+        <motion.div 
+          className="mb-16 w-full max-w-6xl mx-auto"
+          {...fadeInUp}
+        >
+          <div className="flex items-center justify-center space-x-4">
+            <button 
+              onClick={prevSlide} 
+              className="flex-shrink-0 bg-white rounded-full p-4 shadow-md hover:bg-gray-100 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Previous team members"
+            >
+              <ChevronLeft className="w-8 h-8 text-blue-800" />
+            </button>
+
+            <div className="flex-grow flex justify-center items-center">
+              <AnimatePresence mode="popLayout">
+                {teamMembers.slice(activeIndex, activeIndex + 2).map((member, index) => (
+                  <motion.div
+                    key={member.name}
+                    className="w-[calc(50%-1rem)] h-80 mx-2"
+                    initial={{ opacity: 0, x: index === 0 ? -100 : 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: index === 0 ? 100 : -100 }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                  >
+                    <div className="bg-white rounded-3xl shadow-xl overflow-hidden w-full h-full p-4 flex flex-col items-center justify-center transform transition-transform duration-300 hover:scale-105">
+                      <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
+                        <img
+                          src={member.image}
+                          alt={member.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-800 mb-1">{member.name}</h3>
+                      <p className="text-blue-600 font-medium">{member.role}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+
+            <button 
+              onClick={nextSlide} 
+              className="flex-shrink-0 bg-white rounded-full p-4 shadow-md hover:bg-gray-100 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Next team members"
+            >
+              <ChevronRight className="w-8 h-8 text-blue-800" />
+            </button>
+          </div>
+        </motion.div>
+
         <motion.div 
           className="bg-blue-800 text-white rounded-lg shadow-xl p-8 text-center"
           {...fadeInUp}
         >
           <h2 className="text-3xl font-bold mb-4">Ready to Shape Your Future?</h2>
           <p className="text-xl mb-6">Let us help you navigate your career journey with confidence and clarity.</p>
-          <button className="bg-white text-blue-800 font-bold py-3 px-8 rounded-full hover:bg-blue-100 transition duration-300">
+          <button className="bg-white text-blue-800 font-bold py-3 px-8 rounded-full hover:bg-blue-100 transition duration-300 focus:outline-none focus:ring-2 focus:ring-white">
             Get Started Today
           </button>
         </motion.div>
