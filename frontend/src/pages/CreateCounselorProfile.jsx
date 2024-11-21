@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 
-const CreateInstituteProfile = () => {
+const CreateCounselorProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -12,15 +12,20 @@ const CreateInstituteProfile = () => {
     name: userName || '',
     email: userEmail || '',
     image: null,
-    address: "",
+    dob: "",
+    gender: "",
+    location: "",
     contactNumber: "",
-    establishYear: "",
-    instituteType: "",
-    studentBody: "",
+    degree: "",
+    certificate: "",
+    association: "",
+    bio: "",
+    yearOfExperience: "",
+    domain: "",
   });
 
   const [activeTab, setActiveTab] = useState("basic");
-  const tabs = ["basic", "details"];
+  const tabs = ["basic", "professional", "additional"];
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -67,8 +72,8 @@ const CreateInstituteProfile = () => {
     }
   
     const requiredFields = [
-      "userId", "address", "contactNumber", "establishYear", 
-      "instituteType", "studentBody"
+      "userId", "dob", "gender", "location", "contactNumber",
+      "degree", "certificate", "association", "bio", "yearOfExperience", "domain"
     ];
   
     const missingFields = requiredFields.filter(field => !formData[field]);
@@ -87,18 +92,23 @@ const CreateInstituteProfile = () => {
   
       const dataToSend = {
         userId: parseInt(formData.userId),
-        imageUrl: imageUrl,
-        address: formData.address,
+        image: imageUrl,
+        dob: formData.dob,
+        gender: formData.gender,
+        location: formData.location,
         contactNumber: formData.contactNumber,
-        establishYear: parseInt(formData.establishYear),
-        instituteType: formData.instituteType,
-        studentBody: formData.studentBody,
+        degree: formData.degree,
+        certificate: formData.certificate,
+        association: formData.association,
+        bio: formData.bio,
+        yearOfExperience: parseInt(formData.yearOfExperience),
+        domain: formData.domain,
       };
   
       console.log("Sending data to server:", JSON.stringify(dataToSend, null, 2));
   
       const token = localStorage.getItem('token');
-      const response = await fetch("http://localhost:4000/api/institute/info/create", {
+      const response = await fetch("http://localhost:4000/api/counselor/create", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -115,13 +125,13 @@ const CreateInstituteProfile = () => {
       }
   
       const responseData = await response.json();
-      console.log("Institute profile created successfully", responseData);
+      console.log("Counselor profile created successfully", responseData);
       
       navigate(`/onboarding`);
       
     } catch (error) {
-      console.error("Error creating institute profile:", error);
-      alert(`Error creating institute profile: ${error.message}. Please try again.`);
+      console.error("Error creating counselor profile:", error);
+      alert(`Error creating counselor profile: ${error.message}. Please try again.`);
     }
   };
 
@@ -149,7 +159,7 @@ const CreateInstituteProfile = () => {
                 {formData.image && (
                   <img
                     src={URL.createObjectURL(formData.image)}
-                    alt="Institute Logo"
+                    alt="Profile"
                     className="w-full h-full object-cover"
                   />
                 )}
@@ -159,7 +169,7 @@ const CreateInstituteProfile = () => {
                   htmlFor="image"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Institute Logo
+                  Profile Image
                 </label>
                 <input
                   id="image"
@@ -177,7 +187,7 @@ const CreateInstituteProfile = () => {
                   htmlFor="name"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Institute Name
+                  Full Name
                 </label>
                 <input
                   id="name"
@@ -206,24 +216,138 @@ const CreateInstituteProfile = () => {
                   readOnly
                 />
               </div>
+              <div>
+                <label
+                  htmlFor="dob"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Date of Birth
+                </label>
+                <input
+                  id="dob"
+                  name="dob"
+                  type="date"
+                  value={formData.dob}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="gender"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Gender
+                </label>
+                <select
+                  id="gender"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                >
+                  <option value="">Select gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
             </div>
           </div>
         );
-      case "details":
+      case "professional":
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
                 <label
-                  htmlFor="address"
+                  htmlFor="degree"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Address
+                  Degree
                 </label>
                 <input
-                  id="address"
-                  name="address"
-                  value={formData.address}
+                  id="degree"
+                  name="degree"
+                  value={formData.degree}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                  placeholder="e.g., Masters in Psychology"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="certificate"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Certificate
+                </label>
+                <input
+                  id="certificate"
+                  name="certificate"
+                  value={formData.certificate}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                  placeholder="e.g., Licensed Professional Counselor"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="association"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Professional Association
+                </label>
+                <input
+                  id="association"
+                  name="association"
+                  value={formData.association}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                  placeholder="e.g., American Counseling Association"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="yearOfExperience"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Years of Experience
+                </label>
+                <input
+                  id="yearOfExperience"
+                  name="yearOfExperience"
+                  type="number"
+                  value={formData.yearOfExperience}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                  min="0"
+                />
+              </div>
+            </div>
+          </div>
+        );
+      case "additional":
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="location"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Location
+                </label>
+                <input
+                  id="location"
+                  name="location"
+                  value={formData.location}
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   required
@@ -246,61 +370,40 @@ const CreateInstituteProfile = () => {
                   required
                 />
               </div>
-              <div>
+              <div className="sm:col-span-2">
                 <label
-                  htmlFor="establishYear"
+                  htmlFor="domain"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Establishment Year
+                  Domain of Expertise
                 </label>
                 <input
-                  id="establishYear"
-                  name="establishYear"
-                  type="number"
-                  value={formData.establishYear}
+                  id="domain"
+                  name="domain"
+                  value={formData.domain}
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   required
+                  placeholder="e.g., Mental Health, Career Counseling"
                 />
               </div>
-              <div>
+              <div className="sm:col-span-2">
                 <label
-                  htmlFor="instituteType"
+                  htmlFor="bio"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Institute Type
+                  Bio
                 </label>
-                <select
-                  id="instituteType"
-                  name="instituteType"
-                  value={formData.instituteType}
+                <textarea
+                  id="bio"
+                  name="bio"
+                  rows="4"
+                  value={formData.bio}
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   required
-                >
-                  <option value="">Select type</option>
-                  <option value="private">Private</option>
-                  <option value="public">Public</option>
-                  <option value="charter">Charter</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  htmlFor="studentBody"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Student Body Size
-                </label>
-                <input
-                  id="studentBody"
-                  name="studentBody"
-                  type="text"
-                  value={formData.studentBody}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  placeholder="e.g., 500 students"
-                />
+                  placeholder="Brief description of your experience and expertise"
+                ></textarea>
               </div>
             </div>
           </div>
@@ -315,7 +418,7 @@ const CreateInstituteProfile = () => {
       <div className="max-w-4xl mx-auto bg-white shadow-2xl rounded-3xl overflow-hidden">
         <div className="px-4 py-5 sm:px-6 bg-blue-600">
           <h2 className="text-2xl font-bold leading-7 text-white sm:text-3xl sm:truncate">
-            Create Institute Profile
+            Create Counselor Profile
           </h2>
         </div>
         <div className="border-t border-gray-200">
@@ -365,5 +468,5 @@ const CreateInstituteProfile = () => {
   );
 };
 
-export default CreateInstituteProfile;
+export default CreateCounselorProfile;
 
