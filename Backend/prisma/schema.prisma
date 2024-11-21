@@ -72,6 +72,8 @@ model User {
   studentSessions Session[] @relation("StudentSessions")
 
   counselorSessions Session[] @relation("CounselorSessions")
+
+  Mentor Mentor[]
 }
 
 // Define the Master Subjects model
@@ -188,6 +190,44 @@ model InstituteInfo {
   studentBody String?
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Mentor {
+  userId         Int       @id // Unique identifier for each mentor, linked to User model
+  expertise      String? // Area of expertise or specialization
+  bio            String? // Short biography or description of the mentor
+  createdAt      DateTime  @default(now()) // Timestamp when the mentor record was created
+  updatedAt      DateTime? // Optional timestamp for when the record was last updated
+  certifications String[] // Array of URLs for certification images
+
+  user User @relation(fields: [userId], references: [id]) // Relationship to User model
+
+  MentorEducation MentorEducation[]
+
+  MentorProfessional MentorProfessional[]
+}
+
+model MentorEducation {
+  userId      Int     @id // Foreign key linking to Mentor (and indirectly to User)
+  degree      String? // Degree obtained by the mentor
+  institution String? // Institution where the degree was obtained
+
+  mentor Mentor @relation(fields: [userId], references: [userId]) // Relationship to Mentor model
+}
+
+model MentorProfessional {
+  userId           Int            @id // Foreign key linking to Mentor (and indirectly to User)
+  bio              String? // Biography or description of professional background
+  yearOfExperience Int? // Years of experience in their field
+  type             MentorTypeEnum // Type of mentor (Associate or Chief)
+
+  mentor Mentor @relation(fields: [userId], references: [userId]) // Relationship to Mentor model
+}
+
+// New ENUM for mentor types
+enum MentorTypeEnum {
+  associate
+  chief
 }
 
 // Define the Programs model
