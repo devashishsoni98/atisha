@@ -23,6 +23,9 @@ import Resources from "../pages/Resource";
 import StudentOnboarding from "../pages/StudentOnboarding";
 import CreateInstituteProfile from "../pages/CareerInstituteProfile";
 import CreateCounselorProfile from "../pages/CreateCounselorProfile";
+import MentorOnboarding from "../pages/MentorOnboarding";
+import CounselorOnboarding from "../pages/CounselorOnBorading";
+import InstituteOnborading from "../pages/InstituteOnboarding";
 
 
 
@@ -67,8 +70,20 @@ const Router = createBrowserRouter([
         element: <CreateCounselorProfile  />, 
       },
       {
-        path: "/onboarding",
+        path: "/onboarding-student",
         element: <StudentOnboarding  />, 
+      },
+      {
+        path: "/onboarding-mentor",
+        element: <MentorOnboarding  />, 
+      },
+      {
+        path: "/onboarding-counselor",
+        element: <CounselorOnboarding  />, 
+      },
+      {
+        path: "/onboarding-institute",
+        element: <InstituteOnborading  />, 
       },
     ],
   },
