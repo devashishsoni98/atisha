@@ -70,7 +70,7 @@ const Router = createBrowserRouter([
         element: <CreateCounselorProfile  />, 
       },
       {
-        path: "/onboarding-student",
+        path: "/onboarding",
         element: <StudentOnboarding  />, 
       },
       {

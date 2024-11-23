@@ -2,13 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { setToken } from '../store/userActions';// Import useDispatch
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-const CreateCounselorProfile = () => {
+const CreateMentorProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const token = useSelector((state) => state.user.token) || localStorage.getItem('token'); // Access token from Redux
-  const dispatch = useDispatch();
 
   
   const { userRole, userId, userEmail, userName } = location.state || {};
@@ -16,17 +15,13 @@ const CreateCounselorProfile = () => {
     userId: userId || '',
     name: userName || '',
     email: userEmail || '',
-    image: null,
-    dob: "",
-    gender: "",
-    location: "",
-    contactNumber: "",
-    degree: "",
-    certificate: "",
-    association: "",
+    expertise: "",
     bio: "",
+    certifications: [],
+    degree: "",
+    institution: "",
     yearOfExperience: "",
-    domain: "",
+    type: "",
   });
 
   const [activeTab, setActiveTab] = useState("basic");
@@ -40,27 +35,39 @@ const CreateCounselorProfile = () => {
 }, [token, navigate]);
 
   const handleInputChange = (e) => {
-    const { name, value, type, files } = e.target;
+    const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "file" ? files[0] : value,
+      [name]: type === "number" ? parseInt(value) : value,
     }));
   };
 
-  const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', 'atisha_preset');
-
-    try {
-      const response = await axios.post(`https://api.cloudinary.com/v1_1/dz4xjnefv/image/upload`, formData);
-      return response.data.secure_url;
-    } catch (error) {
-      console.error("Image upload failed", error);
-      throw new Error('Image upload failed');
-    }
+  const handleCertificationsChange = (e) => {
+    const files = Array.from(e.target.files);
+    setFormData((prev) => ({
+      ...prev,
+      certifications: files,
+    }));
   };
- 
+
+  const uploadCertifications = async (files) => {
+    const uploadedUrls = [];
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'atisha_preset');
+
+      try {
+        const response = await axios.post(`https://api.cloudinary.com/v1_1/dz4xjnefv/image/upload`, formData);
+        uploadedUrls.push(response.data.secure_url);
+      } catch (error) {
+        console.error("Certification upload failed", error);
+        throw new Error('Certification upload failed');
+      }
+    }
+    return uploadedUrls;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -76,8 +83,7 @@ const CreateCounselorProfile = () => {
     }
   
     const requiredFields = [
-      "userId", "dob", "gender", "location", "contactNumber",
-      "degree", "certificate", "association", "bio", "yearOfExperience", "domain"
+      "userId", "expertise", "bio", "degree", "institution", "yearOfExperience", "type"
     ];
   
     const missingFields = requiredFields.filter(field => !formData[field]);
@@ -88,31 +94,26 @@ const CreateCounselorProfile = () => {
     }
   
     try {
-      let imageUrl = null;
-  
-      if (formData.image) {
-        imageUrl = await uploadImage(formData.image);
+      let certificationUrls = [];
+      if (formData.certifications.length > 0) {
+        certificationUrls = await uploadCertifications(formData.certifications);
       }
   
       const dataToSend = {
         userId: parseInt(formData.userId),
-        image: imageUrl,
-        dob: formData.dob,
-        gender: formData.gender,
-        location: formData.location,
-        contactNumber: formData.contactNumber,
-        degree: formData.degree,
-        certificate: formData.certificate,
-        association: formData.association,
+        expertise: formData.expertise,
         bio: formData.bio,
+        certifications: certificationUrls,
+        degree: formData.degree,
+        institution: formData.institution,
         yearOfExperience: parseInt(formData.yearOfExperience),
-        domain: formData.domain,
+        type: formData.type,
       };
   
       console.log("Sending data to server:", JSON.stringify(dataToSend, null, 2));
   
       const token = localStorage.getItem('token');
-      const response = await fetch("http://localhost:4000/api/counselor/create", {
+      const response = await fetch("http://localhost:4000/api/mentor/create", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -129,15 +130,13 @@ const CreateCounselorProfile = () => {
       }
   
       const responseData = await response.json();
-      dispatch(setUserProfile(responseData)); 
-      
-      console.log("Counselor profile created successfully", responseData);
+      console.log("Mentor profile created successfully", responseData);
       
       navigate(`/onboarding`);
       
     } catch (error) {
-      console.error("Error creating counselor profile:", error);
-      alert(`Error creating counselor profile: ${error.message}. Please try again.`);
+      console.error("Error creating mentor profile:", error);
+      alert(`Error creating mentor profile: ${error.message}. Please try again.`);
     }
   };
 
@@ -160,33 +159,6 @@ const CreateCounselorProfile = () => {
       case "basic":
         return (
           <div className="space-y-6">
-            <div className="flex items-center space-x-6">
-              <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden">
-                {formData.image && (
-                  <img
-                    src={URL.createObjectURL(formData.image)}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                )}
-              </div>
-              <div>
-                <label
-                  htmlFor="image"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Profile Image
-                </label>
-                <input
-                  id="image"
-                  name="image"
-                  type="file"
-                  onChange={handleInputChange}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition duration-300 ease-in-out"
-                  accept="image/*"
-                />
-              </div>
-            </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
                 <label
@@ -224,40 +196,40 @@ const CreateCounselorProfile = () => {
               </div>
               <div>
                 <label
-                  htmlFor="dob"
+                  htmlFor="expertise"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Date of Birth
+                  Expertise
                 </label>
                 <input
-                  id="dob"
-                  name="dob"
-                  type="date"
-                  value={formData.dob}
+                  id="expertise"
+                  name="expertise"
+                  value={formData.expertise}
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   required
+                  placeholder="e.g., Software Development"
                 />
               </div>
               <div>
                 <label
-                  htmlFor="gender"
+                  htmlFor="type"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Gender
+                  Mentor Type
                 </label>
                 <select
-                  id="gender"
-                  name="gender"
-                  value={formData.gender}
+                  id="type"
+                  name="type"
+                  value={formData.type}
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   required
                 >
-                  <option value="">Select gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
+                  <option value="">Select type</option>
+                  <option value="chief">Chief</option>
+                  <option value="associate">Associate</option>
+                  {/* <option value="junior">Junior</option> */}
                 </select>
               </div>
             </div>
@@ -281,41 +253,24 @@ const CreateCounselorProfile = () => {
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   required
-                  placeholder="e.g., Masters in Psychology"
+                  placeholder="e.g., Master's in Computer Science"
                 />
               </div>
               <div>
                 <label
-                  htmlFor="certificate"
+                  htmlFor="institution"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Certificate
+                  Institution
                 </label>
                 <input
-                  id="certificate"
-                  name="certificate"
-                  value={formData.certificate}
+                  id="institution"
+                  name="institution"
+                  value={formData.institution}
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   required
-                  placeholder="e.g., Licensed Professional Counselor"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="association"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Professional Association
-                </label>
-                <input
-                  id="association"
-                  name="association"
-                  value={formData.association}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  placeholder="e.g., American Counseling Association"
+                  placeholder="e.g., University of Technology"
                 />
               </div>
               <div>
@@ -336,81 +291,46 @@ const CreateCounselorProfile = () => {
                   min="0"
                 />
               </div>
+              <div>
+                <label
+                  htmlFor="certifications"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Certifications
+                </label>
+                <input
+                  id="certifications"
+                  name="certifications"
+                  type="file"
+                  onChange={handleCertificationsChange}
+                  className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  multiple
+                  accept="image/*,.pdf"
+                />
+              </div>
             </div>
           </div>
         );
       case "additional":
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="location"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Location
-                </label>
-                <input
-                  id="location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="contactNumber"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Contact Number
-                </label>
-                <input
-                  id="contactNumber"
-                  name="contactNumber"
-                  type="tel"
-                  value={formData.contactNumber}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="domain"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Domain of Expertise
-                </label>
-                <input
-                  id="domain"
-                  name="domain"
-                  value={formData.domain}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  placeholder="e.g., Mental Health, Career Counseling"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="bio"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Bio
-                </label>
-                <textarea
-                  id="bio"
-                  name="bio"
-                  rows="4"
-                  value={formData.bio}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  placeholder="Brief description of your experience and expertise"
-                ></textarea>
-              </div>
+            <div>
+              <label
+                htmlFor="bio"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Bio
+              </label>
+              <textarea
+                id="bio"
+                name="bio"
+                rows="4"
+                value={formData.bio}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+                placeholder="Brief description of your experience and expertise"
+              ></textarea>
             </div>
           </div>
         );
@@ -424,7 +344,7 @@ const CreateCounselorProfile = () => {
       <div className="max-w-4xl mx-auto bg-white shadow-2xl rounded-3xl overflow-hidden">
         <div className="px-4 py-5 sm:px-6 bg-blue-600">
           <h2 className="text-2xl font-bold leading-7 text-white sm:text-3xl sm:truncate">
-            Create Counselor Profile
+            Create Mentor Profile
           </h2>
         </div>
         <div className="border-t border-gray-200">
@@ -474,5 +394,5 @@ const CreateCounselorProfile = () => {
   );
 };
 
-export default CreateCounselorProfile;
+export default CreateMentorProfile;
 

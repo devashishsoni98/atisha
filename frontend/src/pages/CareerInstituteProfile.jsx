@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { setToken } from '../store/userActions';// Import useDispatch
+import { useSelector } from "react-redux";
 
 const CreateInstituteProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const token = useSelector((state) => state.user.token) || localStorage.getItem('token'); // Access token from Redux
   
   const { userRole, userId, userEmail, userName } = location.state || {};
   const [formData, setFormData] = useState({
@@ -23,12 +26,11 @@ const CreateInstituteProfile = () => {
   const tabs = ["basic", "details"];
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if (!token) {
-      console.error("No token found. Redirecting to signup.");
-      navigate('/signup');
+        console.error("No token found. Redirecting to signup.");
+        navigate('/signup');
     }
-  }, [navigate]);
+}, [token, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;

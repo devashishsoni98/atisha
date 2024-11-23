@@ -4,8 +4,12 @@ import { User, Building2, GraduationCap } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { setUser, setToken, setUserId, setUserType } from '../store/userActions';
 
 const SignUp = ({ setAuthType }) => {
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const [selectedType, setSelectedType] = useState("Student");
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -14,72 +18,8 @@ const SignUp = ({ setAuthType }) => {
     { id: "Student", label: "Student", icon: GraduationCap },
     { id: "Institute", label: "Institute", icon: Building2 },
     { id: "Counselor", label: "Counselor", icon: User },
+    { id: "Mentor", label: "Mentor", icon: User },
   ];
-
-  // const handleRegister = async (data) => {
-  //   const { fullName, email, password, confirmPassword } = data;
-  //   if (password !== confirmPassword) {
-  //       alert("Passwords do not match.");
-  //       return;
-  //   }
-  //   const accountType = selectedType.toLowerCase();
-  //   const userData = { fullName, email, password, accountType };
-
-  //   console.log("Data sent to API:", userData);
-
-  //   try {
-  //     const response = await axios.post("http://localhost:4000/api/auth/users/signup", userData);
-  //     const { userId, token, user } = response.data;
-      
-  //     // Store the token in localStorage
-  //     localStorage.setItem('token', token);
-  //     navigate(`/create-profile`, { 
-  //       state: { 
-  //         userRole: accountType, 
-  //         userId: userId, 
-  //         userEmail: email, 
-  //         userName: fullName 
-  //       } 
-  //     });
-  //   } catch (error) {
-  //     console.error("Error during registration:", error);
-  //     alert("Registration failed. Please try again.");
-  //   }
-  // };
-
-//   const handleRegister = async (data) => {
-//     const { fullName, email, password, confirmPassword } = data;
-//     if (password !== confirmPassword) {
-//         alert("Passwords do not match.");
-//         return;
-//     }
-
-//     const accountType = selectedType.toLowerCase();
-//     const userData = { fullName, email, password, accountType };
-//     console.log("Data sent to API:", userData);
-
-//     try {
-//         const response = await axios.post("http://localhost:4000/api/auth/users/signup", userData);
-//         const { userId, token, user } = response.data;
-
-//         // Store the token in localStorage
-//         localStorage.setItem('token', token);
-
-//         // Navigate based on account type
-//         if (accountType === "institute") {
-//             navigate("/create-institute-profile", {
-//                 state: { userRole: accountType, userId: userId, userEmail: email, userName: fullName }
-//             });
-//         } else {
-//             navigate(`/create-profile`, {
-//                 state: { userRole: accountType, userId: userId, userEmail: email, userName: fullName }
-//             });
-//         }
-//     } catch (error) {
-//         console.error("Error during registration:", error);
-//         alert("Registration failed. Please try again.");
-//     }
-// };
 
 const handleRegister = async (data) => {
   const { fullName, email, password, confirmPassword } = data;
@@ -96,8 +36,17 @@ const handleRegister = async (data) => {
       const response = await axios.post("http://localhost:4000/api/auth/users/signup", userData);
       const { userId, token, user } = response.data;
 
-      // Store the token in localStorage
-      localStorage.setItem('token', token);
+      // Dispatch actions to set user and token in Redux store
+      dispatch(setUser({
+        id: userId,
+        name: fullName,
+        email,
+        roleId: response.data.roleId,
+        roleType: accountType,
+    }));
+    dispatch(setToken(token)); // Store token in Redux
+    dispatch(setUserId(userId)); // Store user ID in localStorage
+    dispatch(setUserType(accountType)); // Store user type in localStorage
 
       // Navigate based on account type
       if (accountType === "institute") {
@@ -106,6 +55,10 @@ const handleRegister = async (data) => {
           });
       } else if (accountType === "counselor") {
           navigate("/create-counselor-profile", {
+              state: { userRole: accountType, userId: userId, userEmail: email, userName: fullName }
+          });
+      } else if (accountType === "mentor") {
+          navigate("/create-mentor-profile", {
               state: { userRole: accountType, userId: userId, userEmail: email, userName: fullName }
           });
       } else { // Default case for "student"

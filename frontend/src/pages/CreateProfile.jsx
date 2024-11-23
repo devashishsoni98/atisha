@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux'; 
+import { setToken } from '../store/userActions';// Import useDispatch
+
 
 export default function CreateProfile() {
   const location = useLocation();
   const navigate = useNavigate();
+  const token = useSelector((state) => state.user.token) || localStorage.getItem('token'); // Access token from Redux
+  const dispatch = useDispatch();
+
+
   
   const { userRole, userId, userEmail, userName } = location.state || {};
   const [formData, setFormData] = useState({
@@ -23,16 +30,16 @@ export default function CreateProfile() {
     gender: "",
   });
 
+  useEffect(() => {
+    if (!token) {
+        console.error("No token found. Redirecting to signup.");
+        navigate('/signup');
+    }
+}, [token, navigate]);
+
   const [activeTab, setActiveTab] = useState("basic");
   const tabs = ["basic", "personal", "education", "interests"];
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error("No token found. Redirecting to signup.");
-      navigate('/signup');
-    }
-  }, [navigate]);
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -117,7 +124,6 @@ export default function CreateProfile() {
   
       console.log("Sending data to server:", JSON.stringify(dataToSend, null, 2));
   
-      const token = localStorage.getItem('token');
       const response = await fetch("http://localhost:4000/api/student/create", {
         method: "POST",
         headers: {
@@ -137,6 +143,7 @@ export default function CreateProfile() {
       const responseData = await response.json();
       console.log("Profile updated successfully", responseData);
       
+
       navigate(`/onboarding`);
       
     } catch (error) {

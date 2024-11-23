@@ -99,14 +99,35 @@
   height: 300px;
   border-radius: 50%;
   opacity: 0.1;
+  animation: float 20s infinite ease-in-out;
 }
 .heroSection::before {
   background-color: #60a5fa;
   top: -150px;
   left: -150px;
+  animation-delay: -10s;
 }
 .heroSection::after {
   background-color: #a78bfa;
   bottom: -150px;
   right: -150px;
+}
+
+.gradientBackground {
+  background: linear-gradient(to bottom right, #e0f2fe, #ffffff, #f3e8ff);
+}
+
+.primaryBackground {
+  background-color: #3b82f6;
+}
+
+.lightPrimaryBackground {
+  background-color: #60a5fa;
+}
+
+.gradientButton {
+  background: linear-gradient(to right, #3b82f6, #60a5fa);
+}
+.gradientButton:hover {
+  background: linear-gradient(to right, #2563eb, #3b82f6);
 }/*# sourceMappingURL=main.css.map */

@@ -1,4 +1,3 @@
-
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
@@ -6,7 +5,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const signupUser = async (req, res) => {
-        const { fullName, email, password, accountType } = req.body;
+    const { fullName, email, password, accountType } = req.body;
 
     if (!fullName || !email || !password || !accountType) {
         return res.status(400).json({ message: "All fields are required." });
@@ -42,15 +41,17 @@ const signupUser = async (req, res) => {
             { expiresIn: '1h' }
         );
 
+        // Return response with user data and token
         res.status(201).json({
             message: "User created successfully",
             userId: user.id,
-            token: token,
-            user: {
+            token,
+            userData: {
                 id: user.id,
                 name: fullName,
-                email: user.email,
+                email,
                 roleId: role.id,
+                roleType: accountType.toLowerCase(),
             }
         });
     } catch (error) {
@@ -67,9 +68,10 @@ const loginUser = async (req, res) => {
     }
 
     try {
-        // Fetch user by email
+        // Fetch user by email and include their role
         const user = await prisma.user.findUnique({
-            where: { email: email },
+            where: { email },
+            include: { role: true }, // Include the user's role in the response
         });
 
         if (!user) {
@@ -92,11 +94,12 @@ const loginUser = async (req, res) => {
         res.status(200).json({
             message: "Login successful.",
             token,
-            user: {
+            userData: {
                 id: user.id,
                 name: user.name,
-                email: user.email,
+                email,
                 roleId: user.roleId,
+                roleType: user.role.role_name.toLowerCase(), // Accessing the user's role name directly
             },
         });
     } catch (error) {
