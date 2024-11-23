@@ -142,7 +142,7 @@
 // export default Navbar;
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaBell, FaBars, FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import Headroom from "react-headroom";
@@ -155,6 +155,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const token = useSelector((state) => state.user.token) || localStorage.getItem('token'); // Access token from Redux
   const dispatch = useDispatch(); // Initialize dispatch
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -165,9 +166,9 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
+    navigate(`/`); // Redirect to home or login page after logging out
     dispatch(logoutUser()); // Dispatch logout action
     localStorage.removeItem('token'); // Clear token from local storage if used
-    window.location.href = '/'; // Redirect to home or login page after logging out
   };
 
   return (
