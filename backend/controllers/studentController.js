@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 const createOrUpdateStudentProfile = async (req, res) => {
     const { userId, image, dob, gender, location, contactNumber, schoolName, classLevel, subjectIds, sportIds, hobbyIds } = req.body;
-
+ 
     // Check for required fields
     if (!userId || !dob || !gender || !location || !contactNumber || !schoolName || !classLevel || !subjectIds || !sportIds || !hobbyIds) {
         return res.status(400).json({ message: "All fields are required." });
@@ -122,6 +122,10 @@ const getStudentById = async (req, res) => {
         res.status(500).json({ message: "Error while fetching student." });
     }
 };
+
+
+
+
 
 module.exports = {
     createOrUpdateStudentProfile,

@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import { User, Calendar, Briefcase, MessageCircle, LogOut, Star, Award, Users, Video, Mail, MapPin, Phone, BookOpen } from 'lucide-react'
+import axios from "axios";
 
 export default function CounselorDashboard() {
   const [activeTab, setActiveTab] = useState('Profile')
@@ -65,6 +66,8 @@ export default function CounselorDashboard() {
         return <ProfileContent counselorData={counselorData} />
     }
   }
+
+
 
   return (
     <div className="min-h-screen bg-blue-50">

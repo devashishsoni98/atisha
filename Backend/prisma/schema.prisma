@@ -14,26 +14,26 @@ datasource db {
 }
 
 // Define the ENUM types
-enum RoleType {
+enum role_type {
   student
   counselor
   institute
   mentor
 }
 
-enum SessionTypeEnum {
+enum session_type_enum {
   online
   offline
 }
 
-enum InstituteTypeEnum {
+enum institute_type_enum {
   private
   govt
   semiGovt
   public
 }
 
-enum GenderEnum {
+enum gender_enum {
   female
   male
   other
@@ -41,9 +41,11 @@ enum GenderEnum {
 
 // Define the Roles model
 model Role {
-  id        Int      @id @default(autoincrement())
-  role_name RoleType @unique
+  id        Int       @id @default(autoincrement())
+  role_name role_type @unique
   User      User[]
+
+  @@map("roles")
 }
 
 // Define the Users model
@@ -52,11 +54,11 @@ model User {
   name      String   @db.VarChar(100)
   email     String   @unique @db.VarChar(100)
   password  String   @db.VarChar(255) // Ensure this line exists
-  roleId    Int?
+  role_id   Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role                Role?                @relation(fields: [roleId], references: [id])
+  role                Role?                @relation(fields: [role_id], references: [id])
   studentPersonalInfo StudentPersonalInfo?
   studentEducation    StudentEducation?
   studentInterest     StudentInterest?
@@ -74,36 +76,50 @@ model User {
   counselorSessions Session[] @relation("CounselorSessions")
 
   Mentor Mentor[]
+
+  UserTraitsStatus UserTraitsStatus[]
+
+  RecommendedCareers RecommendedCareers[]
+
+  @@map("users")
 }
 
 // Define the Master Subjects model
 model MasterSubject {
   id          Int    @id @default(autoincrement())
   subjectName String @unique @db.VarChar(100)
+
+  @@map("master_subjects")
 }
 
 // Define the Master Sports model
 model MasterSport {
   id        Int    @id @default(autoincrement())
   sportName String @unique @db.VarChar(100)
+
+  @@map("master_sports")
 }
 
 // Define the Master Hobbies model
 model MasterHobby {
   id        Int    @id @default(autoincrement())
   hobbyName String @unique @db.VarChar(100)
+
+  @@map("master_hobbies")
 }
 
 // Define the Student Personal Info model
 model StudentPersonalInfo {
-  userId        Int        @id
+  userId        Int         @id
   image         String?
   dob           DateTime?
-  gender        GenderEnum
+  gender        gender_enum
   location      String?
   contactNumber String?
 
   user User @relation(fields: [userId], references: [id])
+
+  @@map("student_personal_info")
 }
 
 // Define the Student Education model
@@ -113,6 +129,8 @@ model StudentEducation {
   class      Int
 
   user User @relation(fields: [userId], references: [id])
+
+  @@map("student_education")
 }
 
 // Define the Student Interest model
@@ -123,18 +141,22 @@ model StudentInterest {
   hobbyIds   Int[] @default([])
 
   user User @relation(fields: [userId], references: [id])
+
+  @@map("student_interest")
 }
 
 // Define the Counselor Personal Info model
 model CounselorPersonalInfo {
-  userId        Int        @id
+  userId        Int         @id
   image         String?
   dob           DateTime?
-  gender        GenderEnum
+  gender        gender_enum
   location      String?
   contactNumber String?
 
   user User @relation(fields: [userId], references: [id])
+
+  @@map("counselor_personal_info")
 }
 
 // Define the Counselor Education model
@@ -145,6 +167,8 @@ model CounselorEducation {
   association String @db.VarChar(50)
 
   user User @relation(fields: [userId], references: [id])
+
+  @@map("counselor_education")
 }
 
 // Define the Counselor Professional model
@@ -156,6 +180,8 @@ model CounselorProfessional {
   image            String?
 
   user User @relation(fields: [userId], references: [id])
+
+  @@map("counselor_professional")
 }
 
 // Define the Session model
@@ -167,7 +193,7 @@ model Session {
   sessionTime DateTime?
   sessionDate DateTime?
 
-  sessionType SessionTypeEnum
+  sessionType session_type_enum
 
   location String @default("remote")
 
@@ -176,20 +202,24 @@ model Session {
   counselor User? @relation("CounselorSessions", fields: [counselorId], references: [id])
 
   User User[]
+
+  @@map("sessions")
 }
 
 // Define the Institute Info model
 model InstituteInfo {
-  userId        Int               @id
+  userId        Int                 @id
   imageUrl      String?
   address       String?
   contactNumber String?
   establishYear Int?
-  instituteType InstituteTypeEnum
+  instituteType institute_type_enum
 
   studentBody String?
 
   user User @relation(fields: [userId], references: [id])
+
+  @@map("institute_info")
 }
 
 model Mentor {
@@ -205,6 +235,8 @@ model Mentor {
   MentorEducation MentorEducation[]
 
   MentorProfessional MentorProfessional[]
+
+  @@map("mentors")
 }
 
 model MentorEducation {
@@ -213,19 +245,23 @@ model MentorEducation {
   institution String? // Institution where the degree was obtained
 
   mentor Mentor @relation(fields: [userId], references: [userId]) // Relationship to Mentor model
+
+  @@map("mentor_education")
 }
 
 model MentorProfessional {
-  userId           Int            @id // Foreign key linking to Mentor (and indirectly to User)
+  userId           Int              @id // Foreign key linking to Mentor (and indirectly to User)
   bio              String? // Biography or description of professional background
   yearOfExperience Int? // Years of experience in their field
-  type             MentorTypeEnum // Type of mentor (Associate or Chief)
+  type             mentor_type_enum // Type of mentor (Associate or Chief)
 
   mentor Mentor @relation(fields: [userId], references: [userId]) // Relationship to Mentor model
+
+  @@map("mentor_professional")
 }
 
 // New ENUM for mentor types
-enum MentorTypeEnum {
+enum mentor_type_enum {
   associate
   chief
 }
@@ -239,6 +275,8 @@ model Program {
   certificateAndAffiliation String?
 
   institute User @relation(fields: [instituteId], references: [id])
+
+  @@map("programs")
 }
 
 model QuizQuestion {
@@ -251,4 +289,33 @@ model QuizQuestion {
   options   String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("quiz_questions")
+}
+
+model UserTraitsStatus {
+  id                Int      @id @default(autoincrement()) // Unique identifier for each record
+  userId            Int // To associate the record with a specific user
+  hollandCodeTraits String[] // Top Holland Code trait (array of text)
+  bigFiveTraits     String[] // Top Big Five Personality trait (array of text)
+  aptitudeStatus    String? // Aptitude Test status (e.g., Low, Mid, High)
+  iqStatus          String? // IQ Test status (e.g., Low, Mid, High)
+  createdAt         DateTime @default(now()) // Timestamp for record creation
+
+  user User @relation(fields: [userId], references: [id]) // Relationship to User model
+
+  @@map("user_traits_status")
+}
+
+model RecommendedCareers {
+  id        Int      @id @default(autoincrement()) // Unique identifier for each record
+  userId    Int // To associate the record with a specific user
+  career1   String? // First recommended career
+  career2   String? // Second recommended career
+  career3   String? // Third recommended career
+  createdAt DateTime @default(now()) // Timestamp for record creation
+
+  user User @relation(fields: [userId], references: [id]) // Relationship to User model
+
+  @@map("recommended_careers")
 }

@@ -2,12 +2,20 @@ import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux'; // Import useSelector to access Redux state
+import {useDispatch, useSelector} from 'react-redux';
+import {getToken} from "../store/userActions.js"; // Import useSelector to access Redux state
 
 export default function StudentOnboarding() {
-  const userId = useSelector((state) => state.user.id)  || localStorage.getItem('token'); // Retrieve user ID from Redux store
-  const roleType = useSelector((state) => state.user.roleType) || localStorage.getItem('userType');
 
+
+
+
+  const token = localStorage.getItem('token');
+  console.log(token);
+  const userId =localStorage.getItem('userId'); // Retrieve user ID from Redux store
+  console.log(userId);
+  const roleType =  localStorage.getItem('userType');
+  console.log(roleType);
     // Determine the dashboard link based on role type
     const dashboardLink = () => {
       switch (roleType) {
