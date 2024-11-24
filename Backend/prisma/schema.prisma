@@ -40,222 +40,223 @@ enum gender_enum {
 }
 
 // Define the Roles model
-model Role {
+model roles {
   id        Int       @id @default(autoincrement())
   role_name role_type @unique
-  User      User[]
+  users     users[]
 
   @@map("roles")
 }
 
-// Define the Users model
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(100)
-  email     String   @unique @db.VarChar(100)
-  password  String   @db.VarChar(255) // Ensure this line exists
-  role_id   Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// Define the users model
+model users {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(100)
+  email      String   @unique @db.VarChar(100)
+  password   String   @db.VarChar(255) // Ensure this line exists
+  role_id    Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  role                Role?                @relation(fields: [role_id], references: [id])
-  studentPersonalInfo StudentPersonalInfo?
-  studentEducation    StudentEducation?
-  studentInterest     StudentInterest?
+  role                  roles?                 @relation(fields: [role_id], references: [id])
+  student_personal_info student_personal_info?
+  student_education     student_education?
+  student_interest      student_interest?
 
-  counselorPersonalInfo CounselorPersonalInfo?
-  counselorEducation    CounselorEducation?
-  counselorProfessional CounselorProfessional?
+  counselor_personal_info counselor_personal_info?
+  counselor_education     counselor_education?
+  counselor_professional  counselor_professional?
 
-  instituteInfo InstituteInfo?
-  Session       Session[]
-  Program       Program[]
+  institute_info institute_info?
+  sessions       sessions[]
+  programs       programs[]
 
-  studentSessions Session[] @relation("StudentSessions")
+  student_sessions sessions[] @relation("Studentsessionss")
 
-  counselorSessions Session[] @relation("CounselorSessions")
+  counselor_sessions sessions[] @relation("Counselorsessionss")
 
-  Mentor Mentor[]
+  mentors mentors[]
 
-  UserTraitsStatus UserTraitsStatus[]
+  user_traits_status user_traits_status[]
 
-  RecommendedCareers RecommendedCareers[]
+  recommended_careers    recommended_careers[]
+  counselor_availability counselor_availability[]
 
   @@map("users")
 }
 
 // Define the Master Subjects model
-model MasterSubject {
-  id          Int    @id @default(autoincrement())
-  subjectName String @unique @db.VarChar(100)
+model master_subjects {
+  id           Int    @id @default(autoincrement())
+  subject_name String @unique @db.VarChar(100)
 
   @@map("master_subjects")
 }
 
 // Define the Master Sports model
-model MasterSport {
-  id        Int    @id @default(autoincrement())
-  sportName String @unique @db.VarChar(100)
+model master_sports {
+  id         Int    @id @default(autoincrement())
+  sport_name String @unique @db.VarChar(100)
 
   @@map("master_sports")
 }
 
 // Define the Master Hobbies model
-model MasterHobby {
-  id        Int    @id @default(autoincrement())
-  hobbyName String @unique @db.VarChar(100)
+model master_hobbies {
+  id         Int    @id @default(autoincrement())
+  hobby_name String @unique @db.VarChar(100)
 
   @@map("master_hobbies")
 }
 
 // Define the Student Personal Info model
-model StudentPersonalInfo {
-  userId        Int         @id
-  image         String?
-  dob           DateTime?
-  gender        gender_enum
-  location      String?
-  contactNumber String?
+model student_personal_info {
+  user_id        Int         @id
+  image          String?
+  dob            DateTime?
+  gender         gender_enum
+  location       String?
+  contact_number String?
 
-  user User @relation(fields: [userId], references: [id])
+  user users @relation(fields: [user_id], references: [id])
 
   @@map("student_personal_info")
 }
 
 // Define the Student Education model
-model StudentEducation {
-  userId     Int    @id
-  schoolName String @db.VarChar(255)
-  class      Int
+model student_education {
+  user_id     Int    @id
+  school_name String @db.VarChar(255)
+  class       Int
 
-  user User @relation(fields: [userId], references: [id])
+  user users @relation(fields: [user_id], references: [id])
 
   @@map("student_education")
 }
 
 // Define the Student Interest model
-model StudentInterest {
-  userId     Int   @id
-  subjectIds Int[] @default([])
-  sportIds   Int[] @default([])
-  hobbyIds   Int[] @default([])
+model student_interest {
+  user_id     Int   @id
+  subject_ids Int[] @default([])
+  sport_ids   Int[] @default([])
+  hobby_ids   Int[] @default([])
 
-  user User @relation(fields: [userId], references: [id])
+  user users @relation(fields: [user_id], references: [id])
 
   @@map("student_interest")
 }
 
 // Define the Counselor Personal Info model
-model CounselorPersonalInfo {
-  userId        Int         @id
-  image         String?
-  dob           DateTime?
-  gender        gender_enum
-  location      String?
-  contactNumber String?
+model counselor_personal_info {
+  user_id        Int         @id
+  image          String?
+  dob            DateTime?
+  gender         gender_enum
+  location       String?
+  contact_number String?
 
-  user User @relation(fields: [userId], references: [id])
+  user users @relation(fields: [user_id], references: [id])
 
   @@map("counselor_personal_info")
 }
 
 // Define the Counselor Education model
-model CounselorEducation {
-  userId      Int    @id
+model counselor_education {
+  user_id     Int    @id
   degree      String @db.VarChar(255)
   certificate String @db.VarChar(50)
   association String @db.VarChar(50)
 
-  user User @relation(fields: [userId], references: [id])
+  user users @relation(fields: [user_id], references: [id])
 
   @@map("counselor_education")
 }
 
 // Define the Counselor Professional model
-model CounselorProfessional {
-  userId           Int     @id
-  bio              String?
-  yearOfExperience Int?
-  domain           String?
-  image            String?
+model counselor_professional {
+  user_id            Int     @id
+  bio                String?
+  year_of_experience Int?
+  domain             String?
+  image              String?
 
-  user User @relation(fields: [userId], references: [id])
+  user users @relation(fields: [user_id], references: [id])
 
   @@map("counselor_professional")
 }
 
-// Define the Session model
-model Session {
-  sessionId   Int  @id @default(autoincrement())
-  studentId   Int?
-  counselorId Int?
+// Define the sessions model
+model sessions {
+  session_id   Int  @id @default(autoincrement())
+  student_id   Int?
+  counselor_id Int?
 
-  sessionTime DateTime?
-  sessionDate DateTime?
+  session_time DateTime?
+  session_date DateTime?
 
-  sessionType session_type_enum
+  session_type session_type_enum
 
   location String @default("remote")
 
-  student User? @relation("StudentSessions", fields: [studentId], references: [id])
+  student users? @relation("Studentsessionss", fields: [student_id], references: [id])
 
-  counselor User? @relation("CounselorSessions", fields: [counselorId], references: [id])
+  counselor users? @relation("Counselorsessionss", fields: [counselor_id], references: [id])
 
-  User User[]
+  users users[]
 
   @@map("sessions")
 }
 
 // Define the Institute Info model
-model InstituteInfo {
-  userId        Int                 @id
-  imageUrl      String?
-  address       String?
-  contactNumber String?
-  establishYear Int?
-  instituteType institute_type_enum
+model institute_info {
+  user_id        Int                 @id
+  image_url      String?
+  address        String?
+  contact_number String?
+  establish_year Int?
+  institute_type institute_type_enum
 
-  studentBody String?
+  student_body String?
 
-  user User @relation(fields: [userId], references: [id])
+  user users @relation(fields: [user_id], references: [id])
 
   @@map("institute_info")
 }
 
-model Mentor {
-  userId         Int       @id // Unique identifier for each mentor, linked to User model
+model mentors {
+  user_id        Int       @id // Unique identifier for each mentor, linked to users model
   expertise      String? // Area of expertise or specialization
   bio            String? // Short biography or description of the mentor
-  createdAt      DateTime  @default(now()) // Timestamp when the mentor record was created
-  updatedAt      DateTime? // Optional timestamp for when the record was last updated
+  created_at     DateTime  @default(now()) // Timestamp when the mentor record was created
+  updated_at     DateTime? // Optional timestamp for when the record was last updated
   certifications String[] // Array of URLs for certification images
 
-  user User @relation(fields: [userId], references: [id]) // Relationship to User model
+  user users @relation(fields: [user_id], references: [id]) // Relationship to users model
 
-  MentorEducation MentorEducation[]
+  mentor_education mentor_education[]
 
-  MentorProfessional MentorProfessional[]
+  mentor_professional mentor_professional[]
 
   @@map("mentors")
 }
 
-model MentorEducation {
-  userId      Int     @id // Foreign key linking to Mentor (and indirectly to User)
+model mentor_education {
+  user_id     Int     @id // Foreign key linking to mentors (and indirectly to users)
   degree      String? // Degree obtained by the mentor
   institution String? // Institution where the degree was obtained
 
-  mentor Mentor @relation(fields: [userId], references: [userId]) // Relationship to Mentor model
+  mentor mentors @relation(fields: [user_id], references: [user_id]) // Relationship to mentors model
 
   @@map("mentor_education")
 }
 
-model MentorProfessional {
-  userId           Int              @id // Foreign key linking to Mentor (and indirectly to User)
-  bio              String? // Biography or description of professional background
-  yearOfExperience Int? // Years of experience in their field
-  type             mentor_type_enum // Type of mentor (Associate or Chief)
+model mentor_professional {
+  user_id            Int              @id // Foreign key linking to mentors (and indirectly to users)
+  bio                String? // Biography or description of professional background
+  year_of_experience Int? // Years of experience in their field
+  type               mentor_type_enum // Type of mentor (Associate or Chief)
 
-  mentor Mentor @relation(fields: [userId], references: [userId]) // Relationship to Mentor model
+  mentor mentors @relation(fields: [user_id], references: [user_id]) // Relationship to mentors model
 
   @@map("mentor_professional")
 }
@@ -266,56 +267,69 @@ enum mentor_type_enum {
   chief
 }
 
-// Define the Programs model
-model Program {
-  instituteId               Int     @id
-  subjects                  String?
-  specialPrograms           String?
-  languageOffer             String?
-  certificateAndAffiliation String?
+// Define the programs model
+model programs {
+  institute_id                Int     @id
+  subjects                    String?
+  special_programs            String?
+  language_offer              String?
+  certificate_and_affiliation String?
 
-  institute User @relation(fields: [instituteId], references: [id])
+  institute users @relation(fields: [institute_id], references: [id])
 
   @@map("programs")
 }
 
-model QuizQuestion {
-  id        Int      @id @default(autoincrement())
-  category  String
-  grade     Int
-  traits    String?
-  question  String   @unique
-  answer    String
-  options   String[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model quiz_questions {
+  id         Int      @id @default(autoincrement())
+  category   String
+  grade      Int
+  traits     String?
+  question   String   @unique
+  answer     String
+  options    String[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@map("quiz_questions")
 }
 
-model UserTraitsStatus {
-  id                Int      @id @default(autoincrement()) // Unique identifier for each record
-  userId            Int // To associate the record with a specific user
-  hollandCodeTraits String[] // Top Holland Code trait (array of text)
-  bigFiveTraits     String[] // Top Big Five Personality trait (array of text)
-  aptitudeStatus    String? // Aptitude Test status (e.g., Low, Mid, High)
-  iqStatus          String? // IQ Test status (e.g., Low, Mid, High)
-  createdAt         DateTime @default(now()) // Timestamp for record creation
+model user_traits_status {
+  id                  Int      @id @default(autoincrement()) // Unique identifier for each record
+  user_id             Int // To associate the record with a specific user
+  holland_code_traits String[] // Top Holland Code trait (array of text)
+  big_five_traits     String[] // Top Big Five Personality trait (array of text)
+  aptitude_status     String? // Aptitude Test status (e.g., Low, Mid, High)
+  iq_status           String? // IQ Test status (e.g., Low, Mid, High)
+  created_at          DateTime @default(now()) // Timestamp for record creation
 
-  user User @relation(fields: [userId], references: [id]) // Relationship to User model
+  user users @relation(fields: [user_id], references: [id]) // Relationship to users model
 
   @@map("user_traits_status")
 }
 
-model RecommendedCareers {
-  id        Int      @id @default(autoincrement()) // Unique identifier for each record
-  userId    Int // To associate the record with a specific user
-  career1   String? // First recommended career
-  career2   String? // Second recommended career
-  career3   String? // Third recommended career
-  createdAt DateTime @default(now()) // Timestamp for record creation
+model recommended_careers {
+  id         Int      @id @default(autoincrement()) // Unique identifier for each record
+  user_id    Int // To associate the record with a specific user
+  career1    String? // First recommended career
+  career2    String? // Second recommended career
+  career3    String? // Third recommended career
+  created_at DateTime @default(now()) // Timestamp for record creation
 
-  user User @relation(fields: [userId], references: [id]) // Relationship to User model
+  user users @relation(fields: [user_id], references: [id]) // Relationship to users model
 
   @@map("recommended_careers")
+}
+
+model counselor_availability {
+  id           Int      @id @default(autoincrement()) // Unique identifier for each entry
+  counselor_id Int // ID of the counselor
+  date         DateTime @db.Date // Date of availability
+  start_time   DateTime @db.Time // Start time of availability
+  end_time     DateTime @db.Time // End time of availability
+  is_booked    Boolean  @default(false) // Booking status (default is not booked)
+
+  counselor users @relation(fields: [counselor_id], references: [id]) // Assuming counselor is a user
+
+  @@map("counselor_availability") // Specify the table name in snake_case
 }

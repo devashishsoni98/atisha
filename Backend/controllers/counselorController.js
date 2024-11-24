@@ -3,9 +3,9 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const createOrUpdateCounselorProfile = async (req, res) => {
-    const { userId, image, dob, gender, location, contactNumber, degree, certificate, association, bio, yearOfExperience, domain } = req.body;
+    const { user_id, image, dob, gender, location, contact_number, degree, certificate, association, bio, year_of_experience, domain } = req.body;
 
-    if (!userId || !dob || !gender || !location || !contactNumber || !degree || !certificate || !association) {
+    if (!user_id || !dob || !gender || !location || !contact_number || !degree || !certificate || !association) {
         return res.status(400).json({ message: "All fields are required." });
     }
 
@@ -14,35 +14,35 @@ const createOrUpdateCounselorProfile = async (req, res) => {
         const formattedDob = new Date(dob); // Ensure this is a valid date
 
         // Create or update counselor personal info
-        const personalInfo = await prisma.counselorPersonalInfo.upsert({
-            where: { userId: userId },
+        const personalInfo = await prisma.counselor_personal_info.upsert({
+            where: { user_id: user_id },
             update: {
                 image,
                 dob: formattedDob,
                 gender,
                 location,
-                contactNumber,
+                contact_number,
             },
             create: {
-                userId,
+                user_id: user_id,
                 image,
                 dob: formattedDob,
                 gender,
                 location,
-                contactNumber,
-            },
+                contact_number,
+            }
         });
 
         // Create or update counselor education info
-        const educationInfo = await prisma.counselorEducation.upsert({
-            where: { userId: userId },
+        const educationInfo = await prisma.counselor_education.upsert({
+            where: { user_id: user_id },
             update: {
                 degree,
                 certificate,
                 association,
             },
             create: {
-                userId,
+                user_id: user_id,
                 degree,
                 certificate,
                 association,
@@ -50,17 +50,17 @@ const createOrUpdateCounselorProfile = async (req, res) => {
         });
 
         // Create or update counselor professional info
-        const professionalInfo = await prisma.counselorProfessional.upsert({
-            where: { userId: userId },
+        const professionalInfo = await prisma.counselor_professional.upsert({
+            where: { user_id: user_id },
             update: {
                 bio,
-                yearOfExperience,
+                year_of_experience,
                 domain,
             },
             create: {
-                userId,
+                user_id,
                 bio,
-                yearOfExperience,
+                year_of_experience,
                 domain,
             },
         });
@@ -86,12 +86,12 @@ const getCounselorById = async (req, res) => {
 
     try {
         // Fetch the counselor by ID
-        const counselor = await prisma.user.findUnique({
+        const counselor = await prisma.users.findUnique({
             where: { id: parseInt(id) }, // Ensure the ID is an integer
             include: {
-                counselorPersonalInfo: true,
-                counselorEducation: true,
-                counselorProfessional: true,
+                counselor_personal_info: true,
+                counselor_education: true,
+                counselor_professional: true,
             },
         });
 

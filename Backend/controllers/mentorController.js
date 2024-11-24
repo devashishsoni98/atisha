@@ -4,42 +4,42 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const createMentor = async (req, res) => {
-    const { userId, expertise, bio, certifications, degree, institution, yearOfExperience, type } = req.body;
+    const { user_id, expertise, bio, certifications, degree, institution, year_of_experience, type } = req.body;
 
     // Validate required fields
-    if (!userId || !expertise || !certifications || !type) {
+    if (!user_id || !expertise || !certifications || !type) {
         return res.status(400).json({ message: "User ID, expertise, certifications, and type are required." });
     }
 
     try {
         // Create a new mentor entry in the database.
-        const newMentor = await prisma.mentor.create({
+        const newMentor = await prisma.mentors.create({
             data: {
-                userId,
-                expertise,
-                bio,
-                certifications,
+                user_id: user_id,
+                expertise: expertise,
+                bio:bio,
+                certifications: certifications,
             },
         });
 
         // Create an entry in the MentorEducation table if degree and institution are provided.
         if (degree && institution) {
-            await prisma.mentorEducation.create({
+            await prisma.mentor_education.create({
                 data: {
-                    userId,
-                    degree,
-                    institution,
+                    user_id: user_id,
+                    degree: degree,
+                    institution: institution   ,
                 },
             });
         }
 
         // Create an entry in the MentorProfessional table.
-        await prisma.mentorProfessional.create({
+        await prisma.mentor_professional.create({
             data: {
-                userId,
-                bio,
-                yearOfExperience,
-                type,
+                user_id: user_id,
+                bio: bio,
+                year_of_experience: year_of_experience,
+                type: type,
             },
         });
 
@@ -60,12 +60,12 @@ const getMentorById = async (req, res) => {
 
     try {
         // Fetch the mentor by ID
-        const mentor = await prisma.mentor.findUnique({
-            where: { userId: parseInt(id) }, // Ensure the ID is an integer
+        const mentor = await prisma.mentors.findUnique({
+            where: { user_id: parseInt(id) }, // Ensure the ID is an integer
             include: {
                 user: true, // Include related user data if needed
-                MentorEducation: true, // Include education data if needed
-                MentorProfessional: true, // Include professional data if needed
+                mentor_education: true, // Include education data if needed
+                mentor_professional: true, // Include professional data if needed
             },
         });
 

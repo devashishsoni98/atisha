@@ -3,38 +3,38 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const createOrUpdateInstituteInfo = async (req, res) => {
-    const { userId, imageId, address, contactNumber, establishYear, instituteType, studentBody } = req.body;
+    const { user_id, image_url, address, contact_number, establish_year, institute_type, student_body } = req.body;
 
-    if (!userId || !address || !contactNumber || !establishYear || !instituteType || !studentBody) {
+    if (!user_id || !address || !contact_number || !establish_year || ! institute_type || !student_body) {
         return res.status(400).json({ message: "All fields are required." });
     }
 
     try {
         // Create or update institute info
-        const instituteInfo = await prisma.instituteInfo.upsert({
-            where: { userId: userId },
+        const instituteInfo = await prisma.institute_info.upsert({
+            where: { user_id: user_id },
             update: {
-                imageId,
-                address,
-                contactNumber,
-                establishYear,
-                instituteType,
-                studentBody,
+                image_url: image_url,
+                address: address,
+                contact_number: contact_number,
+                establish_year: establish_year,
+                institute_type: institute_type,
+                student_body: student_body,
             },
             create: {
-                userId,
-                imageId,
-                address,
-                contactNumber,
-                establishYear,
-                instituteType,
-                studentBody,
+                    user_id: user_id,
+                image_url: image_url,
+                address: address,
+                contact_number: contact_number,
+                establish_year: establish_year,
+                institute_type: institute_type,
+                student_body: student_body,
             },
         });
 
         res.status(201).json({
             message: "Institute information created/updated successfully",
-            instituteInfo,
+            instituteInfo: instituteInfo,
         });
     } catch (error) {
         console.error("Error while creating/updating institute information:", error);
@@ -51,8 +51,8 @@ const getInstituteById = async (req, res) => {
 
     try {
         // Fetch the institute by ID
-        const institute = await prisma.instituteInfo.findUnique({
-            where: { userId: parseInt(id) }, // Ensure the ID is an integer
+        const institute = await prisma.institute_info.findUnique({
+            where: { user_id: parseInt(id) }, // Ensure the ID is an integer
             include: {
                 user: true, // Include related user data if needed
             },

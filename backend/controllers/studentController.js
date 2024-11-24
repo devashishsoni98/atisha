@@ -2,10 +2,10 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const createOrUpdateStudentProfile = async (req, res) => {
-    const { userId, image, dob, gender, location, contactNumber, schoolName, classLevel, subjectIds, sportIds, hobbyIds } = req.body;
+    const { user_id, image, dob, gender, location, contact_number, school_name, class_level, subject_ids, sport_ids, hobby_ids } = req.body;
  
     // Check for required fields
-    if (!userId || !dob || !gender || !location || !contactNumber || !schoolName || !classLevel || !subjectIds || !sportIds || !hobbyIds) {
+    if (!user_id || !dob || !gender || !location || !contact_number || !school_name || !class_level || !subject_ids || !sport_ids || !hobby_ids) {
         return res.status(400).json({ message: "All fields are required." });
     }
 
@@ -17,63 +17,63 @@ const createOrUpdateStudentProfile = async (req, res) => {
         }
 
         // Ensure userId is an integer
-        const userIdInt = parseInt(userId);
+        const userIdInt = parseInt(user_id);
         if (isNaN(userIdInt)) {
             return res.status(400).json({ message: "Invalid user ID." });
         }
 
         // Create or update student personal info
-        const personalInfo = await prisma.studentPersonalInfo.upsert({
-            where: { userId: userIdInt },
+        const personalInfo = await prisma.student_personal_info.upsert({
+            where: { user_id: userIdInt },
             update: {
-                image,
+                image:image,
                 dob: formattedDob,
-                gender,
-                location,
-                contactNumber,
+                gender:gender,
+                location:location,
+                contact_number :contact_number,
             },
             create: {
-                userId: userIdInt,
-                image,
+                user_id: userIdInt,
+                image:image,
                 dob: formattedDob,
-                gender,
-                location,
-                contactNumber,
+                gender:gender,
+                location:location,
+                contact_number :contact_number,
             },
         });
 
         // Create or update student education info
-        const educationInfo = await prisma.studentEducation.upsert({
-            where: { userId: userIdInt },
+        const educationInfo = await prisma.student_education.upsert({
+            where: { user_id: userIdInt },
             update: {
-                schoolName,
-                class: classLevel,
+                school_name:school_name,
+                class: class_level,
             },
             create: {
-                userId: userIdInt,
-                schoolName,
-                class: classLevel,
+                user_id: userIdInt,
+                school_name:school_name,
+                class: class_level,
             },
         });
 
         // Ensure subjectIds, sportIds, and hobbyIds are arrays
-        const subjectIdsArray = Array.isArray(subjectIds) ? subjectIds : [];
-        const sportIdsArray = Array.isArray(sportIds) ? sportIds : [];
-        const hobbyIdsArray = Array.isArray(hobbyIds) ? hobbyIds : [];
+        const subjectIdsArray = Array.isArray(subject_ids) ? subject_ids : [];
+        const sportIdsArray = Array.isArray(sport_ids) ? sport_ids : [];
+        const hobbyIdsArray = Array.isArray(hobby_ids) ? hobby_ids : [];
 
         // Create or update student interests info
-        const interestsInfo = await prisma.studentInterest.upsert({
-            where: { userId: userIdInt },
+        const interestsInfo = await prisma.student_interest.upsert({
+            where: { user_id: userIdInt },
             update: {
-                subjectIds: subjectIdsArray,
-                sportIds: sportIdsArray,
-                hobbyIds: hobbyIdsArray,
+                subject_ids: subjectIdsArray,
+                sport_ids: sportIdsArray,
+                hobby_ids: hobbyIdsArray,
             },
             create: {
-                userId: userIdInt,
-                subjectIds: subjectIdsArray,
-                sportIds: sportIdsArray,
-                hobbyIds: hobbyIdsArray,
+                user_id: userIdInt,
+                subject_ids: subjectIdsArray,
+                sport_ids: sportIdsArray,
+                hobby_ids: hobbyIdsArray,
             },
         });
 
@@ -103,12 +103,12 @@ const getStudentById = async (req, res) => {
         }
 
         // Fetch the student by ID
-        const student = await prisma.user.findUnique({
+        const student = await prisma.users.findUnique({
             where: { id: idInt },
             include: {
-                studentPersonalInfo: true,
-                studentEducation: true,
-                studentInterest: true,
+                student_personal_info: true,
+                student_education: true,
+                student_interest: true,
             },
         });
 
