@@ -81,6 +81,8 @@ model users {
 
   recommended_careers    recommended_careers[]
   counselor_availability counselor_availability[]
+  counselor_bookings     counselor_bookings[]     @relation("counselor_bookings")
+  student_bookings       counselor_bookings[]     @relation("student_bookings")
 
   @@map("users")
 }
@@ -329,7 +331,28 @@ model counselor_availability {
   end_time     DateTime @db.Time // End time of availability
   is_booked    Boolean  @default(false) // Booking status (default is not booked)
 
-  counselor users @relation(fields: [counselor_id], references: [id]) // Assuming counselor is a user
+  counselor          users                @relation(fields: [counselor_id], references: [id]) // Assuming counselor is a user
+  counselor_bookings counselor_bookings[]
 
   @@map("counselor_availability") // Specify the table name in snake_case
+}
+
+model counselor_bookings {
+  id                        Int      @id @default(autoincrement()) // Unique identifier for each booking
+  student_id                Int // References the users table for the student
+  counselor_id              Int // References the users table for the counselor
+  counselor_availability_id Int // References the availability table
+  date                      DateTime @db.Date // Booking date
+  start_time                DateTime @db.Time // Start time of the booking
+  end_time                  DateTime @db.Time // End time of the booking
+  status                    String   @default("pending") // Status of the booking
+  type                      String? // Type of booking (e.g., online, in-person)
+  location                  String? // Location of the session
+  created_at                DateTime @default(now()) // Timestamp when the booking was created
+
+  student      users                  @relation("student_bookings", fields: [student_id], references: [id]) // Relationship to User model for student
+  counselor    users                  @relation("counselor_bookings", fields: [counselor_id], references: [id]) // Relationship to User model for counselor
+  availability counselor_availability @relation(fields: [counselor_availability_id], references: [id]) // Relationship to availability
+
+  @@map("counselor_bookings") // Specify the table name in snake_case
 }
