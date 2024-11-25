@@ -103,10 +103,13 @@ model users {
 
   user_traits_status user_traits_status[]
 
-  recommended_careers    recommended_careers[]
-  counselor_availability counselor_availability[]
-  counselor_bookings     counselor_bookings[]     @relation("counselor_bookings")
-  student_bookings       counselor_bookings[]     @relation("student_bookings")
+  recommended_careers       recommended_careers[]
+  counselor_availability    counselor_availability[]
+  counselor_bookings        counselor_bookings[]     @relation("counselor_bookings")
+  student_bookings          counselor_bookings[]     @relation("student_bookings")
+  session_reports_student   session_reports[]        @relation("StudentSessions")
+  session_reports_counselor session_reports[]        @relation("CounselorSessions")
+  session_reports_mentor    session_reports[]        @relation("MentorSessions")
 
   @@map("users")
 }
@@ -377,4 +380,33 @@ model counselor_bookings {
   availability counselor_availability @relation(fields: [counselor_availability_id], references: [id]) // Relationship to availability
 
   @@map("counselor_bookings") // Specify the table name in snake_case
+}
+
+model session_reports {
+  id                    Int      @id @default(autoincrement())
+  student_id            Int // ID of the student
+  counselor_id          Int? // ID of the counselor (nullable)
+  mentor_id             Int? // ID of the mentor (nullable)
+  session_date          DateTime @db.Date // Date of the session
+  session_time          DateTime @db.Time // Time of the session
+  student_name          String // Name of the student
+  duration              Int // Duration in minutes
+  objective             String   @db.Text // Purpose of the session (long string)
+  topics_discussed      String   @db.Text // Key topics covered during the session (long string)
+  student_concerns      String?  @db.Text // Specific concerns raised by the student (long string)
+  strengths_identified  String?  @db.Text // Student's strengths based on discussion (long string)
+  areas_for_improvement String?  @db.Text // Areas where the student can improve (long string)
+  career_alignment      String?  @db.Text // Alignment of student's plan with their skills/interests (long string)
+  action_items          String[] // Tasks or goals for the student
+  recommendations       String[] // Suggested courses, skills, or steps to take based on the session
+  follow_up_plan        String? // Follow-up plan if another session is required
+  additional_notes      String?  @db.Text // Any other remarks, feedback, or observations not covered above
+
+  created_at DateTime @default(now()) // Timestamp for record creation
+
+  student   users  @relation("StudentSessions", fields: [student_id], references: [id])
+  counselor users? @relation("CounselorSessions", fields: [counselor_id], references: [id])
+  mentor    users? @relation("MentorSessions", fields: [mentor_id], references: [id])
+
+  @@map("session_reports")
 }

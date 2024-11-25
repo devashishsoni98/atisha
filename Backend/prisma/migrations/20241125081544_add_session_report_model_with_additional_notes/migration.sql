@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "session_reports" ADD COLUMN     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ALTER COLUMN "session_date" SET DATA TYPE DATE,
+ALTER COLUMN "session_time" SET DATA TYPE TIME;

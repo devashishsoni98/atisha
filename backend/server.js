@@ -27,6 +27,8 @@ const studentRoutes = require('./routes/studentRoutes');
 const counselorRoutes = require('./routes/counselorRoutes');
 const instituteRoutes = require('./routes/InstituteRoutes');
 const mentorRoutes = require('./routes/mentorRoutes');
+const sessionsReportsRoutes = require('./routes/sessionsReportsRoutes');
+const counselorBookingRoutes = require('./routes/counselorBookingRoutes');
 
 // Use routes with a prefix
 app.use('/api/auth', userRoutes);
@@ -34,6 +36,8 @@ app.use('/api/student', studentRoutes);
 app.use('/api/counselor', counselorRoutes);
 app.use('/api/institute', instituteRoutes);
 app.use('/api/mentor', mentorRoutes);
+app.use('/api/session-reports', sessionsReportsRoutes);
+app.use('/api/counselor-booking', counselorBookingRoutes);
 
 // Start server
 app.listen(PORT, () => {
