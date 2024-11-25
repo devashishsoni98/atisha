@@ -22,7 +22,7 @@ const createOrUpdateInstituteInfo = async (req, res) => {
                 student_body: student_body,
             },
             create: {
-                    user_id: user_id,
+                user_id: user_id,
                 image_url: image_url,
                 address: address,
                 contact_number: contact_number,

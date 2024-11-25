@@ -21,6 +21,11 @@ enum role_type {
   mentor
 }
 
+enum mentor_type_enum {
+  associate
+  chief
+}
+
 enum session_type_enum {
   online
   offline
@@ -39,7 +44,26 @@ enum gender_enum {
   other
 }
 
-// Define the Roles model
+enum counselor_type_enum {
+  private
+  govt
+  fresher
+}
+
+enum counselor_specialization_type_enum {
+  mentalHealth
+  career
+  parenting
+}
+
+enum institute_board_type_enum {
+  cbse
+  icse
+  state
+  international
+}
+
+// Def`in`e the Roles model
 model roles {
   id        Int       @id @default(autoincrement())
   role_name role_type @unique
@@ -164,10 +188,10 @@ model counselor_personal_info {
 
 // Define the Counselor Education model
 model counselor_education {
-  user_id     Int    @id
-  degree      String @db.VarChar(255)
-  certificate String @db.VarChar(50)
-  association String @db.VarChar(50)
+  user_id      Int    @id
+  degree       String @db.VarChar(255)
+  degree_image String @db.VarChar(50)
+  association  String @db.VarChar(50)
 
   user users @relation(fields: [user_id], references: [id])
 
@@ -176,13 +200,15 @@ model counselor_education {
 
 // Define the Counselor Professional model
 model counselor_professional {
-  user_id            Int     @id
-  bio                String?
-  year_of_experience Int?
-  domain             String?
-  image              String?
-
-  user users @relation(fields: [user_id], references: [id])
+  user_id               Int                                @id
+  bio                   String?
+  year_of_experience    Int?
+  specialization        String?
+  certificates          String[]
+  counselor_type        counselor_type_enum
+  counselor_speciality  counselor_specialization_type_enum
+  career_specialization String[]
+  user                  users                              @relation(fields: [user_id], references: [id])
 
   @@map("counselor_professional")
 }
@@ -211,14 +237,15 @@ model sessions {
 
 // Define the Institute Info model
 model institute_info {
-  user_id        Int                 @id
-  image_url      String?
-  address        String?
-  contact_number String?
-  establish_year Int?
-  institute_type institute_type_enum
-
-  student_body String?
+  user_id         Int                       @id
+  name            String?
+  image_url       String?
+  address         String?
+  contact_number  String?
+  establish_year  Int?
+  institute_type  institute_type_enum
+  institute_board institute_board_type_enum
+  student_body    String?
 
   user users @relation(fields: [user_id], references: [id])
 
@@ -227,6 +254,7 @@ model institute_info {
 
 model mentors {
   user_id        Int       @id // Unique identifier for each mentor, linked to users model
+  image_url      String? // URL to the mentor's image
   expertise      String? // Area of expertise or specialization
   bio            String? // Short biography or description of the mentor
   created_at     DateTime  @default(now()) // Timestamp when the mentor record was created
@@ -261,12 +289,6 @@ model mentor_professional {
   mentor mentors @relation(fields: [user_id], references: [user_id]) // Relationship to mentors model
 
   @@map("mentor_professional")
-}
-
-// New ENUM for mentor types
-enum mentor_type_enum {
-  associate
-  chief
 }
 
 // Define the programs model
