@@ -1,86 +1,48 @@
-import React, { useState } from 'react'
-import { Calendar, Clock, Search, Filter, Star, ChevronLeft, ChevronRight, Mail, Phone } from 'lucide-react'
+import  {useEffect, useState} from 'react'
+import { Clock, ChevronLeft, ChevronRight, Star } from 'lucide-react'
+import {fetchCounselorsData} from "../api/CounselorBookingApi.jsx";
+import {motion} from "framer-motion";
 
-const counselors = [
-  { 
-    id: 1, 
-    name: 'Dr. Emily Smith', 
-    specialization: 'Career Guidance', 
-    qualifications: 'Ph.D. in Psychology, Certified Career Counselor',
-    expertise: ['Career Planning', 'Job Search Strategies', 'Interview Preparation'],
-    languages: ['English', 'Spanish'],
-    rating: 4.8,
-    reviews: 127,
-    avatar: '/placeholder.svg?height=100&width=100'
-  },
-  { 
-    id: 2, 
-    name: 'Prof. Michael Johnson', 
-    specialization: 'Academic Advising', 
-    qualifications: 'M.Ed. in Higher Education, Certified Academic Advisor',
-    expertise: ['Course Selection', 'Study Skills', 'Time Management'],
-    languages: ['English', 'French'],
-    rating: 4.6,
-    reviews: 98,
-    avatar: '/placeholder.svg?height=100&width=100'
-  },
-  { 
-    id: 3, 
-    name: 'Dr. Sarah Lee', 
-    specialization: 'Personal Development', 
-    qualifications: 'Ph.D. in Counseling Psychology, Licensed Therapist',
-    expertise: ['Stress Management', 'Self-Esteem Building', 'Goal Setting'],
-    languages: ['English', 'Mandarin'],
-    rating: 4.9,
-    reviews: 156,
-    avatar: '/placeholder.svg?height=100&width=100'
-  },
-  { 
-    id: 4, 
-    name: 'Dr. David Brown', 
-    specialization: 'Graduate School Preparation', 
-    qualifications: 'Ed.D. in Educational Leadership, Former Admissions Officer',
-    expertise: ['Application Strategy', 'Personal Statement Review', 'Interview Preparation'],
-    languages: ['English'],
-    rating: 4.7,
-    reviews: 89,
-    avatar: '/placeholder.svg?height=100&width=100'
-  },
-  { 
-    id: 5, 
-    name: 'Prof. Lisa Chen', 
-    specialization: 'International Student Support', 
-    qualifications: 'M.A. in International Education, TESOL Certified',
-    expertise: ['Cultural Adjustment', 'Language Support', 'Visa Guidance'],
-    languages: ['English', 'Mandarin', 'Cantonese'],
-    rating: 4.8,
-    reviews: 112,
-    avatar: '/placeholder.svg?height=100&width=100'
-  },
-]
 
-const CounselorCard = ({ counselor, onSelect }) => (
-  <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer" onClick={() => onSelect(counselor)}>
-    <div className="flex items-start">
-      <img src={counselor.avatar} alt={counselor.name} className="w-20 h-20 rounded-full mr-4" />
-      <div className="flex-grow">
-        <h3 className="text-lg font-semibold">{counselor.name}</h3>
-        <p className="text-sm text-gray-500 mb-2">{counselor.specialization}</p>
-        <div className="flex items-center mb-2">
-          <Star className="w-4 h-4 text-yellow-400 mr-1" />
-          <span className="text-sm font-medium">{counselor.rating}</span>
-          <span className="text-sm text-gray-500 ml-1">({counselor.reviews} reviews)</span>
-        </div>
-        <div className="flex flex-wrap gap-2 mb-2">
-          {counselor.expertise.slice(0, 3).map((exp, index) => (
-            <span key={index} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">{exp}</span>
-          ))}
-        </div>
-        <p className="text-sm text-gray-600">Languages: {counselor.languages.join(', ')}</p>
-      </div>
-    </div>
-  </div>
-)
+export function CounselorCard({ counselor, similarityScore, onSelect }) {
+    return (
+        <motion.div
+            className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onSelect(counselor)}
+        >
+            <div className="p-6">
+                <div className="flex items-start">
+                    <img
+                        src={counselor.counselor_personal_info.image}
+                        alt={`${counselor.name}'s profile picture`}
+                        width={80}
+                        height={80}
+                        className="rounded-full mr-4"
+                    />
+                    <div className="flex-grow">
+                        <h3 className="text-lg font-semibold">{counselor.name}</h3>
+                        <p className="text-sm text-gray-500 mb-2">{counselor.counselor_professional.counselor_speciality}</p>
+                        <div className="flex items-center mb-2">
+                            <Star className="w-4 h-4 text-yellow-400 mr-1" />
+                            <span className="text-sm font-medium">{similarityScore.toFixed(2)}</span>
+                            <span className="text-sm text-gray-500 ml-1">similarity score</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {counselor.counselor_professional.career_specialization.slice(0, 3).map((exp, index) => (
+                                <span key={index} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">{exp}</span>
+                            ))}
+                        </div>
+                        <p className="text-sm text-gray-600">Experience: {counselor.counselor_professional.year_of_experience} years</p>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    )
+}
+
+
 
 const TimeSlot = ({ time, isAvailable, onSelect }) => (
   <button
@@ -154,6 +116,31 @@ export default function StudentCounselorBrowsing() {
   const [filterLanguage, setFilterLanguage] = useState('')
   const [activeTab, setActiveTab] = useState('browse') // 'browse', 'sessions', or 'requests'
 
+
+  const [counselors, setCounselors] = useState([])
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    async function loadCounselors() {
+      try {
+        const data = await fetchCounselorsData()
+        const counselorsWithRecommendations = data.recommendations.map((rec) => {
+          const counselorDetails = data.counselorsDetails.find((c) => c.id === rec.counselor_id)
+          return {
+            ...counselorDetails,
+            similarityScore: rec.similarity_score,
+          }
+        })
+        setCounselors(counselorsWithRecommendations)
+      } catch (error) {
+        console.error("Error loading counselors:", error)
+        setError("There was a problem fetching the counselors data. Please try again later.")
+      }
+    }
+
+    loadCounselors()
+  }, [])
+
   const availableSlots = [
     { time: '9:00 AM', available: true },
     { time: '10:00 AM', available: false },
@@ -163,6 +150,8 @@ export default function StudentCounselorBrowsing() {
     { time: '3:00 PM', available: true },
     { time: '4:00 PM', available: true },
   ]
+
+
 
   // Mock data for student sessions and requests
   const [studentSessions, setStudentSessions] = useState([
@@ -177,7 +166,7 @@ export default function StudentCounselorBrowsing() {
     { id: 3, counselor: 'Dr. Emily Smith', date: '2023-06-24', time: '11:00 AM', topic: 'Career Planning', status: 'Rejected' },
   ])
 
-  const filteredCounselors = counselors.filter(counselor => 
+  const filteredCounselors = counselors.filter(counselor =>
     counselor.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
     (filterExpertise === '' || counselor.expertise.includes(filterExpertise)) &&
     (filterLanguage === '' || counselor.languages.includes(filterLanguage))
@@ -249,15 +238,15 @@ export default function StudentCounselorBrowsing() {
           <div className="flex flex-col md:flex-row gap-8">
             <section className="md:w-2/3">
               <div className="mb-6 flex flex-col sm:flex-row gap-4">
-                <input 
+                <input
                   type="text"
-                  placeholder="Search counselors..." 
+                  placeholder="Search counselors..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="flex-grow p-2 border rounded"
                 />
-                <select 
-                  value={filterExpertise} 
+                <select
+                  value={filterExpertise}
                   onChange={(e) => setFilterExpertise(e.target.value)}
                   className="w-full sm:w-[180px] p-2 border rounded"
                 >
@@ -267,8 +256,8 @@ export default function StudentCounselorBrowsing() {
                   <option value="Stress Management">Stress Management</option>
                   <option value="Cultural Adjustment">Cultural Adjustment</option>
                 </select>
-                <select 
-                  value={filterLanguage} 
+                <select
+                  value={filterLanguage}
                   onChange={(e) => setFilterLanguage(e.target.value)}
                   className="w-full sm:w-[180px] p-2 border rounded"
                 >
@@ -279,29 +268,43 @@ export default function StudentCounselorBrowsing() {
                   <option value="French">French</option>
                 </select>
               </div>
-              <div className="space-y-6 pr-4 max-h-[calc(100vh-250px)] overflow-y-auto">
-                {filteredCounselors.map(counselor => (
-                  <CounselorCard
-                    key={counselor.id}
-                    counselor={counselor}
-                    onSelect={setSelectedCounselor}
-                  />
-                ))}
-              </div>
+                <motion.div
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    initial={{opacity: 0}}
+                    animate={{opacity: 1}}
+                    transition={{staggerChildren: 0.1}}
+                >
+                    {counselors.map((counselor) => (
+                        <motion.div
+                            key={counselor.id}
+                            initial={{opacity: 0, y: 20}}
+                            animate={{opacity: 1, y: 0}}
+                        >
+                            <CounselorCard
+                                counselor={counselor}
+                                similarityScore={counselor.similarityScore}
+                                onSelect={(selectedCounselor) => {
+                                    console.log("Selected counselor:", selectedCounselor)
+                                    // Implement your logic for counselor selection here
+                                }}
+                            />
+                        </motion.div>
+                    ))}
+                </motion.div>
             </section>
 
-            <section className="md:w-1/3">
-              {selectedCounselor ? (
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <h2 className="text-xl font-semibold mb-2">{selectedCounselor.name}</h2>
-                  <p className="text-gray-600 mb-4">{selectedCounselor.specialization}</p>
-                  <h3 className="font-semibold mb-2">Select a Date and Time</h3>
-                  <div className="flex items-center justify-between mb-4">
-                    <button className="p-2 border rounded" onClick={() => handleDateChange(-1)}>
-                      <ChevronLeft className="h-4 w-4" />
-                    </button>
-                    <h4 className="text-sm font-medium">
-                      {selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              <section className="md:w-1/3">
+                  {selectedCounselor ? (
+                      <div className="bg-white p-6 rounded-lg shadow-sm">
+                          <h2 className="text-xl font-semibold mb-2">{selectedCounselor.name}</h2>
+                          <p className="text-gray-600 mb-4">{selectedCounselor.specialization}</p>
+                          <h3 className="font-semibold mb-2">Select a Date and Time</h3>
+                          <div className="flex items-center justify-between mb-4">
+                              <button className="p-2 border rounded" onClick={() => handleDateChange(-1)}>
+                                  <ChevronLeft className="h-4 w-4"/>
+                              </button>
+                              <h4 className="text-sm font-medium">
+                                  {selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                     </h4>
                     <button className="p-2 border rounded" onClick={() => handleDateChange(1)}>
                       <ChevronRight className="h-4 w-4" />

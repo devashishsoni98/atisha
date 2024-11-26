@@ -35,3 +35,16 @@ export const fetchBookingsForStarting = async (counselorId) => {
     return response.data;
 };
 
+export async function fetchCounselorsData() {
+    try {
+        const response = await axios.get('http://localhost:4000/api/counselor/recommendation/1');
+        if (!response.data) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.data;
+    } catch (error) {
+        console.error("There was a problem with the fetch operation:", error);
+        throw error;
+    }
+}
+

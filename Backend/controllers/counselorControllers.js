@@ -25,12 +25,12 @@ const createOrUpdateCounselorProfile = async (req, res) => {
     // Validate required fields
     if (!user_id || !dob || !gender || !location || !contact_number ||
         !degree || !degree_image || !association) {
-        return res.status(400).json({ message: "All fields are required." });
+        return res.status(400).json({message: "All fields are required."});
     }
 
     // Check if counselor_type is valid and handle career_specialization accordingly
     if (counselor_speciality !== 'career' && (career_specialization && career_specialization.length > 0)) {
-        return res.status(400).json({ message: "Career specialization can only be provided if counselor speciality is 'career'." });
+        return res.status(400).json({message: "Career specialization can only be provided if counselor speciality is 'career'."});
     }
 
     try {
@@ -39,7 +39,7 @@ const createOrUpdateCounselorProfile = async (req, res) => {
 
         // Create or update counselor personal info
         const personalInfo = await prisma.counselor_personal_info.upsert({
-            where: { user_id: user_id },
+            where: {user_id: user_id},
             update: {
                 image,
                 dob: formattedDob,
@@ -59,7 +59,7 @@ const createOrUpdateCounselorProfile = async (req, res) => {
 
         // Create or update counselor education info
         const educationInfo = await prisma.counselor_education.upsert({
-            where: { user_id: user_id },
+            where: {user_id: user_id},
             update: {
                 degree,
                 degree_image, // Use the correct field name for the degree image
@@ -75,7 +75,7 @@ const createOrUpdateCounselorProfile = async (req, res) => {
 
         // Create or update counselor professional info
         const professionalInfo = await prisma.counselor_professional.upsert({
-            where: { user_id: user_id },
+            where: {user_id: user_id},
             update: {
                 bio,
                 year_of_experience,
@@ -105,7 +105,7 @@ const createOrUpdateCounselorProfile = async (req, res) => {
         });
     } catch (error) {
         console.error("Error while creating/updating counselor profile:", error);
-        res.status(500).json({ message: "Error while creating/updating counselor profile." });
+        res.status(500).json({message: "Error while creating/updating counselor profile."});
     }
 };
 
@@ -139,15 +139,38 @@ const getCounselorById = async (req, res) => {
 };
 
 const getCounselorByRecommendation = async (req, res) => {
-    const {counselor_id} = req.params; // Get the counselor ID from the request parameters
+    const {counselor_id} = await req.params; // Get the counselor ID from the request parameters
+    console.log("counselor: ", counselor_id);
 
-    try{
+    try {
 
-         const recommendationCounselors = await axios.get(`http://127.0.0.1:7000/match_counselor?user_id=${counselor_id}`);
-        console.log(recommendationCounselors.data.match_counselor);
-        res.status(200).json(recommendationCounselors.data);
-    }
-    catch (error) {
+        const recommendationCounselors = await axios.get(`http://127.0.0.1:7000/match_counselor?user_id=${counselor_id}`);
+        console.log(recommendationCounselors.data.matches.counselor_id);
+        const recommendations = recommendationCounselors.data.matches; // Adjust based on your actual response structure
+
+        // Extract counselor IDs
+        const counselorIds = recommendations.map(rec => rec.counselor_id);
+
+        // Fetch details for each counselor
+        const counselorsDetails = await prisma.users.findMany({
+            where: {
+                id: {
+                    in: counselorIds, // Filter counselors by the extracted IDs
+                },
+            },
+            include: {
+                counselor_personal_info: true, // Include related career specializations if needed
+                counselor_education: true,
+                counselor_professional: true,
+            },
+        });
+
+        // Extract data from responses
+
+
+        res.status(200).json({recommendations, counselorsDetails});
+
+    } catch (error) {
         console.error("Error while fetching counselor:", error);
         res.status(500).json({message: "Error while fetching counselor."});
     }

@@ -7,8 +7,8 @@ const {
     completeBooking,
     getCounselorBookingsForApproval,
     getCounselorBookingsForStarting,
-    getCounselorBookingsForCompletion
-
+    getCounselorBookingsForCompletion,
+    getBookingByStudentId
 
 } = require('../controllers/counselorBookingController');
 
@@ -45,4 +45,10 @@ router.get('/get_bookings_for_starting/:counselor_id', getCounselorBookingsForSt
 // Route to get bookings for completion
 // End point: /api/counselor-booking/get_bookings_for_completion/:counselor_id
 router.get('/get_bookings_for_completion/:counselor_id', getCounselorBookingsForCompletion);
+
+// Route to get bookings for a student
+// End point: /api/counselor-booking/get_bookings_for_student/:student_id
+router.get('/get_bookings_for_student/:student_id', getBookingByStudentId);
+
+
 module.exports = router;

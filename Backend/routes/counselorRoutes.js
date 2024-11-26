@@ -15,6 +15,6 @@ router.get('/:id', CounselorController.getCounselorById);
 
 // Route for getting counselor profile by recommendation
 // End point: GET /api/counselor/recommendation/:id
-router.get('/recommendation/:id', CounselorController.getCounselorByRecommendation);
+router.get('/recommendation/:counselor_id', CounselorController.getCounselorByRecommendation);
 
 module.exports = router;

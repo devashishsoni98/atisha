@@ -132,7 +132,7 @@ const bookSlot = async (req, res) => {
       data: { is_booked: true }
     });
 
-    await prisma.counselor_bookings.create({
+   const response = await prisma.counselor_bookings.create({
       data: {
         student_id,
         counselor_id: slot.counselor_id,
@@ -144,12 +144,32 @@ const bookSlot = async (req, res) => {
       }
     });
 
-    res.status(201).json({ message: "Booking request sent" });
+   res.status(201).json({ message: "Booking request sent" , response: response });
+
+    // res.status(201).json({ message: "Booking request sent" });
   } catch (err) {
     res.status(500).json({ error: "Failed to book slot", details: err.message });
   }
 };
 
+const getSlot = async (req, res) => {
+  const {booking_id} = req.params;
+  try {
+    const slot = await prisma.counselor_bookings.findUnique({
+      where: {id: parseInt(booking_id)},
+      include: {
+        counselor_availability: true,
+        counselor: true
+      }
+    });
+    if (!slot) {
+      return res.status(404).json({error: "Booking ID not found"});
+    }
+    res.status(200).json({booking: slot});
+  } catch (err) {
+    res.status(500).json({error: "Failed to fetch booking", details: err.message});
+  }
+}
 // Update Booking Status
 const updateBookingStatus = async (req, res) => {
   const { booking_id, status } = req.body;
@@ -290,6 +310,24 @@ const getCounselorBookingsForCompletion = async (req, res) => {
   }
 }
 
+const getBookingByStudentId = async (req, res) => {
+  const { student_id } = req.params;
+  if (!student_id) {
+    return res.status(400).json({ error: "Missing student_id" });
+  }
+  try {
+    const bookings = await prisma.counselor_bookings.findMany({
+      where: { student_id: parseInt(student_id) },
+      include: {
+        availability: true,
+        student: true
+      }
+    });
+    res.status(200).json(bookings);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch bookings", details: err.message });
+  }
+}
 
 module.exports = {
   setAvailability,
@@ -299,6 +337,8 @@ module.exports = {
   completeBooking,
   getCounselorBookingsForApproval,
   getCounselorBookingsForStarting,
-  getCounselorBookingsForCompletion
+  getCounselorBookingsForCompletion,
+  getBookingByStudentId,
+  getSlot
 };
 
