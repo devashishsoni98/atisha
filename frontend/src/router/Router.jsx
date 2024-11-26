@@ -29,6 +29,7 @@ import CounselorOnboarding from "../pages/onboarding/CounselorOnboarding.jsx";
 import InstituteOnborading from "../pages/onboarding/InstituteOnboarding.jsx";
 import ReportSubmissionByCounselor from "../pages/ReportSubmissionByCounselor.jsx";
 import CounselorBooking from "../pages/CounselorBooking.jsx";
+import StudentCounselorBrowsing from "../pages/StudentCounselorBrowsing.jsx";
 
 
 
@@ -103,6 +104,10 @@ const Router = createBrowserRouter([
       {
         path:"/counselor-booking",
         element: <CounselorBooking  />
+      },
+      {
+        path:"/student-counselor-browsing",
+        element: <StudentCounselorBrowsing  />
       }
     ],
   },

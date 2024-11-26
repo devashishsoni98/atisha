@@ -13,4 +13,8 @@ router.post('/create', CounselorController.createOrUpdateCounselorProfile);
 // End point: GET /api/counselor/:id
 router.get('/:id', CounselorController.getCounselorById);
 
+// Route for getting counselor profile by recommendation
+// End point: GET /api/counselor/recommendation/:id
+router.get('/recommendation/:id', CounselorController.getCounselorByRecommendation);
+
 module.exports = router;

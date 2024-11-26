@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { fetchBookingsForApproval, updateBookingStatus } from '../api/counselorApi';
+import { fetchBookingsForApproval, updateBookingStatus } from '../api/CounselorBookingApi.jsx';
 import { formatTime, formatDate } from '../utils/dateUtils';
 
 export const BookingRequests = ({ counselorId }) => {

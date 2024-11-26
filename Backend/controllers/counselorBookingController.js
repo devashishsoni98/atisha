@@ -85,7 +85,11 @@ const getAvailability = async (req, res) => {
         date: true,
         start_time: true,
         end_time: true
-      }
+      },
+      orderBy: [
+        { date: 'asc' }, // Sort by date in ascending order
+        { start_time: 'asc' } // Sort by start_time in ascending order within the same date
+      ]
     });
 
     // Send the response with available slots
