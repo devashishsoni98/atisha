@@ -44,20 +44,57 @@ const setAvailability = async (req, res) => {
 };
 
 // Get Availability
+// const getAvailability = async (req, res) => {
+//   const { counselor_id } = req.params;
+//
+//   try {
+//     const slots = await prisma.counselor_availability.findMany({
+//       where: { counselor_id: parseInt(counselor_id), is_booked: false, date: { gte: new Date() } },
+//       select: { id: true, date: true, start_time: true, end_time: true }
+//     });
+//
+//     res.status(200).json({ available_slots: slots });
+//   } catch (err) {
+//     res.status(500).json({ error: "Failed to fetch availability", details: err.message });
+//   }
+// };
+
 const getAvailability = async (req, res) => {
   const { counselor_id } = req.params;
 
   try {
+    // Get current date and time
+    const now = new Date();
+
+    // Create a new date object for the start of tomorrow
+    const tomorrow = new Date(now);
+    tomorrow.setHours(0, 0, 0, 0); // Set to midnight
+    tomorrow.setDate(tomorrow.getDate() + 1); // Move to next day
+
+    // Fetch available slots for the given counselor
     const slots = await prisma.counselor_availability.findMany({
-      where: { counselor_id: parseInt(counselor_id), is_booked: false },
-      select: { id: true, date: true, start_time: true, end_time: true }
+      where: {
+        counselor_id: parseInt(counselor_id),
+        is_booked: false,
+        date: {
+          gte: tomorrow // Ensure only slots from tomorrow onward are considered
+        }
+      },
+      select: {
+        id: true,
+        date: true,
+        start_time: true,
+        end_time: true
+      }
     });
 
+    // Send the response with available slots
     res.status(200).json({ available_slots: slots });
   } catch (err) {
+    // Handle any errors that occur during the fetch
     res.status(500).json({ error: "Failed to fetch availability", details: err.message });
   }
-};
+}
 
 // Book Slot
 const bookSlot = async (req, res) => {

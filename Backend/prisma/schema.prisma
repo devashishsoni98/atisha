@@ -389,7 +389,8 @@ model session_reports {
   mentor_id             Int? // ID of the mentor (nullable)
   session_date          DateTime @db.Date // Date of the session
   session_time          DateTime @db.Time // Time of the session
-  student_name          String // Name of the student
+  student_name          String? // Name of the student
+  counselor_name        String? // Name of the counselor (nullable)
   duration              Int // Duration in minutes
   objective             String   @db.Text // Purpose of the session (long string)
   topics_discussed      String   @db.Text // Key topics covered during the session (long string)

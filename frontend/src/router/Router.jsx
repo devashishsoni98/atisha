@@ -1,5 +1,4 @@
 // Router.jsx
-import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 import Unprotected from "./Unprotected";
 import Home from "../pages/Home";
@@ -26,6 +25,8 @@ import CreateCounselorProfile from "../pages/CreateCounselorProfile";
 import MentorOnboarding from "../pages/MentorOnboarding";
 import CounselorOnboarding from "../pages/CounselorOnBorading";
 import InstituteOnborading from "../pages/InstituteOnboarding";
+import ReportSubmissionByCounselor from "../pages/ReportSubmissionByCounselor.jsx";
+import CounselorBooking from "../pages/CounselorBooking.jsx";
 
 
 
@@ -85,6 +86,14 @@ const Router = createBrowserRouter([
         path: "/onboarding-institute",
         element: <InstituteOnborading  />, 
       },
+      {
+        path: "/report-submission-by-counselor",
+        element: <ReportSubmissionByCounselor  />,
+      },
+      {
+        path:"/counselor-booking",
+        element: <CounselorBooking  />
+      }
     ],
   },
   {

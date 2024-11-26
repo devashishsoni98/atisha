@@ -109,17 +109,17 @@ export default function CreateProfile() {
       }
   
       const dataToSend = {
-        userId: parseInt(formData.userId),
+        user_id: parseInt(formData.userId),
         image: imageUrl,
         dob: formData.dob,
         gender: formData.gender,
         location: formData.location,
-        contactNumber: formData.contactNumber,
-        schoolName: formData.schoolName,
-        classLevel: parseInt(formData.classLevel),
-        subjectIds: formData.subjects,
-        sportIds: formData.sports,
-        hobbyIds: formData.hobbies,
+        contact_number: formData.contactNumber,
+        school_name: formData.schoolName,
+        class_level: parseInt(formData.classLevel),
+        subject_ids: formData.subjects,
+        sport_ids: formData.sports,
+        hobby_ids: formData.hobbies,
       };
   
       console.log("Sending data to server:", JSON.stringify(dataToSend, null, 2));
