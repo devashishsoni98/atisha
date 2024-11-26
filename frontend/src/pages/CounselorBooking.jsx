@@ -64,49 +64,48 @@ export const ExistingBooking = ({student, date, time, course, status, notes}) =>
 );
 
 
-
-
-
 export const AvailabilityComponent = () => {
-    const [newAvailability, setNewAvailability] = useState({ date: '', start_time: '', end_time: '' });
+
     const [availability, setAvailability] = useState({});
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const handleAddAvailability = async (e) => {
-        e.preventDefault();
+    // Function to fetch availability
+    const handleFetchAvailability = async () => {
         try {
-            const response = await axios.post('http://localhost:4000/api/counselor-booking/set_availability', {
-                counselor_id: 11, // Hardcoded for this example
-                ...newAvailability
-            });
-
-            console.log('Availability added successfully:', response.data);
-            setAvailability(prev => ({
-                ...prev,
-                [newAvailability.date]: {
-                    ...prev[newAvailability.date],
-                    [newAvailability.start_time]: true,
-                    [newAvailability.end_time]: true
-                }
-            }));
-            setIsDialogOpen(false);
-            setNewAvailability({ date: '', start_time: '', end_time: '' });
+            const response = await axios.get('http://localhost:4000/api/counselor-booking/get_availability/11');
+            console.log('Availability fetched successfully:', response.data);
+            setAvailability(response.data.available_slots); // Assuming response structure
         } catch (error) {
-            console.error('Error adding availability:', error);
+            console.error('Error fetching availability:', error);
         }
     };
 
+    // Optional: Fetch availability when the component mounts
+    useEffect(() => {
+        handleFetchAvailability();
+    }, []);
+
     return (
-        <form onSubmit={handleAddAvailability}>
-            {/* Form fields for date, start_time, and end_time */}
-            <input type="date" value={newAvailability.date} onChange={(e) => setNewAvailability({ ...newAvailability, date: e.target.value })} required />
-            <input type="time" value={newAvailability.start_time} onChange={(e) => setNewAvailability({ ...newAvailability, start_time: e.target.value })} required />
-            <input type="time" value={newAvailability.end_time} onChange={(e) => setNewAvailability({ ...newAvailability, end_time: e.target.value })} required />
-            <button type="submit">Add Availability</button>
-        </form>
+        <div>
+            <h2>Available Slots</h2>
+            <button onClick={handleFetchAvailability}>Refresh Availability</button>
+            <ul>
+                {Object.keys(availability).map(date => (
+                    <li key={date}>
+                        <strong>Date: {date}</strong>
+                        <ul>
+                            {Object.keys(availability[date]).map(start_time => (
+                                <li key={start_time}>
+                                    Start: {start_time} - End: {availability[date][start_time].end_time}
+                                </li>
+                            ))}
+                        </ul>
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 };
-
 
 
 const CounselorDashboard = () => {
@@ -259,12 +258,7 @@ const CounselorDashboard = () => {
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                             {timeSlots.map(time => (
-                                <TimeSlot
-                                    key={time}
-                                    time={time}
-                                    isAvailable={availability[selectedDate.toISOString().split('T')[0]]?.[time]}
-                                    onToggle={() => toggleAvailability(selectedDate.toISOString().split('T')[0], time)}
-                                />
+                                <AvailabilityComponent/>
                             ))}
                         </div>
                     </div>
@@ -334,13 +328,17 @@ const CounselorDashboard = () => {
                                         type="date"
                                         id="date"
                                         value={newAvailability.date}
-                                        onChange={(e) => setNewAvailability(prev => ({...prev, date: e.target.value}))}
+                                        onChange={(e) => setNewAvailability(prev => ({
+                                            ...prev,
+                                            date: e.target.value
+                                        }))}
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                                         required
                                     />
                                 </div>
                                 <div className="mb-4">
-                                    <label htmlFor="start_time" className="block text-sm font-medium text-gray-700">Start
+                                    <label htmlFor="start_time"
+                                           className="block text-sm font-medium text-gray-700">Start
                                         Time</label>
                                     <input
                                         type="time"
@@ -355,7 +353,8 @@ const CounselorDashboard = () => {
                                     />
                                 </div>
                                 <div className="mb-4">
-                                    <label htmlFor="end_time" className="block text-sm font-medium text-gray-700">End
+                                    <label htmlFor="end_time"
+                                           className="block text-sm font-medium text-gray-700">End
                                         Time</label>
                                     <input
                                         type="time"

@@ -206,7 +206,6 @@ model counselor_professional {
   user_id               Int                                @id
   bio                   String?
   year_of_experience    Int?
-  specialization        String?
   certificates          String[]
   counselor_type        counselor_type_enum
   counselor_speciality  counselor_specialization_type_enum
