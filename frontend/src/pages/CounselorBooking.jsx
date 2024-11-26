@@ -64,48 +64,112 @@ export const ExistingBooking = ({student, date, time, course, status, notes}) =>
 );
 
 
-export const AvailabilityComponent = () => {
 
-    const [availability, setAvailability] = useState({});
+export const AvailabilityComponent = () => {
+    const [availability, setAvailability] = useState([]);
+    const [selectedSlot, setSelectedSlot] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    // Function to fetch availability
     const handleFetchAvailability = async () => {
         try {
             const response = await axios.get('http://localhost:4000/api/counselor-booking/get_availability/11');
             console.log('Availability fetched successfully:', response.data);
-            setAvailability(response.data.available_slots); // Assuming response structure
+            setAvailability(response.data.available_slots);
         } catch (error) {
             console.error('Error fetching availability:', error);
         }
     };
 
-    // Optional: Fetch availability when the component mounts
     useEffect(() => {
         handleFetchAvailability();
     }, []);
 
+    const groupedAvailability = availability.reduce((acc, slot) => {
+        const date = new Date(slot.date).toLocaleDateString();
+        if (!acc[date]) {
+            acc[date] = [];
+        }
+        acc[date].push(slot);
+        return acc;
+    }, {});
+
+    const handleSlotClick = (slot) => {
+        setSelectedSlot(slot);
+        setIsDialogOpen(true);
+    };
+
+    const handleConfirmBooking = () => {
+        // Implement booking logic here
+        console.log('Booking confirmed for slot:', selectedSlot);
+        setIsDialogOpen(false);
+    };
+
+    const formatTime = (timeString) => {
+        const date = new Date(timeString);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
     return (
-        <div>
-            <h2>Available Slots</h2>
-            <button onClick={handleFetchAvailability}>Refresh Availability</button>
-            <ul>
-                {Object.keys(availability).map(date => (
-                    <li key={date}>
-                        <strong>Date: {date}</strong>
-                        <ul>
-                            {Object.keys(availability[date]).map(start_time => (
-                                <li key={start_time}>
-                                    Start: {start_time} - End: {availability[date][start_time].end_time}
+        <div className="container mx-auto px-4 py-8">
+            <h2 className="text-2xl font-bold mb-4">Available Slots</h2>
+            <button
+                onClick={handleFetchAvailability}
+                className="mb-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+                Refresh Availability
+            </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Object.entries(groupedAvailability).map(([date, slots]) => (
+                    <div key={date} className="bg-white shadow-md rounded-lg p-4">
+                        <h3 className="text-lg font-semibold mb-2">{date}</h3>
+                        <ul className="space-y-2">
+                            {slots.map((slot) => (
+                                <li key={slot.id}>
+                                    <button
+                                        onClick={() => handleSlotClick(slot)}
+                                        className="w-full text-left py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        {formatTime(slot.start_time)} - {formatTime(slot.end_time)}
+                                    </button>
                                 </li>
                             ))}
                         </ul>
-                    </li>
+                    </div>
                 ))}
-            </ul>
+            </div>
+
+            {isDialogOpen && selectedSlot && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+                        <h3 className="text-xl font-bold mb-4">Confirm Booking</h3>
+                        <p className="mb-4">
+                            Date: {new Date(selectedSlot.date).toLocaleDateString()}
+                            <br />
+                            Time: {formatTime(selectedSlot.start_time)} - {formatTime(selectedSlot.end_time)}
+                        </p>
+                        <div className="flex justify-end space-x-2">
+                            <button
+                                onClick={() => setIsDialogOpen(false)}
+                                className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleConfirmBooking}
+                                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
+
+
+
 
 
 const CounselorDashboard = () => {

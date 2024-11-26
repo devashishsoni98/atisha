@@ -1,7 +1,7 @@
 // routes/counselorRoutes.js
 
 const express = require('express');
-const CounselorController = require('../controllers/counselorController');
+const CounselorController = require('../controllers/counselorControllers');
 
 const router = express.Router();
 
