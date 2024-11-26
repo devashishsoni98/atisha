@@ -193,8 +193,8 @@ model counselor_personal_info {
 model counselor_education {
   user_id      Int    @id
   degree       String @db.VarChar(255)
-  degree_image String @db.VarChar(50)
-  association  String @db.VarChar(50)
+  degree_image String @db.Text
+  association  String @db.Text
 
   user users @relation(fields: [user_id], references: [id])
 

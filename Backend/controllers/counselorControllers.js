@@ -1,4 +1,4 @@
-// controllers/counselorControllers.js
+// controllers/counselorController.js
 const {PrismaClient} = require('@prisma/client');
 const axios = require("axios");
 const prisma = new PrismaClient();
