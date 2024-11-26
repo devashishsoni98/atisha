@@ -20,110 +20,6 @@ const Login = ({setAuthType}) => {
         {id: "Mentor", label: "Mentor", icon: User},
     ];
 
-    // const handleLogin = async () => {
-    //     try {
-    //         const response = await axios.post(
-    //             "http://localhost:4000/api/auth/users/login",
-    //             {
-    //                 body: {email, password}
-    //             }
-    //         );
-    //
-    //         if (!response.ok) {
-    //             throw new Error("Login failed");
-    //         }
-    //
-    //         const data = await response.json();
-    //         console.log(data);
-    //         // Assuming the API returns user info and a token
-    //         const {id, token, roleId, role} = data; // Adjust according to your API response
-    //
-    //         // Check if role exists and has a role_name
-    //         const roleType = role?.role_name ? role.role_name.toLowerCase() : null;
-    //
-    //         // Dispatch actions to set user and token in Redux store
-    //         dispatch(setUser({
-    //             id: id,
-    //             email,
-    //             roleId,
-    //             roleType,
-    //         }));
-    //         dispatch(setToken(token)); // Store token in Redux
-    //         dispatch(setUserId(userId)); // Store user ID in localStorage
-    //         dispatch(setUserType(roleType)); // Store user type in localStorage
-    //
-    //
-    //         // Redirect based on selected type
-    //         // if (roleType === "student") {
-    //         //   navigate(`/dashboard/student/${userId}`);
-    //         // } else if (roleType === "institute") {
-    //         //   navigate(`/dashboard/institute/${userId}`);
-    //         // } else if (roleType === "counselor") {
-    //         //   navigate(`/dashboard/counselor/${userId}`);
-    //         // }
-    //
-    //         navigate(`/onboarding`);
-    //
-    //     } catch (error) {
-    //         alert(error.message);
-    //     }
-    // };
-
-//     const handleLogin = async () => {
-//         try {
-//             const response = await axios.post(
-//                 "http://localhost:4000/api/auth/users/login",
-//                 {email, password},
-//
-//     )
-//         ;
-// ``
-//         if (!response) {
-//             throw new Error("Login failed");
-//         }
-//
-//         const data = await response.json();
-//         console.log(data);
-//
-//         // Assuming the API returns user info and a token
-//         const {token, user} = data; // Extracting user directly from response
-//
-//         // Check if role exists and has a role_name
-//         const roleType = user.role_name.toLowerCase();
-//         console.log(roleType);
-//
-//         // Dispatch actions to set user and token in Redux store
-//         dispatch(setUser({
-//             id: user.id, // Use id from user
-//             email: user.email,
-//             roleId: user.roleId,
-//             roleType,
-//         }));
-//
-//         dispatch(setToken(token)); // Store token in Redux
-//         dispatch(setUserId(user.id)); // Store user ID in localStorage
-//         dispatch(setUserType(roleType));
-//
-//
-//         // Redirect based on selected type
-//         // if (roleType === "student") {
-//         //   navigate(/dashboard/student/${userId});
-//         // } else if (roleType === "institute") {
-//         //   navigate(/dashboard/institute/${userId});
-//         // } else if (roleType === "counselor") {
-//         //   navigate(/dashboard/counselor/${userId});
-//         // }
-//
-//         navigate("/onboarding");
-//
-//     }
-// catch
-//     (error)
-//     {
-//         alert(error.message);
-//     }
-// };
-
         const handleLogin = async () => {
             try {
                 const response = await axios.post(
@@ -146,28 +42,12 @@ const Login = ({setAuthType}) => {
                 const roleType = user.role_name ? user.role_name.toLowerCase() : null;
                 console.log(roleType);
 
-                // Dispatch actions to set user and token in Redux store
-                dispatch(setUser({
-                    id: user.id, // Use id from user
-                    email: user.email,
-                    roleId: user.roleId,
-                    roleType,
-                }));
-
                 dispatch(setToken(token)); // Store token in Redux
                 dispatch(setUserId(user.id)); // Store user ID in localStorage
                 dispatch(setUserType(roleType)); // Store user type in localStorage
 
-                // Redirect based on selected type
-                // if (roleType === "student") {
-                //     navigate(`/dashboard/student/${user.id}`);
-                // } else if (roleType === "institute") {
-                //     navigate(`/dashboard/institute/${user.id}`);
-                // } else if (roleType === "counselor") {
-                //     navigate(`/dashboard/counselor/${user.id}`);
-                // } else {
-                    navigate("/onboarding"); // Default redirect if no specific role matches
-                // }
+                
+                    navigate("/onboarding"); 
 
             } catch (error) {
                 alert(error.message);
@@ -210,40 +90,7 @@ return (
             </motion.h1>
 
             <div className="space-y-8">
-                <motion.div
-                    initial={{y: 10, opacity: 0}}
-                    animate={{y: 0, opacity: 1}}
-                    transition={{duration: 0.5, delay: 0.4}}
-                >
-                    <h3 className="text-lg font-medium text-gray-700 mb-4">Login as</h3>
-                    <div className="flex flex-wrap gap-6 justify-center">
-                        {options.map(({id, label, icon: Icon}) => (
-                            <motion.div
-                                key={id}
-                                className="relative"
-                                whileHover={{scale: 1.05}}
-                                whileTap={{scale: 0.95}}
-                            >
-                                <input
-                                    type="radio"
-                                    id={id}
-                                    name="accountType"
-                                    value={id}
-                                    // checked={selectedType === id}
-                                    // onChange={(e) => setSelectedType(e.target.value)}
-                                    className="peer absolute opacity-0 w-full h-full cursor-pointer"
-                                />
-                                <label
-                                    htmlFor={id}
-                                    className="flex items-center gap-3 px-6 py-3 border-2 rounded-full cursor-pointer transition-all duration-200 peer-checked:text-blue-600 peer-checked:border-blue-600 peer-checked:bg-blue-50 hover:bg-gray-50 peer-checked:hover:bg-blue-100"
-                                >
-                                    <Icon className="w-6 h-6"/>
-                                    <span className="text-base font-medium">{label}</span>
-                                </label>
-                            </motion.div>
-                        ))}
-                    </div>
-                </motion.div>
+               
 
                 <motion.div
                     initial={{y: 10, opacity: 0}}

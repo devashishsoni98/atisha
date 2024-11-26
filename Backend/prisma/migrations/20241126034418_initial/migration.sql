@@ -2,6 +2,9 @@
 CREATE TYPE "role_type" AS ENUM ('student', 'counselor', 'institute', 'mentor');
 
 -- CreateEnum
+CREATE TYPE "mentor_type_enum" AS ENUM ('associate', 'chief');
+
+-- CreateEnum
 CREATE TYPE "session_type_enum" AS ENUM ('online', 'offline');
 
 -- CreateEnum
@@ -11,7 +14,13 @@ CREATE TYPE "institute_type_enum" AS ENUM ('private', 'govt', 'semiGovt', 'publi
 CREATE TYPE "gender_enum" AS ENUM ('female', 'male', 'other');
 
 -- CreateEnum
-CREATE TYPE "mentor_type_enum" AS ENUM ('associate', 'chief');
+CREATE TYPE "counselor_type_enum" AS ENUM ('private', 'govt', 'fresher');
+
+-- CreateEnum
+CREATE TYPE "counselor_specialization_type_enum" AS ENUM ('mentalHealth', 'career', 'parenting');
+
+-- CreateEnum
+CREATE TYPE "institute_board_type_enum" AS ENUM ('cbse', 'icse', 'state', 'international');
 
 -- CreateTable
 CREATE TABLE "roles" (
@@ -60,14 +69,14 @@ CREATE TABLE "master_hobbies" (
 
 -- CreateTable
 CREATE TABLE "student_personal_info" (
-    "userId" INTEGER NOT NULL,
+    "user_id" INTEGER NOT NULL,
     "image" TEXT,
     "dob" TIMESTAMP(3),
     "gender" "gender_enum" NOT NULL,
     "location" TEXT,
     "contact_number" TEXT,
 
-    CONSTRAINT "student_personal_info_pkey" PRIMARY KEY ("userId")
+    CONSTRAINT "student_personal_info_pkey" PRIMARY KEY ("user_id")
 );
 
 -- CreateTable
@@ -103,12 +112,12 @@ CREATE TABLE "counselor_personal_info" (
 
 -- CreateTable
 CREATE TABLE "counselor_education" (
-    "userId" INTEGER NOT NULL,
+    "user_id" INTEGER NOT NULL,
     "degree" VARCHAR(255) NOT NULL,
-    "certificate" VARCHAR(50) NOT NULL,
+    "degree_image" VARCHAR(50) NOT NULL,
     "association" VARCHAR(50) NOT NULL,
 
-    CONSTRAINT "counselor_education_pkey" PRIMARY KEY ("userId")
+    CONSTRAINT "counselor_education_pkey" PRIMARY KEY ("user_id")
 );
 
 -- CreateTable
@@ -116,8 +125,11 @@ CREATE TABLE "counselor_professional" (
     "user_id" INTEGER NOT NULL,
     "bio" TEXT,
     "year_of_experience" INTEGER,
-    "domain" TEXT,
-    "image" TEXT,
+    "specialization" TEXT,
+    "certificates" TEXT[],
+    "counselor_type" "counselor_type_enum" NOT NULL,
+    "counselor_speciality" "counselor_specialization_type_enum" NOT NULL,
+    "career_specialization" TEXT[],
 
     CONSTRAINT "counselor_professional_pkey" PRIMARY KEY ("user_id")
 );
@@ -138,11 +150,13 @@ CREATE TABLE "sessions" (
 -- CreateTable
 CREATE TABLE "institute_info" (
     "user_id" INTEGER NOT NULL,
+    "name" TEXT,
     "image_url" TEXT,
     "address" TEXT,
     "contact_number" TEXT,
     "establish_year" INTEGER,
     "institute_type" "institute_type_enum" NOT NULL,
+    "institute_board" "institute_board_type_enum" NOT NULL,
     "student_body" TEXT,
 
     CONSTRAINT "institute_info_pkey" PRIMARY KEY ("user_id")
@@ -151,6 +165,7 @@ CREATE TABLE "institute_info" (
 -- CreateTable
 CREATE TABLE "mentors" (
     "user_id" INTEGER NOT NULL,
+    "image_url" TEXT,
     "expertise" TEXT,
     "bio" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -243,6 +258,49 @@ CREATE TABLE "counselor_availability" (
 );
 
 -- CreateTable
+CREATE TABLE "counselor_bookings" (
+    "id" SERIAL NOT NULL,
+    "student_id" INTEGER NOT NULL,
+    "counselor_id" INTEGER NOT NULL,
+    "counselor_availability_id" INTEGER NOT NULL,
+    "date" DATE NOT NULL,
+    "start_time" TIME NOT NULL,
+    "end_time" TIME NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "type" TEXT,
+    "location" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "counselor_bookings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "session_reports" (
+    "id" SERIAL NOT NULL,
+    "student_id" INTEGER NOT NULL,
+    "counselor_id" INTEGER,
+    "mentor_id" INTEGER,
+    "session_date" DATE NOT NULL,
+    "session_time" TIME NOT NULL,
+    "student_name" TEXT,
+    "counselor_name" TEXT,
+    "duration" INTEGER NOT NULL,
+    "objective" TEXT NOT NULL,
+    "topics_discussed" TEXT NOT NULL,
+    "student_concerns" TEXT,
+    "strengths_identified" TEXT,
+    "areas_for_improvement" TEXT,
+    "career_alignment" TEXT,
+    "action_items" TEXT[],
+    "recommendations" TEXT[],
+    "follow_up_plan" TEXT,
+    "additional_notes" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "session_reports_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_sessionsTousers" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
@@ -276,7 +334,7 @@ CREATE INDEX "_sessionsTousers_B_index" ON "_sessionsTousers"("B");
 ALTER TABLE "users" ADD CONSTRAINT "users_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "roles"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "student_personal_info" ADD CONSTRAINT "student_personal_info_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "student_personal_info" ADD CONSTRAINT "student_personal_info_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "student_education" ADD CONSTRAINT "student_education_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -288,7 +346,7 @@ ALTER TABLE "student_interest" ADD CONSTRAINT "student_interest_user_id_fkey" FO
 ALTER TABLE "counselor_personal_info" ADD CONSTRAINT "counselor_personal_info_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "counselor_education" ADD CONSTRAINT "counselor_education_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "counselor_education" ADD CONSTRAINT "counselor_education_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "counselor_professional" ADD CONSTRAINT "counselor_professional_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -322,6 +380,24 @@ ALTER TABLE "recommended_careers" ADD CONSTRAINT "recommended_careers_user_id_fk
 
 -- AddForeignKey
 ALTER TABLE "counselor_availability" ADD CONSTRAINT "counselor_availability_counselor_id_fkey" FOREIGN KEY ("counselor_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "counselor_bookings" ADD CONSTRAINT "counselor_bookings_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "counselor_bookings" ADD CONSTRAINT "counselor_bookings_counselor_id_fkey" FOREIGN KEY ("counselor_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "counselor_bookings" ADD CONSTRAINT "counselor_bookings_counselor_availability_id_fkey" FOREIGN KEY ("counselor_availability_id") REFERENCES "counselor_availability"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "session_reports" ADD CONSTRAINT "session_reports_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "session_reports" ADD CONSTRAINT "session_reports_counselor_id_fkey" FOREIGN KEY ("counselor_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "session_reports" ADD CONSTRAINT "session_reports_mentor_id_fkey" FOREIGN KEY ("mentor_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_sessionsTousers" ADD CONSTRAINT "_sessionsTousers_A_fkey" FOREIGN KEY ("A") REFERENCES "sessions"("session_id") ON DELETE CASCADE ON UPDATE CASCADE;

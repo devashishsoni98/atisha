@@ -8,7 +8,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setUser, setToken, setUserId, setUserType } from '../store/userActions';
 
 const SignUp = ({ setAuthType }) => {
-  const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [selectedType, setSelectedType] = useState("Student");
   const navigate = useNavigate();
@@ -36,14 +35,7 @@ const handleRegister = async (data) => {
       const response = await axios.post("http://localhost:4000/api/auth/users/signup", userData);
       const { userId, token, user } = response.data;
 
-      // Dispatch actions to set user and token in Redux store
-      dispatch(setUser({
-        id: userId,
-        name: fullName,
-        email,
-        roleId: response.data.roleId,
-        roleType: accountType,
-    }));
+    
     dispatch(setToken(token)); // Store token in Redux
     dispatch(setUserId(userId)); // Store user ID in localStorage
     dispatch(setUserType(accountType)); // Store user type in localStorage
@@ -62,7 +54,7 @@ const handleRegister = async (data) => {
               state: { userRole: accountType, userId: userId, userEmail: email, userName: fullName }
           });
       } else { // Default case for "student"
-          navigate(`/create-profile`, {
+          navigate(`/create-student-profile`, {
               state: { userRole: accountType, userId: userId, userEmail: email, userName: fullName }
           });
       }

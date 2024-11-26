@@ -1,30 +1,32 @@
 // Router.jsx
 import { createBrowserRouter } from "react-router-dom";
 import Unprotected from "./Unprotected";
+import Protected from "./Protected";
 import Home from "../pages/Home";
 import AuthPage from "../pages/AuthPage";
 import CareerRoadmaps from "../pages/CareerRoadmaps";
 import Roadmap from "../pages/Roadmap";
 import Sessions from "../pages/Sessions";
-import Protected from "./Protected";
-import DashboardStudent from "../pages/DashboardStudent";
-import DashBoardCounselor from "../pages/DashBoardCounselor";
-import DashboardInstitute from "../pages/DashboardInstitute";
+import DashboardStudent from "../pages/dashboards/DashboardStudent";
+import DashBoardCounselor from "../pages/dashboards/DashBoardCounselor";
+import DashboardInstitute from "../pages/dashboards/DashboardInstitute";
+import DashboardMentor from "../pages/dashboards/DashboardMentor";
 import QuizPage from "../pages/QuizPage";
 import QuizFormsPage from "../pages/QuizFormsPage";
 import ResultPage from "../pages/ResultPage";
 import About from "../pages/About";
 import ContactUs from "../pages/ContactUs";
 import Testimonials from "../pages/Testimonials";
-import CreateProfile from "../pages/CreateProfile";
+import CreateStudentProfile from "../pages/createProfiles/CreateStudentProfile";
+import CreateInstituteProfile from "../pages/createProfiles/CreateInstituteProfile";
+import CreateCounselorProfile from "../pages/createProfiles/CreateCounselorProfile";
+import CreateMentorProfile from "../pages/createProfiles/CreateMentorProfile";
 import Mentors from "../pages/Mentors";
 import Resources from "../pages/Resource";
-import StudentOnboarding from "../pages/StudentOnboarding";
-import CreateInstituteProfile from "../pages/CareerInstituteProfile";
-import CreateCounselorProfile from "../pages/CreateCounselorProfile";
-import MentorOnboarding from "../pages/MentorOnboarding";
-import CounselorOnboarding from "../pages/CounselorOnBorading";
-import InstituteOnborading from "../pages/InstituteOnboarding";
+import StudentOnboarding from "../pages/onboarding/StudentOnboarding.jsx";
+import MentorOnboarding from "../pages/onboarding/MentorOnboarding.jsx";
+import CounselorOnboarding from "../pages/onboarding/CounselorOnboarding.jsx";
+import InstituteOnborading from "../pages/onboarding/InstituteOnboarding.jsx";
 import ReportSubmissionByCounselor from "../pages/ReportSubmissionByCounselor.jsx";
 import CounselorBooking from "../pages/CounselorBooking.jsx";
 
@@ -47,6 +49,10 @@ const Router = createBrowserRouter([
         element: <DashboardInstitute />,
       },
       {
+        path: "/dashboard/mentor/:id",
+        element: <DashboardMentor />,
+      },
+      {
         path: "/quiz",
         element: <QuizPage />,
       },
@@ -59,8 +65,8 @@ const Router = createBrowserRouter([
         element: <ResultPage />,
       },
       {
-        path: "/create-profile",
-        element: <CreateProfile  />, 
+        path: "/create-student-profile",
+        element: <CreateStudentProfile  />, 
       },
       {
         path: "/create-institute-profile",
@@ -69,6 +75,10 @@ const Router = createBrowserRouter([
       {
         path: "/create-counselor-profile",
         element: <CreateCounselorProfile  />, 
+      },
+      {
+        path: "/create-mentor-profile",
+        element: <CreateMentorProfile  />, 
       },
       {
         path: "/onboarding",
