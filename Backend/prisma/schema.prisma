@@ -63,6 +63,15 @@ enum institute_board_type_enum {
   international
 }
 
+model Admin {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  name     String
+  password String // Store hashed password for authentication
+
+  @@map("admins")
+}
+
 // Def`in`e the Roles model
 model roles {
   id        Int       @id @default(autoincrement())
@@ -110,8 +119,8 @@ model users {
   session_reports_student   session_reports[]        @relation("StudentSessions")
   session_reports_counselor session_reports[]        @relation("CounselorSessions")
   session_reports_mentor    session_reports[]        @relation("MentorSessions")
-  mentor_bookings           mentor_bookings[]        @relation("student_bookings")
-  mentor_student_bookings   mentor_bookings[]        @relation("mentor_bookings")
+  mentor_student_bookings   mentor_bookings[]        @relation("student_mentor_bookings")
+  mentor_bookings           mentor_bookings[]        @relation("mentor_bookings")
   mentor_availability       mentor_availability[]
 
   @@map("users")
@@ -414,7 +423,7 @@ model mentor_bookings {
   location               String? // Location of the session
   created_at             DateTime @default(now()) // Timestamp when the booking was created
 
-  student      users               @relation("student_bookings", fields: [student_id], references: [id]) // Relationship to User model for student
+  student      users               @relation("student_mentor_bookings", fields: [student_id], references: [id]) // Relationship to User model for student
   mentor       users               @relation("mentor_bookings", fields: [mentor_id], references: [id]) // Relationship to User model for mentor
   availability mentor_availability @relation(fields: [mentor_availability_id], references: [id]) // Relationship to availability
 
