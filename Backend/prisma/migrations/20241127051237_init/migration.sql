@@ -114,8 +114,8 @@ CREATE TABLE "counselor_personal_info" (
 CREATE TABLE "counselor_education" (
     "user_id" INTEGER NOT NULL,
     "degree" VARCHAR(255) NOT NULL,
-    "degree_image" VARCHAR(50) NOT NULL,
-    "association" VARCHAR(50) NOT NULL,
+    "degree_image" TEXT NOT NULL,
+    "association" TEXT NOT NULL,
 
     CONSTRAINT "counselor_education_pkey" PRIMARY KEY ("user_id")
 );
@@ -125,7 +125,6 @@ CREATE TABLE "counselor_professional" (
     "user_id" INTEGER NOT NULL,
     "bio" TEXT,
     "year_of_experience" INTEGER,
-    "specialization" TEXT,
     "certificates" TEXT[],
     "counselor_type" "counselor_type_enum" NOT NULL,
     "counselor_speciality" "counselor_specialization_type_enum" NOT NULL,
