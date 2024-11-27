@@ -17,4 +17,12 @@ router.get('/:id', CounselorController.getCounselorById);
 // End point: GET /api/counselor/recommendation/:id
 router.get('/recommendation/:counselor_id', CounselorController.getCounselorByRecommendation);
 
+// Route for getting counselors by specialization
+// End point: GET /api/counselor/specialization/:specialty
+router.get('/specialization/:specialty', CounselorController.getCounselorBySpecialization);
+
+// Route for getting all counselors
+// End point: GET /api/counselor/all
+router.get('/', CounselorController.getAllCounselor);
+
 module.exports = router;

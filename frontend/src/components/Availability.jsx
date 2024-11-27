@@ -19,7 +19,8 @@ export const Availability = ({ counselorId }) => {
     const handleAddAvailability = async (e) => {
         e.preventDefault();
         try {
-            await setAvailability(counselorId, newAvailability.date, newAvailability.start_time, newAvailability.end_time);
+            const response = await setAvailability(counselorId, newAvailability.date, newAvailability.start_time, newAvailability.end_time);
+            console.log('Availability added:', response);
             fetchAvailability(counselorId).then(setAvailabilityState);
             setIsDialogOpen(false);
             setNewAvailability({ date: '', start_time: '', end_time: '' });

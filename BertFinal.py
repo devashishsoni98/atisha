@@ -133,7 +133,7 @@ def find_matches(user_id=None, counselor_id=None, mentor_id=None):
         if counselor_id:  # If counselor_id is provided, match with counselors
             counselor_embeddings = np.vstack(counselors['embedding'].values)
             cosine_similarities = cosine_similarity(student_embedding, counselor_embeddings).flatten()
-            top_indices = cosine_similarities.argsort()[-3:][::-1]
+            top_indices = cosine_similarities.argsort()[-5:][::-1]
             
             for i in top_indices:
                 matches.append({

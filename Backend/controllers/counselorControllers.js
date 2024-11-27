@@ -132,8 +132,8 @@ const getCounselorById = async (req, res) => {
         }
 
         res.status(200).json(counselor);
-    } catch (error) {
-        console.error("Error while fetching counselor:", error);
+    } catch (error) { 
+        console.error("Error while fetching counselor in by id :", error);
         res.status(500).json({message: "Error while fetching counselor."});
     }
 };
@@ -176,9 +176,81 @@ const getCounselorByRecommendation = async (req, res) => {
     }
 }
 
+const getCounselorBySpecialization = async (req, res) => {
+    const {specialty} = await req.params; // Get the counselor ID from the request parameters
+    console.log("counselor: ", specialty);
+
+    try {
+        const counselor = await prisma.counselor_professional.findMany({
+            where: {
+                counselor_speciality: specialty,
+            },
+            include: {
+                user: true,
+            },
+        });
+
+        const counselorIds = counselor.map(c => c.user_id);
+
+        const counselorsDetails = await prisma.users.findMany({
+            where: {
+                id: {
+                    in: counselorIds, // Filter counselors by the extracted IDs
+                },
+            },
+            include: {
+                counselor_personal_info: true, // Include related career specializations if needed
+                counselor_education: true,
+                counselor_professional: true,
+            },
+        });
+
+        res.status(200).json({counselor, counselorsDetails});
+    } catch (error) {
+        console.error("Error while fetching counselor:", error);
+        res.status(500).json({message: "Error while fetching counselor."});
+    }
+
+}
+
+const getAllCounselor = async (req, res) => {
+    try {
+
+        const roleId = await prisma.roles.findUnique({
+            where: {
+                role_name: 'counselor',
+            },
+        });
+
+        console.log(roleId);
+
+        const counselors = await prisma.users.findMany({
+            where: {
+                role_id: parseInt(roleId.id),
+            },
+            include: {
+                counselor_personal_info: true,
+                counselor_education: true,
+                counselor_professional: true,
+            },
+        });
+
+        if (!counselors.length) {
+            return res.status(404).json({ message: "No counselors found." });
+        }
+
+        res.status(200).json(counselors);
+        console.log(counselors);
+    } catch (error) {
+        console.error("Error while fetching counselors:", error);
+        res.status(500).json({ message: "Error while fetching counselors.", error: error.message });
+    }
+};
 
 module.exports = {
     createOrUpdateCounselorProfile,
     getCounselorById,
-    getCounselorByRecommendation
+    getCounselorByRecommendation,
+    getCounselorBySpecialization,
+    getAllCounselor,
 };

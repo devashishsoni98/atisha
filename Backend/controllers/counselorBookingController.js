@@ -6,14 +6,22 @@ const { addHours } = require('date-fns');
 const setAvailability = async (req, res) => {
   const { counselor_id, date, start_time, end_time } = req.body;
 
+  console.log(counselor_id, date, start_time, end_time);
+
   // Validate input
   if (!counselor_id || !date || !start_time || !end_time) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
   try {
+    // Construct full Date objects for start and end times
     const startTime = new Date(`${date}T${start_time}`);
     const endTime = new Date(`${date}T${end_time}`);
+
+    // Check if the dates are valid
+    if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+      return res.status(400).json({ error: "Invalid date or time format" });
+    }
 
     if (startTime >= endTime) {
       return res.status(400).json({ error: "Start time must be earlier than end time" });
@@ -23,41 +31,29 @@ const setAvailability = async (req, res) => {
     let currentStart = startTime;
 
     while (currentStart < endTime) {
-      let nextEnd = addHours(currentStart, 2);
+      let nextEnd = new Date(currentStart);
+      nextEnd.setHours(currentStart.getHours() + 2); // Add 2 hours
+
       if (nextEnd > endTime) nextEnd = endTime;
 
       intervals.push({
-        counselor_id,
-        date: new Date(date),
-        start_time: currentStart,
-        end_time: nextEnd
+        counselor_id: parseInt(counselor_id),
+        date: new Date(date), // Store only the date part
+        start_time: currentStart.toISOString(), // Store as ISO string
+        end_time: nextEnd.toISOString() // Store as ISO string
       });
 
       currentStart = nextEnd;
     }
 
+    console.log(intervals);
     await prisma.counselor_availability.createMany({ data: intervals });
     res.status(201).json({ message: "Availability added successfully", slots_added: intervals });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: "Failed to add availability", details: err.message });
   }
 };
-
-// Get Availability
-// const getAvailability = async (req, res) => {
-//   const { counselor_id } = req.params;
-//
-//   try {
-//     const slots = await prisma.counselor_availability.findMany({
-//       where: { counselor_id: parseInt(counselor_id), is_booked: false, date: { gte: new Date() } },
-//       select: { id: true, date: true, start_time: true, end_time: true }
-//     });
-//
-//     res.status(200).json({ available_slots: slots });
-//   } catch (err) {
-//     res.status(500).json({ error: "Failed to fetch availability", details: err.message });
-//   }
-// };
 
 const getAvailability = async (req, res) => {
   const { counselor_id } = req.params;
@@ -96,6 +92,7 @@ const getAvailability = async (req, res) => {
     res.status(200).json({ available_slots: slots });
   } catch (err) {
     // Handle any errors that occur during the fetch
+    console.log("Error fetching availability:", err);
     res.status(500).json({ error: "Failed to fetch availability", details: err.message });
   }
 }
@@ -120,7 +117,7 @@ const bookSlot = async (req, res) => {
 
     // Ensure no duplicate booking
     const existingBooking = await prisma.counselor_bookings.findFirst({
-      where: { student_id, date: slot.date }
+      where: { student_id:parseInt(student_id), date: slot.date }
     });
 
     if (existingBooking) {
@@ -134,9 +131,9 @@ const bookSlot = async (req, res) => {
 
    const response = await prisma.counselor_bookings.create({
       data: {
-        student_id,
-        counselor_id: slot.counselor_id,
-        counselor_availability_id,
+        student_id: parseInt(student_id),
+        counselor_id:parseInt( slot.counselor_id),
+        counselor_availability_id: parseInt(counselor_availability_id),
         date: slot.date,
         start_time: slot.start_time,
         end_time: slot.end_time,
@@ -320,7 +317,8 @@ const getBookingByStudentId = async (req, res) => {
       where: { student_id: parseInt(student_id) },
       include: {
         availability: true,
-        student: true
+        student: true,
+        counselor: true
       }
     });
     res.status(200).json(bookings);

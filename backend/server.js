@@ -15,7 +15,7 @@ app.use(express.json());
 // Configure CORS
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Allow requests from this origin (frontend)
+    origin: ['http://localhost:5173','http://localhost:5174'], // Allow requests from this origin (frontend)
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
     credentials: true, // If using cookies/auth headers
   })
@@ -29,6 +29,8 @@ const instituteRoutes = require('./routes/InstituteRoutes');
 const mentorRoutes = require('./routes/mentorRoutes');
 const sessionsReportsRoutes = require('./routes/sessionsReportsRoutes');
 const counselorBookingRoutes = require('./routes/counselorBookingRoutes');
+const mentorBookingRoutes = require('./routes/mentorBookingRoutes');
+
 
 // Use routes with a prefix
 app.use('/api/auth', userRoutes);
@@ -38,6 +40,8 @@ app.use('/api/institute', instituteRoutes);
 app.use('/api/mentor', mentorRoutes);
 app.use('/api/session-reports', sessionsReportsRoutes);
 app.use('/api/counselor-booking', counselorBookingRoutes);
+app.use('/api/mentor-booking', mentorBookingRoutes);
+
 
 // Start server
 app.listen(PORT, () => {

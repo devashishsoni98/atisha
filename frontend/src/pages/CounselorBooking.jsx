@@ -3,10 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {Availability} from "../components/Availability.jsx";
 import {BookingRequests} from "../components/BoookingRequests.jsx";
 import {ExistingBookings} from "../components/ExistingBookings.jsx";
+import {useSelector} from "react-redux";
 
 
 const CounselorDashboard = () => {
-    const counselorId = 11; // Hardcoded for this example
+    const counselorId =  useSelector((state) => state.user.id) || localStorage.getItem('userId') ; // Hardcoded for this example
     const [activeTab, setActiveTab] = useState('availability');
 
     const tabContent = {

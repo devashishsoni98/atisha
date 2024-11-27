@@ -110,6 +110,9 @@ model users {
   session_reports_student   session_reports[]        @relation("StudentSessions")
   session_reports_counselor session_reports[]        @relation("CounselorSessions")
   session_reports_mentor    session_reports[]        @relation("MentorSessions")
+  mentor_bookings           mentor_bookings[]        @relation("student_bookings")
+  mentor_student_bookings   mentor_bookings[]        @relation("mentor_bookings")
+  mentor_availability       mentor_availability[]
 
   @@map("users")
 }
@@ -242,7 +245,10 @@ model institute_info {
   user_id         Int                       @id
   name            String?
   image_url       String?
-  address         String?
+  plot_no         String?                   @db.VarChar(50)
+  street          String?                   @db.VarChar(100)
+  city            String?                   @db.VarChar(50)
+  state           String?                   @db.VarChar(50)
   contact_number  String?
   establish_year  Int?
   institute_type  institute_type_enum
@@ -350,9 +356,9 @@ model recommended_careers {
 model counselor_availability {
   id           Int      @id @default(autoincrement()) // Unique identifier for each entry
   counselor_id Int // ID of the counselor
-  date         DateTime @db.Date // Date of availability
-  start_time   DateTime @db.Time // Start time of availability
-  end_time     DateTime @db.Time // End time of availability
+  date         DateTime // Date of availability
+  start_time   DateTime // Start time of availability
+  end_time     DateTime // End time of availability
   is_booked    Boolean  @default(false) // Booking status (default is not booked)
 
   counselor          users                @relation(fields: [counselor_id], references: [id]) // Assuming counselor is a user
@@ -379,6 +385,40 @@ model counselor_bookings {
   availability counselor_availability @relation(fields: [counselor_availability_id], references: [id]) // Relationship to availability
 
   @@map("counselor_bookings") // Specify the table name in snake_case
+}
+
+model mentor_availability {
+  id         Int      @id @default(autoincrement()) // Unique identifier for each entry
+  mentor_id  Int // ID of the mentor
+  date       DateTime // Date of availability
+  start_time DateTime // Start time of availability
+  end_time   DateTime // End time of availability
+  is_booked  Boolean  @default(false) // Booking status (default is not booked)
+
+  mentor          users             @relation(fields: [mentor_id], references: [id]) // Assuming mentor is a user
+  mentor_bookings mentor_bookings[] // Relationship to bookings
+
+  @@map("mentor_availability") // Specify the table name in snake_case
+}
+
+model mentor_bookings {
+  id                     Int      @id @default(autoincrement()) // Unique identifier for each booking
+  student_id             Int // References the users table for the student
+  mentor_id              Int // References the users table for the mentor
+  mentor_availability_id Int // References the availability table
+  date                   DateTime @db.Date // Booking date
+  start_time             DateTime @db.Time // Start time of the booking
+  end_time               DateTime @db.Time // End time of the booking
+  status                 String   @default("pending") // Status of the booking
+  type                   String? // Type of booking (e.g., online, in-person)
+  location               String? // Location of the session
+  created_at             DateTime @default(now()) // Timestamp when the booking was created
+
+  student      users               @relation("student_bookings", fields: [student_id], references: [id]) // Relationship to User model for student
+  mentor       users               @relation("mentor_bookings", fields: [mentor_id], references: [id]) // Relationship to User model for mentor
+  availability mentor_availability @relation(fields: [mentor_availability_id], references: [id]) // Relationship to availability
+
+  @@map("mentor_bookings") // Specify the table name in snake_case
 }
 
 model session_reports {
