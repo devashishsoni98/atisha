@@ -30,6 +30,7 @@ import InstituteOnborading from "../pages/onboarding/InstituteOnboarding.jsx";
 import ReportSubmissionByCounselor from "../pages/ReportSubmissionByCounselor.jsx";
 import CounselorBooking from "../pages/CounselorBooking.jsx";
 import StudentCounselorBrowsing from "../pages/StudentCounselorBrowsing.jsx";
+import CounselorTrainingProgram from "../pages/CounselorTrainingProgram.jsx";
 
 
 
@@ -108,7 +109,11 @@ const Router = createBrowserRouter([
       {
         path:"/student-counselor-browsing",
         element: <StudentCounselorBrowsing  />
-      }
+      },
+      {
+        path: "/training",
+        element: <CounselorTrainingProgram />,
+      },
     ],
   },
   {

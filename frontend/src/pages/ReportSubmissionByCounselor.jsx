@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import axios from "axios";
+import { useSelector } from "react-redux";
+
 
 const ReportSubmissionByCounselor = () => {
+    
+  const userId = useSelector((state) => state.user.id) || localStorage.getItem("userId");
     const [report, setReport] = useState({
         student_id: 6,
-        counselor_id: 8,
+        counselor_id: userId,
         mentor_id: null,
         session_date: '',
         session_time: '',

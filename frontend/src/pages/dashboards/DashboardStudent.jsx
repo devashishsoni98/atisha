@@ -40,14 +40,14 @@ const DashboardStudent = () => {
                 const response = await fetch(`http://localhost:4000/api/student/${userId}`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization':` Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                    throw new Error(`errorData.message || HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
@@ -293,4 +293,3 @@ const ActivitiesContent = ({ activities }) => (
 
 
 export default DashboardStudent;
-
