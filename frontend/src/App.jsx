@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { XCircle, Send } from 'lucide-react';
 import Router from './router/Router';
 import '@xyflow/react/dist/style.css';
 import './App.css';
+import chatbotIcon from './assets/logo.png';
+import loadingGif from './assets/loading.gif';
+import botAvatar from './assets/main.gif';
 
 // Create a separate component for the chat functionality
 function ChatBot() {
@@ -16,6 +20,7 @@ function ChatBot() {
 
   const userId = useSelector((state) => state.user.id) || localStorage.getItem('userId');
   const roleType = useSelector((state) => state.user.roleType) || localStorage.getItem('userType');
+  const userName = useSelector((state) => state.user.name) || localStorage.getItem('userName');
 
   useEffect(() => {
     if (chatRef.current) {
@@ -39,7 +44,7 @@ function ChatBot() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ role, username: userId }),
+        body: JSON.stringify({ role, username: userName }),
       });
 
       if (!response.ok) {
@@ -142,55 +147,79 @@ function ChatBot() {
   };
 
   return (
-    <div className={`fixed bottom-4 right-4 w-96 bg-white rounded-lg shadow-xl transition-all duration-300 ease-in-out ${isChatOpen ? 'h-[600px]' : 'h-16'} overflow-hidden z-[9999]`}>
+    <div className={`fixed bottom-4 right-4 transition-all duration-300 ease-in-out z-[9999]  ${
+  isChatOpen 
+    ? 'w-[525px] h-[750px] rounded-lg' 
+    : 'w-20 h-20 rounded-full overflow-hidden'
+}`}>
       {/* Chat Header */}
-      <div
-        className="bg-gradient-to-r from-blue-500 to-purple-500 p-4 cursor-pointer"
-        onClick={() => setIsChatOpen(!isChatOpen)}
-      >
-        <h2 className="text-white font-bold">ATISHA Chatbot</h2>
-      </div>
+      {isChatOpen ? (
+        <div className="bg-blue-500 p-4 cursor-pointer flex justify-between items-center">
+          <div className="flex items-center">
+            <img src={botAvatar} alt="Chatbot Icon" className="h-12 w-12 mr-2" />
+            <h2 className="text-white text-xl font-bold">ATISHA Chatbot</h2>
+          </div>
+          <button
+            onClick={() => setIsChatOpen(false)}
+            className="text-white hover:text-gray-200 transition-colors"
+          >
+            <XCircle size={28} />
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={() => setIsChatOpen(true)}
+          className="w-full h-full bg-blue-500 hover:bg-blue-600 transition-colors flex items-center justify-center shadow-lg"
+        >
+          <img src={botAvatar} alt="Open Chat" className="w-full" />
+        </button>
+      )}
 
       {/* Chat Messages */}
       {isChatOpen && (
-        <div className="h-[calc(100%-8rem)] overflow-y-auto p-4" ref={chatRef}>
-          {messages.map((message, index) => (
-            <div key={index} className={`mb-4 ${message.type === 'user' ? 'text-right' : 'text-left'}`}>
-              <div className={`inline-block p-2 rounded-lg ${message.type === 'user' ? 'bg-blue-100 text-blue-900' : 'bg-purple-100 text-purple-900'}`}>
-                {message.content}
+        <>
+          <div className="h-[calc(100%-8rem)] bg-gray-100 overflow-y-auto p-4" ref={chatRef}>
+            {messages.map((message, index) => (
+              <div key={index} className={`mb-4 flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                {message.type === 'bot' && (
+                  <div className="w-10 h-10 rounded-full mr-2 self-start mt-4 bg-gray-500 flex items-center justify-center">
+                    <img src={chatbotIcon} alt="Bot Avatar" className="w-8 h-8" />
+                  </div>
+                )}
+                <div className={`max-w-[70%] p-3 rounded-lg ${
+                  message.type === 'user' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-white text-gray-800 border border-gray-300'
+                }`}>
+                  {message.content}
+                </div>
               </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
-                <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+            ))}
+            {isLoading && (
+              <div className="">
+                <img src={loadingGif} alt="Loading..." className="h-12 w-12 inline-block mb-6" />
               </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Chat Input */}
-      {isChatOpen && (
-        <form onSubmit={handleSubmit} className="absolute bottom-0 left-0 right-0 p-4 bg-gray-100">
-          <div className="flex">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your message..."
-              className="flex-grow p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-2 rounded-r-lg hover:opacity-90 transition-opacity"
-            >
-              Send
-            </button>
+            )}
           </div>
-        </form>
+          <form onSubmit={handleSubmit} className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
+            <div className="flex">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-grow p-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+              />
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="bg-blue-500 text-white p-3 rounded-r-lg hover:bg-blue-600 transition-colors"
+              >
+                <Send className="h-5 w-5"/>
+              </button>
+            </div>
+          </form>
+        </>
       )}
     </div>
   );

@@ -3,7 +3,7 @@ import {motion} from "framer-motion";
 import {User, Building2, GraduationCap} from "lucide-react";
 import {useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
-import {setUser, setToken, setUserId, setUserType} from "../store/userActions";
+import {setUser, setToken, setUserId, setUserType, setUserName} from "../store/userActions";
 import axios from "axios";
 
 const Login = ({setAuthType}) => {
@@ -41,11 +41,14 @@ const Login = ({setAuthType}) => {
                 // Check if role exists and has a role_name
                 const roleType = user.role_name ? user.role_name.toLowerCase() : null;
                 console.log(roleType);
+                // Check if role exists and has a role_name
+                const userName = user.name;
+                console.log(userName);
 
                 dispatch(setToken(token)); // Store token in Redux
                 dispatch(setUserId(user.id)); // Store user ID in localStorage
                 dispatch(setUserType(roleType)); // Store user type in localStorage
-
+                dispatch(setUserName(userName)); //store user name in redux
                 
                     navigate("/onboarding"); 
 

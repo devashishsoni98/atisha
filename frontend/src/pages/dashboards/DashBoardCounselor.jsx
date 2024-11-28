@@ -2,8 +2,22 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Calendar, Briefcase, MessageCircle, LogOut, Award, Users, BookOpen, Mail, MapPin, Phone } from 'lucide-react';
+import {
+  User,
+  Calendar,
+  Briefcase,
+  MessageCircle,
+  LogOut,
+  Award,
+  Users,
+  BookOpen,
+  Mail,
+  MapPin,
+  Phone,
+  Bell,
+} from "lucide-react";
 import SessionsCounselorDashboard from "../SessionsCounselorDashboard";
+import { EventsContent } from "./EventsContent";
 
 const fadeIn = {
   initial: { opacity: 0 },
@@ -22,8 +36,10 @@ export default function CounselorDashboard() {
   const [counselorData, setCounselorData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const token = useSelector((state) => state.user.token) || localStorage.getItem("token");
-  const userId = useSelector((state) => state.user.id) || localStorage.getItem("userId");
+  const token =
+    useSelector((state) => state.user.token) || localStorage.getItem("token");
+  const userId =
+    useSelector((state) => state.user.id) || localStorage.getItem("userId");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -81,13 +97,19 @@ export default function CounselorDashboard() {
         return <WorkspaceContent pastSessions={[]} />;
       case "Sessions":
         return <SessionsContent />;
+      case "Events":
+        return <EventsContent />;
       default:
         return <ProfileContent counselorData={counselorData} />;
     }
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -126,13 +148,13 @@ export default function CounselorDashboard() {
               Counselor
             </motion.p>
           </div>
-
           <nav className="space-y-2">
             {[
               { name: "Profile", icon: <User className="w-4 h-4" /> },
               { name: "Schedule", icon: <Calendar className="w-4 h-4" /> },
               { name: "Workspace", icon: <Briefcase className="w-4 h-4" /> },
               { name: "Sessions", icon: <MessageCircle className="w-4 h-4" /> },
+              { name: "Events", icon: <Bell className="w-4 h-4" /> },
             ].map((item) => (
               <motion.button
                 key={item.name}
@@ -267,7 +289,9 @@ function ProfileContent({ counselorData }) {
 
             <div className="md:col-span-2">
               <h2 className="text-xl font-semibold text-gray-800 mb-2">Bio</h2>
-              <p className="text-gray-600">{counselorData?.counselor_professional.bio}</p>
+              <p className="text-gray-600">
+                {counselorData?.counselor_professional.bio}
+              </p>
             </div>
           </div>
         </div>
@@ -331,7 +355,9 @@ function ScheduleContent({ sessions }) {
                 <div className="flex items-start justify-between">
                   <div>
                     <span className="text-2xl mb-2">{session.icon}</span>
-                    <h3 className="font-medium text-blue-700">{session.title}</h3>
+                    <h3 className="font-medium text-blue-700">
+                      {session.title}
+                    </h3>
                     <p className="text-sm text-gray-600">{session.type}</p>
                     <div className="mt-2 text-sm text-gray-600">
                       <p>{session.time}</p>
@@ -386,7 +412,9 @@ function WorkspaceContent({ pastSessions }) {
               >
                 <div>
                   <h3 className="font-medium text-blue-700">{session.title}</h3>
-                  <p className="text-sm text-gray-600">with {session.student}</p>
+                  <p className="text-sm text-gray-600">
+                    with {session.student}
+                  </p>
                   <p className="text-sm text-gray-600">
                     {session.date} - {session.duration}
                   </p>
@@ -417,7 +445,7 @@ function SessionsContent() {
       exit="exit"
       variants={fadeIn}
     >
-     <SessionsCounselorDashboard/>
+      <SessionsCounselorDashboard />
     </motion.div>
   );
 }
@@ -436,4 +464,3 @@ function ProfileItem({ icon, label, value }) {
     </motion.div>
   );
 }
-

@@ -11,6 +11,8 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const token = useSelector((state) => state.user.token) || localStorage.getItem('token');
+  const userId = useSelector((state) => state.user.id) || localStorage.getItem('userId');
+  const roleType = useSelector((state) => state.user.roleType) || localStorage.getItem('userType');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
@@ -81,8 +83,8 @@ const Navbar = () => {
                   </button>
                   {dropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                      <Link to="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setDropdownOpen(false)}>Dashboard</Link>
-                      <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setDropdownOpen(false)}>Home</Link>
+                      <Link to={`/dashboard/${roleType}/${userId}`} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setDropdownOpen(false)}>Dashboard</Link>
+                      <Link to="/onboarding" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setDropdownOpen(false)}>Home</Link>
                       <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-100">Logout</button>
                     </div>
                   )}

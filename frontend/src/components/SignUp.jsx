@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { setUser, setToken, setUserId, setUserType } from '../store/userActions';
+import { setUser, setToken, setUserId, setUserType, setUserName } from '../store/userActions';
 
 const SignUp = ({ setAuthType }) => {
   const dispatch = useDispatch();
@@ -35,10 +35,14 @@ const handleRegister = async (data) => {
       const response = await axios.post("http://localhost:4000/api/auth/users/signup", userData);
       const { userId, token, user } = response.data;
 
+      const userName = user.name;
+      // console.log(userName);
+
     
     dispatch(setToken(token)); // Store token in Redux
     dispatch(setUserId(userId)); // Store user ID in localStorage
     dispatch(setUserType(accountType)); // Store user type in localStorage
+    dispatch(setUserName(userName)); //store user name in redux
 
       // Navigate based on account type
       if (accountType === "institute") {
