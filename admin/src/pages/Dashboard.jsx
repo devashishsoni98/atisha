@@ -3,12 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../store/userSlice';
 import { EventInvitations, EventNotifications, EventRequestForm } from '../components/EventComponents';
+import { EventCreationForm } from '../components/EventCreationForm';
 
 const Dashboard = () => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const [showCreateEventModal, setShowCreateEventModal] = useState(false);
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -66,6 +68,19 @@ const Dashboard = () => {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {renderTabContent()}
       </main>
+
+      {showCreateEventModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3 text-center">
+              <h3 className="text-lg leading-6 font-medium text-gray-900">Create New Event</h3>
+              <div className="mt-2 px-7 py-3">
+                <EventCreationForm onClose={() => setShowCreateEventModal(false)} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -85,25 +100,47 @@ const OverviewContent = () => (
   </div>
 );
 
-const EventsContent = () => (
-  <div>
-    <h1 className="text-2xl font-semibold text-gray-900 mb-6">Event Management</h1>
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div>
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Event Invitations</h2>
-        <EventInvitations />
+const EventsContent = () => {
+  const [showCreateEventModal, setShowCreateEventModal] = useState(false);
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold text-gray-900">Event Management</h1>
+        <button
+          onClick={() => setShowCreateEventModal(true)}
+          className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Create New Event
+        </button>
       </div>
-      <div>
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Event Notifications</h2>
-        <EventNotifications />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <h2 className="text-lg font-medium text-gray-900 mb-4">Event Invitations</h2>
+          <EventInvitations />
+        </div>
+        <div>
+          <h2 className="text-lg font-medium text-gray-900 mb-4">Event Notifications</h2>
+          <EventNotifications />
+        </div>
       </div>
+      <div className="mt-8">
+        <h2 className="text-lg font-medium text-gray-900 mb-4">Request New Event</h2>
+        <EventRequestForm />
+      </div>
+      {showCreateEventModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
+          <div className="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">Create New Event</h3>
+              <EventCreationForm onClose={() => setShowCreateEventModal(false)} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-    <div className="mt-8">
-      <h2 className="text-lg font-medium text-gray-900 mb-4">Request New Event</h2>
-      <EventRequestForm />
-    </div>
-  </div>
-);
+  );
+};
 
 const StatCard = ({ title, value }) => (
   <div className="bg-white overflow-hidden shadow rounded-lg">
