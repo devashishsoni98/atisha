@@ -238,6 +238,8 @@ const completeBooking = async (req, res) => {
   }
 };
 
+
+// Get Counselor Bookings for Approval
 const getCounselorBookingsForApproval = async (req, res) => {
   const { counselor_id } = req.params;
   if (!counselor_id) {
@@ -259,6 +261,8 @@ const getCounselorBookingsForApproval = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch bookings", details: err.message });
   }
 }
+
+// Get Counselor Bookings for Starting
 const getCounselorBookingsForStarting = async (req, res) => {
   const { counselor_id } = req.params;
   if (!counselor_id) {

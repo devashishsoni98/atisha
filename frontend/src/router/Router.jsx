@@ -31,6 +31,7 @@ import ReportSubmissionByCounselor from "../pages/ReportSubmissionByCounselor.js
 import CounselorBooking from "../pages/CounselorBooking.jsx";
 import StudentCounselorBrowsing from "../pages/StudentCounselorBrowsing.jsx";
 import CounselorTrainingProgram from "../pages/CounselorTrainingProgram.jsx";
+import MentorBookings from "../pages/MentorBookings.jsx";
 
 
 
@@ -105,6 +106,10 @@ const Router = createBrowserRouter([
       {
         path:"/counselor-booking",
         element: <CounselorBooking  />
+      },
+      {
+        path:"/mentor-booking",
+        element: <MentorBookings  />
       },
       {
         path:"/student-counselor-browsing",

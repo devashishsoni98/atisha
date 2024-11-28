@@ -1,27 +1,28 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {Availability} from "../components/couselorBooking/Availability.jsx";
-import {BookingRequests} from "../components/couselorBooking/BoookingRequests.jsx";
-import {ExistingBookings} from "../components/couselorBooking/ExistingBookings.jsx";
-import {useSelector} from "react-redux";
 
+import { useSelector } from "react-redux";
+import {Availability} from "../components/mentorBookings/Availability.jsx";
+import {BookingRequests} from "../components/mentorBookings/BookingRequests.jsx";
+import {ExistingBookings} from "../components/mentorBookings/ExistingBookings.jsx";
 
-const CounselorDashboard = () => {
-    const counselorId =  useSelector((state) => state.user.id) || localStorage.getItem('userId') ; // Hardcoded for this example
+const MentorBookings = () => {
+    const mentorId = useSelector((state) => state.user.id) || localStorage.getItem('userId');
     const [activeTab, setActiveTab] = useState('availability');
 
+    console.log(mentorId);
+
     const tabContent = {
-        availability: <Availability counselorId={counselorId} />,
-        requests: <BookingRequests counselorId={counselorId} />,
-        bookings: <ExistingBookings counselorId={counselorId} />
+        availability: <Availability mentorId={mentorId} />,
+        requests: <BookingRequests mentorId={mentorId} />,
+        bookings: <ExistingBookings mentorId={mentorId} />
     };
 
     return (
         <div className="min-h-screen bg-gray-50">
             <header className="bg-blue-600 text-white py-6">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px
--8">
-                    <h1 className="text-3xl font-bold">Counselor Dashboard</h1>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h1 className="text-3xl font-bold">Mentor Dashboard</h1>
                 </div>
             </header>
 
@@ -54,5 +55,5 @@ const CounselorDashboard = () => {
     );
 };
 
-export default CounselorDashboard;
+export default MentorBookings;
 

@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { fetchBookingsForApproval, updateBookingStatus } from '../api/CounselorBookingApi.jsx';
-import { formatTime, formatDate } from '../utils/dateUtils';
+import { fetchBookingsForApproval, updateBookingStatus } from '../../api/MentorBookingApi.jsx';
+import { formatTime, formatDate } from '../../utils/dateUtils.jsx';
 
-export const BookingRequests = ({ counselorId }) => {
+export const BookingRequests = ({ mentorId }) => {
     const [bookingRequests, setBookingRequests] = useState([]);
 
     useEffect(() => {
-        fetchBookingsForApproval(counselorId).then(setBookingRequests);
-    }, [counselorId]);
+        fetchBookingsForApproval(mentorId).then(setBookingRequests);
+    }, [mentorId]);
 
     const handleApproveBooking = async (id) => {
         await updateBookingStatus(id, 'approved');

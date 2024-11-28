@@ -13,4 +13,8 @@ router.post('/create', MentorController.createMentor);
 // End point: GET /api/mentor/:id
 router.get('/:id', MentorController.getMentorById);
 
+// Route for getting all mentors
+// End point: GET /api/mentor
+router.get('/', MentorController.getAllMentors);
+
 module.exports = router;

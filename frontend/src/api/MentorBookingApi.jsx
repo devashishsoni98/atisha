@@ -1,20 +1,19 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:4000/api/counselor-booking';
+const BASE_URL = 'http://localhost:4000/api/mentor-booking';
 
-export const fetchAvailability = async (counselorId) => {
-    const response = await axios.get(`${BASE_URL}/get_availability/${counselorId}`);
+export const fetchAvailability = async (mentorId) => {
+    const response = await axios.get(`${BASE_URL}/get_availability/${mentorId}`);
     return response.data.available_slots;
 };
 
-
-export const setAvailability = async (counselorId, date, startTime, endTime) => {
+export const setAvailability = async (mentorId, date, startTime, endTime) => {
     // Log the parameters for debugging
-    console.log({ counselorId, date, startTime, endTime });
+    console.log({ mentorId, date, startTime, endTime });
 
     // Prepare the request payload with corrected time format
     const payload = {
-        counselor_id: parseInt(counselorId),
+        mentor_id: parseInt(mentorId),
         date: date,
         start_time: `${startTime}:00`, // Ensure seconds are included
         end_time: `${endTime}:00` // Ensure seconds are included
@@ -30,11 +29,8 @@ export const setAvailability = async (counselorId, date, startTime, endTime) => 
     }
 };
 
-
-
-
-export const fetchBookingsForApproval = async (counselorId) => {
-    const response = await axios.get(`${BASE_URL}/get_bookings_for_approval/${counselorId}`);
+export const fetchBookingsForApproval = async (mentorId) => {
+    const response = await axios.get(`${BASE_URL}/get_bookings_for_approval/${mentorId}`);
     return response.data;
 };
 
@@ -46,18 +42,18 @@ export const updateBookingStatus = async (bookingId, status) => {
     return response.data;
 };
 
-export const fetchBookingsForStarting = async (counselorId) => {
-    const response = await axios.get(`${BASE_URL}/get_bookings_for_starting/${counselorId}`);
+export const fetchBookingsForStarting = async (mentorId) => {
+    const response = await axios.get(`${BASE_URL}/get_bookings_for_starting/${mentorId}`);
     return response.data;
 };
 
-export async function fetchCounselorsData() {
+export async function fetchMentorsData() {
     try {
-        const response = await axios.get('http://localhost:4000/api/counselor');
+        const response = await axios.get('http://localhost:4000/api/mentor');
         if (!response.data) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        console.log("response:" ,response.data);
+        console.log("response:", response.data);
         return await response.data;
     } catch (error) {
         console.error("There was a problem with the fetch operation:", error);
@@ -65,40 +61,40 @@ export async function fetchCounselorsData() {
     }
 }
 
-export async function fetchSessionByStudentId (studentId) {
-    const stundent_id = await studentId;
+export async function fetchSessionByStudentId(studentId) {
+    const student_id = await studentId;
 
     try {
-        const session = await axios.get(`http://localhost:4000/api/counselor-booking/get_bookings_for_student/${stundent_id}`);
+        const session = await axios.get(`http://localhost:4000/api/mentor-booking/get_bookings_for_student/${student_id}`);
         console.log(session);
-        return session.data
-    }
-    catch (error) {
+        return session.data;
+    } catch (error) {
         console.error("Error getting session:", error);
     }
 };
 
 
-export async function fetchCounselorSlots(counselorId) {
+
+export async function fetchMentorSlots(mentorId) {
     try {
-        const response = await fetch(`http://localhost:4000/api/counselor-booking/get_availability/${counselorId}`);
+        const response = await fetch(`http://localhost:4000/api/mentor-booking/get_availability/${mentorId}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         return await response.json();
     } catch (error) {
-        console.error("Error fetching counselor slots:", error);
+        console.error("Error fetching mentor slots:", error);
         return null;
     }
 }
 
-export async function bookSlot(studentId, counselorAvailabilityId) {
+export async function bookSlot(studentId, mentorAvailabilityId) {
     try {
-        console.log({studentId, counselorAvailabilityId});
-        const response = await axios.post('http://localhost:4000/api/counselor-booking/book_slot',
-
-            { student_id: studentId, counselor_availability_id: counselorAvailabilityId },
-        );
+        console.log({ studentId, mentorAvailabilityId });
+        const response = await axios.post('http://localhost:4000/api/mentor-booking/book_slot', {
+            student_id: studentId,
+            mentor_availability_id: mentorAvailabilityId
+        });
         console.log(response.data);
         if (!response) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -110,9 +106,9 @@ export async function bookSlot(studentId, counselorAvailabilityId) {
     }
 }
 
-export async function fetchStudentCounselorBookings(studentId) {
+export async function fetchStudentMentorBookings(studentId) {
     try {
-        const response = await axios.get(`http://localhost:4000/api/counselor-booking/get_bookings_for_student/${studentId}`);
+        const response = await axios.get(`http://localhost:4000/api/mentor-booking/get_bookings_for_student/${studentId}`);
         if (!response) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -123,9 +119,3 @@ export async function fetchStudentCounselorBookings(studentId) {
         return null;
     }
 }
-
-
-
-
-
-

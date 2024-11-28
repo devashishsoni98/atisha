@@ -99,61 +99,11 @@ const getMentorAvailability = async (req, res) => {
 
 }
 
-// const bookMentorSlot = async (req, res) => {
-//     const { student_id, mentor_availability_id } = req.body;
-//     if (!student_id || !mentor_availability_id) {
-//         return res.status(400).json({error: "Missing required fields"});
-//     }
-//
-//     try {
-//         const slot = await prisma.mentor_availability.findUnique({
-//             where: {
-//                 id: parseInt(mentor_availability_id),
-//
-//             },
-//             include: { mentor_bookings: true }
-//         });
-//         if (!slot || slot.is_booked) {
-//             return res.status(400).json({ error: "Slot not available" });
-//         }
-//
-//         // Ensure no duplicate booking
-//         const existingBooking = await prisma.mentor_bookings.findFirst({
-//             where: { student_id:parseInt(student_id), date: slot.date }
-//         });
-//
-//         if (existingBooking) {
-//             return res.status(400).json({ error: "Student has already booked a slot on this date." });
-//         }
-//
-//         await prisma.mentor_availability.update({
-//             where: { id: parseInt(mentor_availability_id) },
-//             data: { is_booked: true }
-//         });
-//
-//         const response = await prisma.mentor_bookings.create({
-//             data: {
-//                 student_id: parseInt(student_id),
-//                 mentor_id:parseInt( slot.mentor_id),
-//                 counselor_availability_id: parseInt(mentor_availability_id),
-//                 date: slot.date,
-//                 start_time: slot.start_time,
-//                 end_time: slot.end_time,
-//                 status: "pending"
-//             }
-//         });
-//
-//         res.status(201).json({ message: "Booking request sent" , response: response });
-//
-//     } catch (err) {
-//         console.log(err);
-//         res.status(500).json({ error: "Failed to book slot", details: err.message });
-//     }
-// }
-
+// Book Slot
 const bookMentorSlot = async (req, res) => {
     const { student_id, mentor_availability_id } = req.body;
 
+    console.log(student_id, mentor_availability_id);
     // Validate input
     if (!student_id || !mentor_availability_id) {
         return res.status(400).json({ error: "Missing required fields" });
@@ -237,13 +187,184 @@ const getMentorSlot = async (req, res) => {
         console.log(err);
         res.status(500).json({error: "Failed to fetch booking", details: err.message});
     }
-
-
 }
+
+// Update Booking Status
+const updateBookingStatusOfMentor = async (req, res) => {
+    const { booking_id, status } = req.body;
+
+    if (!booking_id || !status) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+    //
+    // if (!["approved", "rejected"].includes(status)) {
+    //     return res.status(400).json({ error: "Invalid status" });
+    // }
+
+    try {
+        const booking = await prisma.mentor_bookings.findUnique({
+            where: { id: parseInt(booking_id) }
+        });
+
+        if (!booking) {
+            return res.status(404).json({ error: "Booking ID not found" });
+        }
+
+        await prisma.mentor_bookings.update({
+            where: { id: parseInt(booking_id) },
+            data: { status }
+        });
+
+        if (status === "rejected") {
+            await prisma.mentor_availability.update({
+                where: { id: booking.mentor_availability_id },
+                data: { is_booked: false }
+            });
+        }
+
+        res.status(200).json({ message: `Booking status updated to '${status}'.` });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to update status", details: err.message });
+    }
+};
+
+
+// Complete Booking
+const completeMentorBooking = async (req, res) => {
+    const { booking_id, status } = req.body;
+
+    console.log(booking_id, status);
+
+    if (!booking_id || !["completed", "cancelled"].includes(status)) {
+        return res.status(400).json({ error: "Invalid data" });
+    }
+
+    try {
+        const booking = await prisma.mentor_bookings.findUnique({
+            where: { id: parseInt(booking_id) }
+        });
+
+        console.log(booking.status);
+
+        if (!booking || (booking.status == "completed" && booking.status == "cancelled")) {
+            return res.status(400).json({ error: "Cannot complete this booking" });
+        }
+
+        await prisma.mentor_bookings.update({
+            where: { id: parseInt(booking_id) },
+            data: { status }
+        });
+
+        res.status(200).json({ message: `Booking marked as ${status}` });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to complete booking", details: err.message });
+    }
+};
+
+
+const getMentorBookingsForApproval = async (req, res) => {
+    const { mentor_id } = req.params;
+    console.log(mentor_id);
+    if (!mentor_id) {
+        return res.status(400).json({ error: "Missing mentor_id" });
+    }
+
+    try {
+        const bookings = await prisma.mentor_bookings.findMany({
+            where: { mentor_id: parseInt(mentor_id),
+                status:'pending'
+            },
+            include: {
+                availability: true,
+                student: true
+            }
+        });
+        res.status(200).json(bookings);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Failed to fetch bookings", details: err.message });
+    }
+}
+
+
+const getMentorBookingsForStarting = async (req, res) => {
+    const { mentor_id } = req.params;
+    if (!mentor_id) {
+        return res.status(400).json({ error: "Missing mentor_id" });
+    }
+
+    try {
+        const bookings = await prisma.mentor_bookings.findMany({
+            where: { mentor_id: parseInt(mentor_id),
+                status:'approved'
+            },
+            include: {
+                availability: true,
+                student: true
+            }
+        });
+        res.status(200).json(bookings);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Failed to fetch bookings", details: err.message });
+    }
+}
+
+const getMentorBookingsForCompletion = async (req, res) => {
+    const {mentor_id} = req.params;
+    if (!mentor_id) {
+        return res.status(400).json({error: "Missing mentor_id"});
+    }
+
+    try {
+        const bookings = await prisma.mentor_bookings.findMany({
+            where: {
+                mentor_id: parseInt(mentor_id),
+                status: 'completed'
+            },
+            include: {
+                availability: true,
+                student: true
+            }
+        });
+        res.status(200).json(bookings);
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({error: "Failed to fetch bookings", details: err.message});
+    }
+}
+
+const getMentorBookingByStudentId = async (req, res) => {
+    const { student_id } = req.params;
+    if (!student_id) {
+        return res.status(400).json({ error: "Missing student_id" });
+    }
+    try {
+        const bookings = await prisma.mentor_bookings.findMany({
+            where: { student_id: parseInt(student_id) },
+            include: {
+                availability: true,
+                student: true,
+                mentor: true
+            }
+        });
+        res.status(200).json(bookings);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch bookings", details: err.message });
+    }
+}
+
 
 module.exports = {
     setMentorAvailability,
     getMentorAvailability,
     bookMentorSlot,
     getMentorSlot,
+    updateBookingStatusOfMentor,
+    completeMentorBooking,
+    getMentorBookingsForApproval,
+    getMentorBookingsForStarting,
+    getMentorBookingsForCompletion,
+    getMentorBookingByStudentId
 };

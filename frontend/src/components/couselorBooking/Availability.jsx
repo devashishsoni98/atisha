@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { fetchAvailability, setAvailability } from '../api/CounselorBookingApi.jsx';
-import { formatTime, formatDate } from '../utils/dateUtils';
+import { fetchAvailability, setAvailability } from '../../api/CounselorBookingApi.jsx';
+import { formatTime, formatDate } from '../../utils/dateUtils.jsx';
 
 export const Availability = ({ counselorId }) => {
     const [availability, setAvailabilityState] = useState([]);

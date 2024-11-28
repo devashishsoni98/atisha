@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-import { formatTime, formatDate } from '../utils/dateUtils';
-import {fetchBookingsForStarting} from "../api/CounselorBookingApi.jsx";
+import { formatTime, formatDate } from '../../utils/dateUtils.jsx';
+import {fetchBookingsForStarting} from "../../api/CounselorBookingApi.jsx";
 
 export const ExistingBookings = ({ counselorId }) => {
     const [existingBookings, setExistingBookings] = useState([]);
