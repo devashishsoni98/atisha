@@ -7,7 +7,7 @@ const router = express.Router();
 
 // Route for creating or updating institute information
 // End point: POST /api/institute/info/create
-router.post('/info/create', InstituteController.createOrUpdateInstituteInfo);
+router.post('/info/create', InstituteController.createOrUpdateInstitute);
 
 // Route for getting institute information by ID
 // End point: GET /api/institute/:id

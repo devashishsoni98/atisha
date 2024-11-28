@@ -149,14 +149,14 @@ function ChatBot() {
   return (
     <div className={`fixed bottom-4 right-4 transition-all duration-300 ease-in-out z-[9999]  ${
   isChatOpen 
-    ? 'w-[525px] h-[750px] rounded-lg' 
+    ? 'w-[35vw] h-[85vh] rounded-lg' 
     : 'w-20 h-20 rounded-full overflow-hidden'
 }`}>
       {/* Chat Header */}
       {isChatOpen ? (
         <div className="bg-blue-500 p-4 cursor-pointer flex justify-between items-center">
-          <div className="flex items-center">
-            <img src={botAvatar} alt="Chatbot Icon" className="h-12 w-12 mr-2" />
+          <div className="flex items-center p-0 overflow-hidden">
+            <img src={botAvatar} alt="Chatbot Icon" className="h-12 w-12 mr-2 object-contain " />
             <h2 className="text-white text-xl font-bold">ATISHA Chatbot</h2>
           </div>
           <button

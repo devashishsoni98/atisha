@@ -22,6 +22,25 @@ CREATE TYPE "counselor_specialization_type_enum" AS ENUM ('mentalHealth', 'caree
 -- CreateEnum
 CREATE TYPE "institute_board_type_enum" AS ENUM ('cbse', 'icse', 'state', 'international');
 
+-- CreateEnum
+CREATE TYPE "event_type_enum" AS ENUM ('seminar', 'webinar', 'workshop');
+
+-- CreateEnum
+CREATE TYPE "event_mode_enum" AS ENUM ('online', 'offline', 'hybrid');
+
+-- CreateEnum
+CREATE TYPE "event_requests_status_enum" AS ENUM ('pending', 'approved', 'rejected');
+
+-- CreateTable
+CREATE TABLE "admins" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+
+    CONSTRAINT "admins_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateTable
 CREATE TABLE "roles" (
     "id" SERIAL NOT NULL,
@@ -151,14 +170,29 @@ CREATE TABLE "institute_info" (
     "user_id" INTEGER NOT NULL,
     "name" TEXT,
     "image_url" TEXT,
-    "address" TEXT,
+    "plot_no" VARCHAR(50),
+    "street" VARCHAR(100),
+    "city" VARCHAR(50),
+    "state" VARCHAR(50),
     "contact_number" TEXT,
     "establish_year" INTEGER,
     "institute_type" "institute_type_enum" NOT NULL,
     "institute_board" "institute_board_type_enum" NOT NULL,
     "student_body" TEXT,
+    "website" TEXT,
 
     CONSTRAINT "institute_info_pkey" PRIMARY KEY ("user_id")
+);
+
+-- CreateTable
+CREATE TABLE "inititue_spoc" (
+    "id" SERIAL NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "contact_number" TEXT NOT NULL,
+
+    CONSTRAINT "inititue_spoc_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -205,6 +239,52 @@ CREATE TABLE "programs" (
 );
 
 -- CreateTable
+CREATE TABLE "events" (
+    "id" SERIAL NOT NULL,
+    "name" VARCHAR(255) NOT NULL,
+    "description" TEXT,
+    "event_type" "event_type_enum" NOT NULL,
+    "start_date" TIMESTAMP(3) NOT NULL,
+    "end_date" TIMESTAMP(3),
+    "duration" INTEGER,
+    "capacity" INTEGER,
+    "link" VARCHAR(255),
+    "status" VARCHAR(50) DEFAULT 'pending',
+    "event_mode" "event_mode_enum" NOT NULL,
+    "organizer_id" INTEGER,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "city" VARCHAR(50),
+    "state" VARCHAR(50),
+
+    CONSTRAINT "events_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "event_requests" (
+    "id" SERIAL NOT NULL,
+    "event_id" INTEGER,
+    "role" VARCHAR(50),
+    "user_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "status" "event_requests_status_enum" NOT NULL DEFAULT 'pending',
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+
+    CONSTRAINT "event_requests_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "event_registrations" (
+    "id" SERIAL NOT NULL,
+    "event_id" INTEGER,
+    "student_id" INTEGER NOT NULL,
+    "status" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "event_registrations_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "quiz_questions" (
     "id" SERIAL NOT NULL,
     "category" TEXT NOT NULL,
@@ -248,9 +328,9 @@ CREATE TABLE "recommended_careers" (
 CREATE TABLE "counselor_availability" (
     "id" SERIAL NOT NULL,
     "counselor_id" INTEGER NOT NULL,
-    "date" DATE NOT NULL,
-    "start_time" TIME NOT NULL,
-    "end_time" TIME NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "start_time" TIMESTAMP(3) NOT NULL,
+    "end_time" TIMESTAMP(3) NOT NULL,
     "is_booked" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "counselor_availability_pkey" PRIMARY KEY ("id")
@@ -271,6 +351,35 @@ CREATE TABLE "counselor_bookings" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "counselor_bookings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "mentor_availability" (
+    "id" SERIAL NOT NULL,
+    "mentor_id" INTEGER NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "start_time" TIMESTAMP(3) NOT NULL,
+    "end_time" TIMESTAMP(3) NOT NULL,
+    "is_booked" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "mentor_availability_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "mentor_bookings" (
+    "id" SERIAL NOT NULL,
+    "student_id" INTEGER NOT NULL,
+    "mentor_id" INTEGER NOT NULL,
+    "mentor_availability_id" INTEGER NOT NULL,
+    "date" DATE NOT NULL,
+    "start_time" TIME NOT NULL,
+    "end_time" TIME NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "type" TEXT,
+    "location" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "mentor_bookings_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -304,6 +413,9 @@ CREATE TABLE "_sessionsTousers" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "admins_email_key" ON "admins"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "roles_role_name_key" ON "roles"("role_name");
@@ -360,6 +472,9 @@ ALTER TABLE "sessions" ADD CONSTRAINT "sessions_counselor_id_fkey" FOREIGN KEY (
 ALTER TABLE "institute_info" ADD CONSTRAINT "institute_info_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "inititue_spoc" ADD CONSTRAINT "inititue_spoc_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "mentors" ADD CONSTRAINT "mentors_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -370,6 +485,21 @@ ALTER TABLE "mentor_professional" ADD CONSTRAINT "mentor_professional_user_id_fk
 
 -- AddForeignKey
 ALTER TABLE "programs" ADD CONSTRAINT "programs_institute_id_fkey" FOREIGN KEY ("institute_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "events" ADD CONSTRAINT "events_organizer_id_fkey" FOREIGN KEY ("organizer_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "event_requests" ADD CONSTRAINT "event_requests_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "events"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "event_requests" ADD CONSTRAINT "event_requests_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "event_registrations" ADD CONSTRAINT "event_registrations_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "events"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "event_registrations" ADD CONSTRAINT "event_registrations_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "user_traits_status" ADD CONSTRAINT "user_traits_status_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -388,6 +518,18 @@ ALTER TABLE "counselor_bookings" ADD CONSTRAINT "counselor_bookings_counselor_id
 
 -- AddForeignKey
 ALTER TABLE "counselor_bookings" ADD CONSTRAINT "counselor_bookings_counselor_availability_id_fkey" FOREIGN KEY ("counselor_availability_id") REFERENCES "counselor_availability"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "mentor_availability" ADD CONSTRAINT "mentor_availability_mentor_id_fkey" FOREIGN KEY ("mentor_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "mentor_bookings" ADD CONSTRAINT "mentor_bookings_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "mentor_bookings" ADD CONSTRAINT "mentor_bookings_mentor_id_fkey" FOREIGN KEY ("mentor_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "mentor_bookings" ADD CONSTRAINT "mentor_bookings_mentor_availability_id_fkey" FOREIGN KEY ("mentor_availability_id") REFERENCES "mentor_availability"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "session_reports" ADD CONSTRAINT "session_reports_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

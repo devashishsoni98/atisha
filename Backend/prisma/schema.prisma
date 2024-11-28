@@ -63,6 +63,27 @@ enum institute_board_type_enum {
   international
 }
 
+// Enums for event types and modes
+enum event_type_enum {
+  seminar // Replace with actual event types
+  webinar
+  workshop
+}
+
+enum event_mode_enum {
+  online
+  offline
+  hybrid
+  // Add other modes as needed
+}
+
+enum event_requests_status_enum {
+  pending
+  approved
+  rejected
+  // Add other statuses as needed
+}
+
 model Admin {
   id       Int    @id @default(autoincrement())
   email    String @unique
@@ -122,6 +143,10 @@ model users {
   mentor_student_bookings   mentor_bookings[]        @relation("student_mentor_bookings")
   mentor_bookings           mentor_bookings[]        @relation("mentor_bookings")
   mentor_availability       mentor_availability[]
+  institute_spoc            institute_spoc[]
+  event                     events[]
+  event_requests            event_requests[]
+  event_registrations       event_registrations[]
 
   @@map("users")
 }
@@ -263,10 +288,22 @@ model institute_info {
   institute_type  institute_type_enum
   institute_board institute_board_type_enum
   student_body    String?
+  website         String?                   @db.Text
 
   user users @relation(fields: [user_id], references: [id])
 
   @@map("institute_info")
+}
+
+model institute_spoc {
+  id             Int    @id @default(autoincrement()) // Unique identifier for each SPOC
+  user_id        Int // Unique identifier for each SPOC
+  name           String // Name of the SPOC
+  email          String // Email address of the SPOC
+  contact_number String // Phone number of the SPOC
+  user           users  @relation(fields: [user_id], references: [id]) // Relationship to users model
+
+  @@map("institute_spoc")
 }
 
 model mentors {
@@ -320,6 +357,61 @@ model programs {
 
   @@map("programs")
 }
+
+model events {
+  id           Int             @id @default(autoincrement()) @map("id")
+  name         String          @map("name") @db.VarChar(255)
+  description  String?         @map("description") @db.Text
+  event_type   event_type_enum @map("event_type")
+  start_date   DateTime        @map("start_date")
+  end_date     DateTime?       @map("end_date")
+  duration     Int? // Store duration as an integer (in seconds or minutes)
+  capacity     Int?            @map("capacity")
+  link         String?         @map("link") @db.VarChar(255)
+  status       String?         @default("pending") @map("status") @db.VarChar(50)
+  event_mode   event_mode_enum @map("event_mode")
+  organizer_id Int?            @map("organizer_id")
+  created_at   DateTime        @default(now()) @map("created_at")
+  city         String?         @map("city") @db.VarChar(50)
+  state        String?         @map("state") @db.VarChar(50)
+  organizer    users?          @relation(fields: [organizer_id], references: [id])
+
+  event_requests      event_requests[]
+  event_registrations event_registrations[]
+
+  @@map("events")
+}
+
+model event_requests {
+  id         Int                        @id @default(autoincrement())
+  event_id   Int?
+  role       String?                    @db.VarChar(50)
+  user_id    Int
+  created_at DateTime                   @default(now())
+  status     event_requests_status_enum @default(pending)
+  is_active  Boolean                    @default(true)
+
+  event events? @relation(fields: [event_id], references: [id])
+  user  users   @relation(fields: [user_id], references: [id])
+
+  @@map("event_requests")
+}
+
+model event_registrations {
+  id         Int      @id @default(autoincrement())
+  event_id   Int?
+  student_id Int
+  status     String // You may want to use an enum here for better validation
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  event   events? @relation(fields: [event_id], references: [id])
+  student users   @relation(fields: [student_id], references: [id])
+
+  @@map("event_registrations")
+}
+
+//Define the quiz_questions model
 
 model quiz_questions {
   id         Int      @id @default(autoincrement())
