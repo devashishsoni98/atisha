@@ -8,8 +8,10 @@ import numpy as np
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"]}})
 
 # Database connection
 DATABASE_URL = "postgresql://postgres:amanjain17@localhost:5432/atisha_db"

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../store/userSlice';
 import { EventInvitations, EventNotifications, EventRequestForm } from '../components/EventComponents';
-import { EventCreationForm } from '../components/EventCreationForm';
+import  EventCreationForm  from '../components/EventCreationForm';
 
 const Dashboard = () => {
   const user = useSelector((state) => state.user);

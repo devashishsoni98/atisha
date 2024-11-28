@@ -6,6 +6,7 @@ import SignupPanel from '../pages/SignupPage';
 import Dashboard from '../pages/Dashboard';
 import Protected from './Protected';
 import Unprotected from './Unprotected';
+import EventPreview from "../components/EventPreview.jsx";
 
 const Router = () => (
   <BrowserRouter>
@@ -14,6 +15,7 @@ const Router = () => (
       <Route element={<Unprotected />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPanel />} />
+        <Route path="/preview" element={<EventPreview />} />
       </Route>
 
       {/* Protected Routes */}
@@ -22,7 +24,7 @@ const Router = () => (
       </Route>
 
       {/* Redirect to login if no matching route is found */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/*<Route path="*" element={<Navigate to="/login" replace />} />*/}
     </Routes>
   </BrowserRouter>
 );
