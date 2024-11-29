@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
 import React, { useEffect } from "react";
-=======
-import React, {useEffect} from 'react';
->>>>>>> Stashed changes
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Navigation from './Navigation';
@@ -13,74 +9,15 @@ const EventPreview = () => {
     const { formData, apiResponse } = location.state || {};
 
     useEffect(() => {
-<<<<<<< Updated upstream
         if (!formData || !apiResponse) {
             navigate("/");
         }
     }, [formData, apiResponse, navigate]);
-
     if (!formData || !apiResponse) {
         return null;
     }
-=======
->>>>>>> Stashed changes
 
-    }, []);
-
-    // if (!formData || !apiResponse) {
-    //     navigate('/');
-    //     return null;
-    // }
-
-    const { recommendations } = {
-        "event_id": 5,
-        "message": "Event created successfully",
-        "recommendations": {
-            "counselors_and_mentors": {
-                "counselors": [
-                    {
-                        "career_specialization": "Engineering Medical",
-                        "counselor_name": "Dr. Anita Kapoor",
-                        "location": "Jaipur",
-                        "similarity": 0.26668858528137207,
-                        "user_id": 2
-                    }
-                ],
-                "mentors": [
-                    {
-                        "expertise": "Software Development",
-                        "location": "Jaipur",
-                        "mentor_name": "Arjun Patel",
-                        "similarity": 0.3452714681625366,
-                        "user_id": 7
-                    },
-                    {
-                        "expertise": "Entrepreneurship",
-                        "location": "Chandigarh",
-                        "mentor_name": "Priya Nair",
-                        "similarity": 0.21368911862373352,
-                        "user_id": 10
-                    },
-                    {
-                        "expertise": "Data Science",
-                        "location": "Ajmer",
-                        "mentor_name": "Neha Gupta",
-                        "similarity": 0.20932134985923767,
-                        "user_id": 8
-                    }
-                ]
-            },
-            "institutes": [
-                {
-                    "city": "Ajmer",
-                    "name": "MNS",
-                    "state": "Rajasthan",
-                    "student_body": "900",
-                    "user_id": 16
-                }
-            ]
-        }
-    };
+    const { recommendations } = apiResponse;
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -144,4 +81,3 @@ const EventPreview = () => {
 };
 
 export default EventPreview;
-

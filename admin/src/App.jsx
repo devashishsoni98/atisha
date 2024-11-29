@@ -15,13 +15,11 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/preview" element={<EventPreview />} />
-
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
         <Route path="/sample" element={<Sample />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
-
         {/* Redirect to login if no matching route is found */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
@@ -30,4 +28,3 @@ const App = () => {
 };
 
 export default App;
-

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { User, Calendar, Briefcase, MessageCircle, LogOut, Award, Users, BookOpen, Mail } from 'lucide-react';
+import { User, Calendar, Briefcase, MessageCircle, LogOut, Award, Users, BookOpen, Mail, MapPin, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const fadeIn = {
@@ -22,7 +22,7 @@ function ProfileItem({ icon, label, value }) {
       </div>
       <div>
         <p className="text-sm font-medium text-gray-600">{label}</p>
-        <p className="text-lg font-semibold text-gray-800">{value || 'N/A'}</p>
+        <p className="text-lg font-semibold text-gray-800">{value}</p>
       </div>
     </motion.div>
   );
@@ -35,52 +35,20 @@ function ProfileContent({ mentorData }) {
         <div className="p-8">
           <motion.h1 className="text-3xl font-bold text-gray-800 mb-6" variants={fadeIn}>Mentor Profile</motion.h1>
           <div className="grid md:grid-cols-2 gap-6">
-            <ProfileItem 
-              icon={<User className="text-blue-500" />} 
-              label="Full Name" 
-              value={mentorData?.user.name} 
-            />
-            <ProfileItem 
-              icon={<Mail className="text-blue-500" />} 
-              label="Email" 
-              value={mentorData?.user.email} 
-            />
-            <ProfileItem 
-              icon={<BookOpen className="text-blue-500" />} 
-              label="Expertise" 
-              value={mentorData?.expertise} 
-            />
-            <ProfileItem 
-              icon={<Calendar className="text-blue-500" />} 
-              label="Joined" 
-              value={new Date(mentorData?.created_at).toLocaleDateString()} 
-            />
+            <ProfileItem icon={<User className="text-blue-500" />} label="Full Name" value={mentorData?.user.name} />
+            <ProfileItem icon={<Mail className="text-blue-500" />} label="Email" value={mentorData?.user.email} />
+            <ProfileItem icon={<BookOpen className="text-blue-500" />} label="Expertise" value={mentorData?.expertise} />
+            <ProfileItem icon={<Calendar className="text-blue-500" />} label="Joined" value={new Date(mentorData?.created_at).toLocaleDateString()} />
             {mentorData?.mentor_education.map((edu, index) => (
               <React.Fragment key={index}>
-                <ProfileItem 
-                  icon={<Award className="text-blue-500" />} 
-                  label="Degree" 
-                  value={edu.degree} 
-                />
-                <ProfileItem 
-                  icon={<Users className="text-blue-500" />} 
-                  label="Institution" 
-                  value={edu.institution} 
-                />
+                <ProfileItem icon={<Award className="text-blue-500" />} label="Degree" value={edu.degree} />
+                <ProfileItem icon={<Users className="text-blue-500" />} label="Institution" value={edu.institution} />
               </React.Fragment>
             ))}
             {mentorData?.mentor_professional.map((prof, index) => (
               <React.Fragment key={index}>
-                <ProfileItem 
-                  icon={<Briefcase className="text-blue-500" />} 
-                  label="Professional Type" 
-                  value={prof.type.charAt(0).toUpperCase() + prof.type.slice(1)} 
-                />
-                <ProfileItem 
-                  icon={<Calendar className="text-blue-500" />} 
-                  label="Years of Experience" 
-                  value={prof.year_of_experience.toString()} 
-                />
+                <ProfileItem icon={<Briefcase className="text-blue-500" />} label="Professional Type" value={prof.type} />
+                <ProfileItem icon={<Calendar className="text-blue-500" />} label="Years of Experience" value={prof.year_of_experience.toString()} />
               </React.Fragment>
             ))}
           </div>
@@ -91,21 +59,9 @@ function ProfileContent({ mentorData }) {
           {mentorData?.certifications && mentorData.certifications.length > 0 && (
             <motion.div className="mt-6" variants={fadeIn}>
               <h2 className="text-xl font-semibold text-gray-800 mb-2">Certifications</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="flex flex-wrap gap-4">
                 {mentorData.certifications.map((cert, index) => (
-                  <a 
-                    key={index} 
-                    href={cert} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="block"
-                  >
-                    <img 
-                      src={cert} 
-                      alt={`Certification ${index + 1}`} 
-                      className="w-full h-32 object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow duration-200"
-                    />
-                  </a>
+                  <img key={index} src={cert} alt={`Certification ${index + 1}`} className="w-24 h-24 object-cover rounded-lg shadow-md" />
                 ))}
               </div>
             </motion.div>
@@ -157,7 +113,7 @@ export default function DashboardMentor() {
   useEffect(() => {
     const fetchMentorData = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/mentor/4');
+        const response = await fetch('http://localhost:4000/api/mentor/8');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -190,11 +146,7 @@ export default function DashboardMentor() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   return (
@@ -204,16 +156,14 @@ export default function DashboardMentor() {
         <motion.div className="w-64 min-h-screen bg-white p-6 shadow-lg" variants={slideIn}>
           <div className="flex flex-col items-center mb-8">
             <motion.img
-              src={mentorData?.image_url || "/placeholder.svg?height=128&width=128"}
+              src="/placeholder.svg?height=128&width=128"
               alt={mentorData?.user.name}
-              className="w-24 h-24 rounded-full border-4 border-blue-200 shadow-lg mb-4 object-cover"
+              className="w-24 h-24 rounded-full border-4 border-blue-200 shadow-lg mb-4"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 260, damping: 20 }}
             />
-            <motion.h2 className="text-xl font-bold text-blue-800" variants={fadeIn}>
-              {mentorData?.user.name}
-            </motion.h2>
+            <motion.h2 className="text-xl font-bold text-blue-800" variants={fadeIn}>{mentorData?.user.name}</motion.h2>
             <motion.p className="text-blue-600" variants={fadeIn}>Mentor</motion.p>
           </div>
           
