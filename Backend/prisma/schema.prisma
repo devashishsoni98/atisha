@@ -79,7 +79,7 @@ enum event_mode_enum {
 
 enum event_requests_status_enum {
   pending
-  approved
+  accepted
   rejected
   // Add other statuses as needed
 }
@@ -104,13 +104,13 @@ model roles {
 
 // Define the users model
 model users {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(100)
-  email      String   @unique @db.VarChar(100)
-  password   String   @db.VarChar(255) // Ensure this line exists
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(100)
+  email      String    @unique @db.VarChar(100)
+  password   String    @db.VarChar(255) // Ensure this line exists
   role_id    Int?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 
   role                  roles?                 @relation(fields: [role_id], references: [id])
   student_personal_info student_personal_info?
@@ -147,6 +147,9 @@ model users {
   event                     events[]
   event_requests            event_requests[]
   event_registrations       event_registrations[]
+
+  user_levels          user_levels[]
+  task_recommendations task_recommendations[]
 
   @@map("users")
 }
@@ -314,6 +317,7 @@ model mentors {
   created_at     DateTime  @default(now()) // Timestamp when the mentor record was created
   updated_at     DateTime? // Optional timestamp for when the record was last updated
   certifications String[] // Array of URLs for certification images
+  location       String
 
   user users @relation(fields: [user_id], references: [id]) // Relationship to users model
 
@@ -550,4 +554,50 @@ model session_reports {
   mentor    users? @relation("MentorSessions", fields: [mentor_id], references: [id])
 
   @@map("session_reports")
+}
+
+//Extra Tables
+model user_levels {
+  id           Int       @id @default(autoincrement())
+  user_id      Int
+  level_id     Int
+  is_completed Boolean   @default(false)
+  completed_at DateTime?
+
+  users users  @relation(fields: [user_id], references: [id])
+  level levels @relation(fields: [level_id], references: [level_id])
+
+  @@map("user_levels")
+}
+
+model levels {
+  level_id    Int    @id @default(autoincrement())
+  name        String
+  description String
+
+  user_levels user_levels[]
+  tasks       tasks[]
+}
+
+model tasks {
+  task_id     Int     @id @default(autoincrement())
+  level_id    Int
+  name        String
+  description String?
+
+  level                levels                 @relation(fields: [level_id], references: [level_id])
+  task_recommendations task_recommendations[]
+}
+
+model task_recommendations {
+  recommendation_id     Int      @id @default(autoincrement())
+  user_id               Int
+  task_id               Int
+  recommendations       String[]
+  recommendation_status String   @default("Pending")
+
+  users users @relation(fields: [user_id], references: [id])
+  task  tasks @relation(fields: [task_id], references: [task_id])
+
+  @@map("task_recommendations")
 }

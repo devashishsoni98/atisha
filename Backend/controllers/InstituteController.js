@@ -116,16 +116,19 @@ const getInstituteById = async (req, res) => {
         const institute = await prisma.institute_info.findUnique({
             where: { user_id: parseInt(id) },
             include: {
-                user: true, // Include related user data if needed
-                spocs: true, // Include related SPOCs
+                user: true, // Include related user data if neede
             },
+        });
+
+        const spocs = await prisma.institute_spoc.findMany({
+            where: { user_id: parseInt(id) },
         });
 
         if (!institute) {
             return res.status(404).json({ message: "Institute not found." });
         }
 
-        res.status(200).json(institute);
+        res.status(200).json({"institute":institute,"spocs":spocs});
     } catch (error) {
         console.error("Error while fetching institute:", error);
         res.status(500).json({ message: "Error while fetching institute." });
