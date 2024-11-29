@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { setUser, setToken } from '../store/userSlice';
+import Navigation from '../components/Navigation';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -36,6 +37,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <Navigation />
       <div className="px-8 py-6 mt-4 text-left bg-white shadow-lg rounded-lg">
         <h3 className="text-2xl font-bold text-center">Login to your account</h3>
         <form onSubmit={handleLogin}>

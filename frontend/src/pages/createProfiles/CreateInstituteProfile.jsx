@@ -1,29 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { useSelector } from "react-redux";
+
+// Define enums as constants
+const INSTITUTE_BOARD_TYPES = {
+  cbse: "cbse",
+  icse: "icse",
+  state: "state",
+  international: "international"
+};
+
+const INSTITUTE_TYPES = {
+  private: "private",
+  govt: "govt",
+  semiGovt: "semiGovt",
+  public: "public"
+};
 
 const CreateInstituteProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const token =
-    useSelector((state) => state.user.token) || localStorage.getItem("token"); // Access token from Redux
+  const token = useSelector((state) => state.user.token) || localStorage.getItem("token");
 
   const { userRole, userId, userEmail, userName } = location.state || {};
   const [formData, setFormData] = useState({
-    user_id: userId || "", 
-    name: userName || "",
-    email: userEmail || "",
-    image: null,
-    address: "",
-    contact_number: "", 
-    establish_year: "", 
-    institute_type: "", 
-    student_body: "", 
+    user_id: userId || 1, // Default to 1 if not provided
+    name: "",
+    image_url: "",
+    plot_no: "",
+    street: "",
+    city: "",
+    state: "",
+    contact_number: "",
+    establish_year: "",
+    institute_type: "",
+    institute_board: "",
+    student_body: "",
+    spoc_name: "",
+    spoc_email: "",
+    spoc_contact_number: ""
   });
 
   const [activeTab, setActiveTab] = useState("basic");
-  const tabs = ["basic", "details"];
+  const tabs = ["basic", "details", "spoc"];
 
   useEffect(() => {
     if (!token) {
@@ -46,21 +65,21 @@ const CreateInstituteProfile = () => {
     formData.append("upload_preset", "atisha_preset");
 
     try {
-      const response = await axios.post(
+      const response = await fetch(
         "https://api.cloudinary.com/v1_1/dz4xjnefv/image/upload",
-        formData
+        {
+          method: "POST",
+          body: formData,
+        }
       );
 
-      if (response.data && response.data.secure_url) {
-        console.log("Image uploaded successfully:", response.data.secure_url);
-        return response.data.secure_url;
-      } else {
-        console.error("No secure_url in Cloudinary response");
-        throw new Error("Invalid Cloudinary response");
-      }
+      if (!response.ok) throw new Error("Image upload failed");
+
+      const data = await response.json();
+      return data.secure_url;
     } catch (error) {
       console.error("Image upload failed:", error);
-      throw new Error("Image upload failed");
+      throw error;
     }
   };
 
@@ -72,30 +91,8 @@ const CreateInstituteProfile = () => {
       return;
     }
 
-    if (!formData.user_id) { 
-      alert("User ID is missing. Please try signing up again.");
-      navigate("/signup");
-      return;
-    }
-
-    const requiredFields = [
-      "user_id", 
-      "address",
-      "contact_number", 
-      "establish_year", 
-      "institute_type", 
-      "student_body", 
-    ];
-
-    const missingFields = requiredFields.filter((field) => !formData[field]);
-
-    if (missingFields.length > 0) {
-      alert(`Please fill in the following fields: ${missingFields.join(", ")}`);
-      return;
-    }
-
     try {
-      let imageUrl = null;
+      let imageUrl = formData.image_url;
 
       if (formData.image) {
         try {
@@ -106,28 +103,23 @@ const CreateInstituteProfile = () => {
         }
       }
 
-      if (!imageUrl) {
-        alert(
-          "Image upload failed. Please ensure a valid image file is selected."
-        );
-        return;
-      }
-
-      // Prepare data according to the API requirements
       const dataToSend = {
-        user_id: parseInt(formData.user_id), 
-        image_url: imageUrl, 
-        address: formData.address,
-        contact_number: formData.contact_number, 
-        establish_year: parseInt(formData.establish_year), 
-        institute_type: formData.institute_type, 
-        student_body: formData.student_body, 
+        user_id: parseInt(formData.user_id),
+        name: formData.name,
+        image_url: imageUrl,
+        plot_no: formData.plot_no,
+        street: formData.street,
+        city: formData.city,
+        state: formData.state,
+        contact_number: formData.contact_number,
+        establish_year: parseInt(formData.establish_year),
+        institute_type: formData.institute_type,
+        student_body: formData.student_body,
+        institute_board: formData.institute_board,
+        spoc_name: formData.spoc_name,
+        spoc_email: formData.spoc_email,
+        spoc_contact_number: formData.spoc_contact_number
       };
-
-      console.log(
-        "Sending data to server:",
-        JSON.stringify(dataToSend, null, 2)
-      );
 
       const response = await fetch(
         "http://localhost:4000/api/institute/info/create",
@@ -143,20 +135,15 @@ const CreateInstituteProfile = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Server response:", errorData);
-        alert(`Error: ${errorData.message}`);
-        return;
+        throw new Error(errorData.message || 'Failed to create institute profile');
       }
 
       const responseData = await response.json();
       console.log("Institute profile created successfully", responseData);
-
-      navigate(`/onboarding`);
+      navigate("/onboarding");
     } catch (error) {
       console.error("Error creating institute profile:", error);
-      alert(
-        `Error creating institute profile: ${error.message}. Please try again.`
-      );
+      alert(error.message);
     }
   };
 
@@ -190,55 +177,29 @@ const CreateInstituteProfile = () => {
                 )}
               </div>
               <div>
-                <label
-                  htmlFor="image"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Institute Logo
                 </label>
-                <input 
-                  id="image" // Fixed missing space in input id attribute
-                  name="image"
+                <input
                   type="file"
+                  name="image"
                   onChange={handleInputChange}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition duration-300 ease-in-out"
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   accept="image/*"
                 />
               </div>
             </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Institute Name
                 </label>
                 <input
-                  id="name"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  readOnly
                 />
               </div>
             </div>
@@ -250,86 +211,149 @@ const CreateInstituteProfile = () => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
-                <label
-                  htmlFor="address"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Address
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Plot No</label>
                 <input
-                  id="address"
-                  name="address"
-                  value={formData.address}
+                  name="plot_no"
+                  value={formData.plot_no}
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   required
                 />
               </div>
               <div>
-                <label
-                  htmlFor="contact_number" // Updated for consistency with the state variable name.
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Contact Number
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Street</label>
                 <input
-                  id="contact_number" // Updated for consistency with the state variable name.
-                  name="contact_number" // Updated for consistency with the state variable name.
+                  name="street"
+                  value={formData.street}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                <input
+                  name="city"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                <input
+                  name="state"
+                  value={formData.state}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+                <input
+                  name="contact_number"
                   type="tel"
-                  value={formData.contact_number} // Updated for consistency with the state variable name.
+                  value={formData.contact_number}
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   required
                 />
               </div>
               <div>
-                <label
-                  htmlFor="establish_year" // Updated for consistency with the state variable name.
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                 Establishment Year 
-                 </label> 
-                 <input 
-                 id= "establish_year" 
-                 name= "establish_year" 
-                 type= "number" 
-                 value= {formData.establish_year} 
-                 onChange= {handleInputChange} 
-                 className= "mt -1 block w-full rounded-md border-gray -300 shadow-sm focus:ring-blue -500 focus:border-blue -500 sm:text-sm" 
-                 required /> 
-               </div> 
-               <div> 
-                 <label htmlFor= "institute_type" 
-                 className= "block text-sm font-medium text-gray -700 mb -1">Institute Type</label> 
-                 <select id= "institute_type" 
-                 name= "institute_type" 
-                 value= {formData.institute_type} 
-                 onChange= {handleInputChange} 
-                 className= "mt -1 block w-full rounded-md border-gray -300 shadow-sm focus:ring-blue -500 focus:border-blue -500 sm:text-sm" 
-                 required> 
-                   <option value="">Select type</option> 
-                   <option value= "private">Private</option> 
-                   <option value= "public">Public</option> 
-                   <option value= "govt">Government</option> 
-                   <option value= "semiGovt">Semi Government</option> 
-                 </select> 
-               </div> 
-              <div>
-                <label
-                  htmlFor="student_body"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Student Body Size
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Establishment Year</label>
                 <input
-                  id="student_body"
+                  name="establish_year"
+                  type="number"
+                  value={formData.establish_year}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Institute Type</label>
+                <select
+                  name="institute_type"
+                  value={formData.institute_type}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                >
+                  <option value="">Select type</option>
+                  {Object.entries(INSTITUTE_TYPES).map(([key, value]) => (
+                    <option key={key} value={value}>
+                      {key.charAt(0).toUpperCase() + key.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Institute Board</label>
+                <select
+                  name="institute_board"
+                  value={formData.institute_board}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                >
+                  <option value="">Select board</option>
+                  {Object.entries(INSTITUTE_BOARD_TYPES).map(([key, value]) => (
+                    <option key={key} value={value}>
+                      {key.toUpperCase()}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Student Body Size</label>
+                <input
                   name="student_body"
                   type="text"
                   value={formData.student_body}
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   required
-                  placeholder="e.g., 500 students"
+                />
+              </div>
+            </div>
+          </div>
+        );
+      case "spoc":
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">SPOC Name</label>
+                <input
+                  name="spoc_name"
+                  value={formData.spoc_name}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">SPOC Email</label>
+                <input
+                  name="spoc_email"
+                  type="email"
+                  value={formData.spoc_email}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">SPOC Contact Number</label>
+                <input
+                  name="spoc_contact_number"
+                  type="tel"
+                  value={formData.spoc_contact_number}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  required
                 />
               </div>
             </div>
@@ -396,3 +420,4 @@ const CreateInstituteProfile = () => {
 };
 
 export default CreateInstituteProfile;
+
