@@ -26,8 +26,8 @@ const CreateMentorProfile = () => {
 
   const [activeTab, setActiveTab] = useState("basic");
   const tabs = ["basic", "professional", "additional"];
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     if (!token) {
@@ -44,22 +44,6 @@ const CreateMentorProfile = () => {
     }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
-
-  const handleCertificationsChange = (e) => {
-    const files = Array.from(e.target.files);
-    setFormData((prev) => ({
-      ...prev,
-      certifications: files,
-    }));
-  };
-
   const uploadImage = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -68,7 +52,13 @@ const CreateMentorProfile = () => {
     try {
       const response = await axios.post(
         "https://api.cloudinary.com/v1_1/dz4xjnefv/image/upload",
-        formData
+        formData,
+        {
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percentCompleted);
+          },
+        }
       );
 
       if (response.data && response.data.secure_url) {
@@ -84,22 +74,44 @@ const CreateMentorProfile = () => {
     }
   };
 
-  const uploadCertifications = async (files) => {
-    const uploadedUrls = [];
-    for (const file of files) {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', 'atisha_preset');
-
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setIsUploading(true);
+      setUploadProgress(0);
       try {
-        const response = await axios.post(`https://api.cloudinary.com/v1_1/dz4xjnefv/image/upload`, formData);
-        uploadedUrls.push(response.data.secure_url);
+        const imageUrl = await uploadImage(file);
+        setFormData((prev) => ({
+          ...prev,
+          image_url: imageUrl,
+        }));
       } catch (error) {
-        console.error("Certification upload failed", error);
-        throw new Error('Certification upload failed');
+        console.error("Error uploading image:", error);
+        alert("Failed to upload image. Please try again.");
+      } finally {
+        setIsUploading(false);
+        setUploadProgress(0);
       }
     }
-    return uploadedUrls;
+  };
+
+  const handleCertificationsChange = async (e) => {
+    const files = Array.from(e.target.files);
+    setIsUploading(true);
+    setUploadProgress(0);
+    try {
+      const uploadedUrls = await Promise.all(files.map(uploadImage));
+      setFormData((prev) => ({
+        ...prev,
+        certifications: [...prev.certifications, ...uploadedUrls],
+      }));
+    } catch (error) {
+      console.error("Error uploading certifications:", error);
+      alert("Failed to upload one or more certifications. Please try again.");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -117,23 +129,13 @@ const CreateMentorProfile = () => {
     }
 
     try {
-      let imageUrl = formData.image_url;
-      if (imageFile) {
-        imageUrl = await uploadImage(imageFile);
-      }
-
-      let certificationUrls = [];
-      if (formData.certifications.length > 0) {
-        certificationUrls = await uploadCertifications(formData.certifications);
-      }
-
       const dataToSend = {
         user_id: parseInt(formData.user_id),
-        image_url: imageUrl,
+        image_url: formData.image_url,
         expertise: formData.expertise,
         bio: formData.bio,
         location: formData.location,
-        certifications: certificationUrls,
+        certifications: formData.certifications,
         degree: formData.degree,
         institution: formData.institution,
         year_of_experience: parseInt(formData.year_of_experience),
@@ -212,9 +214,18 @@ const CreateMentorProfile = () => {
                   accept="image/*"
                   onChange={handleImageChange}
                   className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  disabled={isUploading}
                 />
-                {imagePreview && (
-                  <img src={imagePreview} alt="Preview" className="h-20 w-20 object-cover rounded-full" />
+                {isUploading && (
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                    <div 
+                      className="bg-blue-600 h-2.5 rounded-full" 
+                      style={{width: `${uploadProgress}%`}}
+                    ></div>
+                  </div>
+                )}
+                {formData.image_url && (
+                  <img src={formData.image_url} alt="Profile" className="h-20 w-20 object-cover rounded-full" />
                 )}
               </div>
             </div>
@@ -333,7 +344,30 @@ const CreateMentorProfile = () => {
                 className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 multiple
                 accept="image/*,.pdf"
+                disabled={isUploading}
               />
+              {isUploading && (
+                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
+                  <div 
+                    className="bg-blue-600 h-2.5 rounded-full" 
+                    style={{width: `${uploadProgress}%`}}
+                  ></div>
+                </div>
+              )}
+              {formData.certifications.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-500">Uploaded certifications:</p>
+                  <ul className="list-disc list-inside">
+                    {formData.certifications.map((cert, index) => (
+                      <li key={index} className="text-sm text-blue-500">
+                        <a href={cert} target="_blank" rel="noopener noreferrer">
+                          Certification {index + 1}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         );

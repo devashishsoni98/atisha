@@ -29,8 +29,7 @@ const CreateInstituteProfile = () => {
 
   const [activeTab, setActiveTab] = useState("basic");
   const tabs = ["basic", "details", "spoc"];
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -45,14 +44,6 @@ const CreateInstituteProfile = () => {
       ...prev,
       [name]: type === "number" ? parseInt(value, 10) : value,
     }));
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
   };
 
   const uploadImage = async (file) => {
@@ -79,6 +70,25 @@ const CreateInstituteProfile = () => {
     }
   };
 
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setIsUploading(true);
+      try {
+        const imageUrl = await uploadImage(file);
+        setFormData((prev) => ({
+          ...prev,
+          image_url: imageUrl,
+        }));
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        alert("Failed to upload image. Please try again.");
+      } finally {
+        setIsUploading(false);
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -94,23 +104,13 @@ const CreateInstituteProfile = () => {
     }
 
     try {
-      let imageUrl = formData.image_url;
-      if (imageFile) {
-        imageUrl = await uploadImage(imageFile);
-      }
-
-      const dataToSend = {
-        ...formData,
-        image_url: imageUrl,
-      };
-
       const response = await fetch("http://localhost:4000/api/institute/info/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
@@ -174,9 +174,11 @@ const CreateInstituteProfile = () => {
                   accept="image/*"
                   onChange={handleImageChange}
                   className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  disabled={isUploading}
                 />
-                {imagePreview && (
-                  <img src={imagePreview} alt="Preview" className="h-20 w-20 object-cover rounded-full" />
+                {isUploading && <p className="text-sm text-gray-500">Uploading...</p>}
+                {formData.image_url && (
+                  <img src={formData.image_url} alt="Institute Logo" className="h-20 w-20 object-cover rounded-full" />
                 )}
               </div>
             </div>
@@ -426,3 +428,4 @@ const CreateInstituteProfile = () => {
 };
 
 export default CreateInstituteProfile;
+

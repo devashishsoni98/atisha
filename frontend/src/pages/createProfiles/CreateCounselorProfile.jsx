@@ -17,6 +17,20 @@ const slideIn = {
   exit: { x: 20, opacity: 0 }
 };
 
+const uploadImage = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'atisha_preset');
+
+  try {
+    const response = await axios.post(`https://api.cloudinary.com/v1_1/dz4xjnefv/image/upload`, formData);
+    return response.data.secure_url;
+  } catch (error) {
+    console.error("Image upload failed", error);
+    throw new Error('Image upload failed');
+  }
+};
+
 const CreateCounselorProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -51,25 +65,25 @@ const CreateCounselorProfile = () => {
     }
   }, [token, navigate]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = async (e) => {
     const { name, value, type, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "file" ? files[0] : value,
-    }));
-  };
-
-  const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', 'atisha_preset');
-
-    try {
-      const response = await axios.post(`https://api.cloudinary.com/v1_1/dz4xjnefv/image/upload`, formData);
-      return response.data.secure_url;
-    } catch (error) {
-      console.error("Image upload failed", error);
-      throw new Error('Image upload failed');
+    if (type === "file") {
+      const file = files[0];
+      try {
+        const uploadedImageUrl = await uploadImage(file);
+        setFormData((prev) => ({
+          ...prev,
+          [name]: uploadedImageUrl,
+        }));
+      } catch (error) {
+        console.error("Image upload failed", error);
+        alert('Failed to upload image. Please try again.');
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
   };
 
@@ -100,26 +114,15 @@ const CreateCounselorProfile = () => {
     }
 
     try {
-      let imageUrl = null;
-      let degreeImageUrl = null;
-
-      if (formData.image) {
-        imageUrl = await uploadImage(formData.image);
-      }
-
-      if (formData.degree_image) {
-        degreeImageUrl = await uploadImage(formData.degree_image);
-      }
-
       const dataToSend = {
         user_id: parseInt(formData.user_id),
-        image: imageUrl,
+        image: formData.image,
         dob: formData.dob,
         gender: formData.gender,
         location: formData.location,
         contact_number: formData.contact_number,
         degree: formData.degree,
-        degree_image: degreeImageUrl,
+        degree_image: formData.degree_image,
         association: formData.association,
         bio: formData.bio,
         year_of_experience: parseInt(formData.year_of_experience),
@@ -191,7 +194,7 @@ const CreateCounselorProfile = () => {
               <div className="w-32 h-32 bg-blue-100 rounded-full overflow-hidden">
                 {formData.image ? (
                   <img
-                    src={URL.createObjectURL(formData.image)}
+                    src={formData.image}
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />
@@ -250,6 +253,9 @@ const CreateCounselorProfile = () => {
               <div>
                 <label htmlFor="degree_image" className="block text-sm font-medium text-gray-700 mb-1">Degree Image</label>
                 <input id="degree_image" name="degree_image" type="file" onChange={handleInputChange} accept=".jpg,.jpeg,.png" required className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                {formData.degree_image && (
+                  <img src={formData.degree_image} alt="Degree" className="mt-2 w-full h-32 object-cover rounded-md" />
+                )}
               </div>
 
               <div>  
@@ -290,7 +296,8 @@ const CreateCounselorProfile = () => {
                     name='career_specialization'
                     type='text'
                     placeholder='e.g., Software Engineer, Data Scientist'
-                    onChange={(e) => setFormData({ ...formData, career_specialization: e.target.value })}
+                    onChange={handleInputChange}
+                    value={formData.career_specialization}
                     className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
                   />
                 </div>
@@ -316,7 +323,7 @@ const CreateCounselorProfile = () => {
 
               <div> 
                 <label htmlFor="contact_number" className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label> 
-                <input id="contact_number" name="contact_number" type="tel" value={formData.contact_number} onChange={handleInputChange} required className="mt-1 block w-full rounded-md border-gray-3-500 sm:text-sm" />
+                <input id="contact_number" name="contact_number" type="tel" value={formData.contact_number} onChange={handleInputChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
               </div> 
 
               <div className='sm:col-span-2'>
@@ -329,7 +336,7 @@ const CreateCounselorProfile = () => {
                   onChange={handleInputChange}
                   required
                   placeholder='Brief description of your experience and expertise'
-                  className='mt-1 block w-full rounded-md border-gray-3-500 sm:text-sm'
+                  className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
                 ></textarea>
               </div>
             </div> 
@@ -361,7 +368,7 @@ const CreateCounselorProfile = () => {
                 >
                   {formData.image ? (
                     <img
-                      src={URL.createObjectURL(formData.image)}
+                      src={formData.image}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />

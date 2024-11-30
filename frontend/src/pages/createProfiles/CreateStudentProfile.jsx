@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux'; 
-import { setToken } from '../../store/userActions';// Import useDispatch
-
 
 export default function CreateStudentProfile() {
   const location = useLocation();
@@ -11,8 +9,6 @@ export default function CreateStudentProfile() {
   const token = useSelector((state) => state.user.token) || localStorage.getItem('token'); // Access token from Redux
   const dispatch = useDispatch();
 
-
-  
   const { userRole, userId, userEmail, userName } = location.state || {};
   const [formData, setFormData] = useState({
     user_id: userId || '',
@@ -30,23 +26,52 @@ export default function CreateStudentProfile() {
     gender: "",
   });
 
-  useEffect(() => {
-    if (!token) {
-        console.error("No token found. Redirecting to signup.");
-        navigate('/signup');
-    }
-}, [token, navigate]);
-
   const [activeTab, setActiveTab] = useState("basic");
   const tabs = ["basic", "personal", "education", "interests"];
+  
+  // State for storing uploaded image URL
+  const [imageUrl, setImageUrl] = useState(null);
 
+  useEffect(() => {
+    if (!token) {
+      console.error("No token found. Redirecting to signup.");
+      navigate('/signup');
+    }
+  }, [token, navigate]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = async (e) => {
     const { name, value, type, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "file" ? files[0] : value,
-    }));
+    
+    if (type === "file") {
+      const file = files[0];
+      setFormData((prev) => ({
+        ...prev,
+        [name]: file,
+      }));
+
+      // Trigger image upload
+      if (file) {
+        try {
+          const uploadedImageUrl = await uploadImage(file);
+          setImageUrl(uploadedImageUrl); // Store the uploaded image URL
+          setFormData((prev) => ({
+            ...prev,
+            image: uploadedImageUrl, // Update formData with the uploaded image URL
+          }));
+        } catch (error) {
+          console.error("Image upload failed", error);
+          alert('Failed to upload image. Please try again.');
+        }
+      } else {
+        // Reset image state if no file is selected
+        setImageUrl(null);
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleInterestChange = (type, value) => {
@@ -71,7 +96,7 @@ export default function CreateStudentProfile() {
       throw new Error('Image upload failed');
     }
   };
- 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -98,19 +123,13 @@ export default function CreateStudentProfile() {
     
     if (missingFields.length > 0) {
       alert(`Please fill in the following fields: ${missingFields.join(', ')}`);
-      return;
+      return; 
     }
   
     try {
-      let imageUrl = null;
-  
-      if (formData.image) {
-        imageUrl = await uploadImage(formData.image);
-      }
-  
       const dataToSend = {
         user_id: parseInt(formData.user_id),
-        image: imageUrl,
+        image: formData.image,
         dob: formData.dob,
         gender: formData.gender,
         location: formData.location,
@@ -143,7 +162,6 @@ export default function CreateStudentProfile() {
       const responseData = await response.json();
       console.log("Profile updated successfully", responseData);
       
-
       navigate(`/onboarding`);
       
     } catch (error) {
@@ -173,9 +191,9 @@ export default function CreateStudentProfile() {
           <div className="space-y-6">
             <div className="flex items-center space-x-6">
               <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden">
-                {formData.image && (
+                {imageUrl && (
                   <img
-                    src={URL.createObjectURL(formData.image)}
+                    src={imageUrl}
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />
@@ -254,6 +272,7 @@ export default function CreateStudentProfile() {
             </div>
           </div>
         );
+      
       case "personal":
         return (
           <div className="space-y-6">
@@ -298,60 +317,37 @@ export default function CreateStudentProfile() {
                 >
                   Gender
                 </label>
-                <select
-                  id="gender"
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                >
-                  <option value="">Select gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
+                <select 
+                    id="gender" 
+                    name="gender" 
+                    value={formData.gender} 
+                    onChange={handleInputChange} 
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                    required>
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
                 </select>
               </div>
             </div>
           </div>
         );
+
       case "education":
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
-                <label
-                  htmlFor="school_name"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  School Name
-                </label>
-                <input
-                  id="school_name"
-                  name="school_name"
-                  value={formData.school_name}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                />
+                <label htmlFor="school_name" className="block text-sm font-medium text-gray-700 mb-1">School Name</label>
+                <input id="school_name" name="school_name" value={formData.school_name} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required />
               </div>
+
               <div>
-                <label
-                  htmlFor="class_level"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Class
-                </label>
-                <input
-                  id="class_level"
-                  name="class_level"
-                  type="text"
-                  value={formData.class_level}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                />
+                <label htmlFor="class_level" className="block text-sm font-medium text-gray-700 mb-1">Class</label>
+                <input id="class_level" name="class_level" type="text" value={formData.class_level} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required />
               </div>
+
             </div>
           </div>
         );
