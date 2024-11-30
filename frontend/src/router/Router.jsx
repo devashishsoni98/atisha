@@ -32,6 +32,7 @@ import CounselorBooking from "../pages/CounselorBooking.jsx";
 import StudentCounselorBrowsing from "../pages/StudentCounselorBrowsing.jsx";
 import CounselorTrainingProgram from "../pages/CounselorTrainingProgram.jsx";
 import MentorBookings from "../pages/MentorBookings.jsx";
+import SomeComponent from "../pages/Chat.jsx";
 
 
 
@@ -118,6 +119,10 @@ const Router = createBrowserRouter([
       {
         path: "/training",
         element: <CounselorTrainingProgram />,
+      },
+      {
+        path: "/chats",
+        element: <SomeComponent />,
       },
     ],
   },

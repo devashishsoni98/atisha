@@ -26,6 +26,7 @@
     "react-router-dom": "^6.28.0",
     "reactflow": "^11.11.4",
     "redux": "^5.0.1",
+    "socket.io-client": "^4.8.1",
     "swiper": "^11.1.14"
   },
   "devDependencies": {

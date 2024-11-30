@@ -150,8 +150,57 @@ model users {
 
   user_levels          user_levels[]
   task_recommendations task_recommendations[]
+  sent_messages        messages[]             @relation("sentMessages")
+  received_messages    messages[]             @relation("receivedMessages")
+  user1_conversations  conversations[]        @relation("User1Conversations")
+  user2_conversations  conversations[]        @relation("User2Conversations")
+  chat_messages        chat_messages[]
 
   @@map("users")
+}
+
+model messages {
+  id          Int      @id @default(autoincrement())
+  sender_id   Int
+  receiver_id Int
+  content     String   @db.VarChar(500)
+  createdAt   DateTime @default(now())
+
+  sender   users @relation("sentMessages", fields: [sender_id], references: [id])
+  receiver users @relation("receivedMessages", fields: [receiver_id], references: [id])
+
+  @@map("messages")
+}
+
+// Chat-related Prisma Models
+
+model conversations {
+  id              Int       @id @default(autoincrement())
+  user1_id        Int
+  user2_id        Int
+  last_message    String?
+  last_message_at DateTime?
+  created_at      DateTime  @default(now())
+
+  user1         users           @relation("User1Conversations", fields: [user1_id], references: [id])
+  user2         users           @relation("User2Conversations", fields: [user2_id], references: [id])
+  chat_messages chat_messages[]
+
+  @@unique([user1_id, user2_id])
+  @@map("conversations")
+}
+
+model chat_messages {
+  id              Int           @id @default(autoincrement())
+  conversation_id Int
+  sender_id       Int
+  message_content String        @db.Text
+  sent_at         DateTime      @default(now())
+  is_read         Boolean       @default(false)
+  conversation    conversations @relation(fields: [conversation_id], references: [id])
+  sender          users         @relation(fields: [sender_id], references: [id])
+
+  @@map("chat_messages")
 }
 
 // Define the Master Subjects model
@@ -438,9 +487,9 @@ model user_traits_status {
   big_five_traits     String[] // Top Big Five Personality trait (array of text)
   aptitude_status     String? // Aptitude Test status (e.g., Low, Mid, High)
   iq_status           String? // IQ Test status (e.g., Low, Mid, High)
-  created_at          DateTime @default(now()) // Timestamp for record creation
-
-  user users @relation(fields: [user_id], references: [id]) // Relationship to users model
+  traits_counter      Int      @default(0) // Counter for traits
+  created_at          DateTime @default(now()) // Timestamp for record creation 
+  user                users    @relation(fields: [user_id], references: [id]) // Relationship to users model
 
   @@map("user_traits_status")
 }

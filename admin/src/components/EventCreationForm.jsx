@@ -12,7 +12,7 @@ const EventCreationForm = ({ onClose }) => {
     try {
       const response = await axios.post('http://localhost:7000/create_event', data);
       console.log('Event created:', response.data);
-      navigate('/event-preview', { state: { formData: data, apiResponse: response.data } });
+      navigate('/preview', { state: { formData: data, apiResponse: response.data } });
     } catch (error) {
       console.error('Error creating event:', error);
     }
