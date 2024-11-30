@@ -13,7 +13,7 @@ const StudentBrowsing = () => {
     const [studentSessions, setStudentSessions] = useState([]);
     const [studentRequests, setStudentRequests] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('browse');
+    const [activeTab, setActiveTab] = useState('browse counselor');
 
     const studentId = useSelector((state) => state.user.id) || localStorage.getItem('userId') || '123';
 

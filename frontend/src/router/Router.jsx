@@ -29,7 +29,7 @@ import CounselorOnboarding from "../pages/onboarding/CounselorOnboarding.jsx";
 import InstituteOnborading from "../pages/onboarding/InstituteOnboarding.jsx";
 import ReportSubmissionByCounselor from "../pages/ReportSubmissionByCounselor.jsx";
 import CounselorBooking from "../pages/CounselorBooking.jsx";
-import StudentCounselorBrowsing from "../pages/StudentCounselorBrowsing.jsx";
+import StudentCounselorBrowsing from "../pages/StudentBrowsing.jsx";
 import CounselorTrainingProgram from "../pages/CounselorTrainingProgram.jsx";
 import MentorBookings from "../pages/MentorBookings.jsx";
 import SomeComponent from "../pages/Chat.jsx";
@@ -61,7 +61,7 @@ const Router = createBrowserRouter([
         element: <QuizPage />,
       },
       {
-        path: "/quiz/:type/:qid",
+        path: "/quiz/start",
         element: <QuizFormsPage />,
       },
       {
@@ -105,16 +105,16 @@ const Router = createBrowserRouter([
         element: <ReportSubmissionByCounselor  />,
       },
       {
+        path:"/student-browsing",
+        element: <StudentCounselorBrowsing  />
+      },
+      {
         path:"/counselor-booking",
         element: <CounselorBooking  />
       },
       {
         path:"/mentor-booking",
         element: <MentorBookings  />
-      },
-      {
-        path:"/student-counselor-browsing",
-        element: <StudentCounselorBrowsing  />
       },
       {
         path: "/training",

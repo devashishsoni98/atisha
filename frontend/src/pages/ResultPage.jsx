@@ -49,13 +49,13 @@ const Result = () => {
     >
       {/* Decorative corners */}
       <motion.div
-        className="absolute top-0 right-0 w-48 h-48 bg_primary_color -rotate-45 transform translate-x-24 -translate-y-24"
+        className="absolute md:top-0 top-[-15%] right-0 w-48 h-48 bg_primary_color -rotate-45 transform translate-x-24 -translate-y-24"
         initial={{ scale: 0, rotate: 0 }}
         animate={{ scale: 1, rotate: -45 }}
         transition={{ duration: 0.5, type: "spring" }}
       />
       <motion.div
-        className="absolute bottom-0 left-0 w-48 h-48 bg_primary_color -rotate-45 transform -translate-x-24 translate-y-24"
+        className="absolute bottom-[-15%] left-0 w-48 h-48 bg_primary_color -rotate-45 transform -translate-x-24 translate-y-24"
         initial={{ scale: 0, rotate: 0 }}
         animate={{ scale: 1, rotate: -45 }}
         transition={{ duration: 0.5, type: "spring", delay: 0.2 }}
@@ -147,15 +147,17 @@ const Result = () => {
               className="flex flex-col sm:flex-row gap-4 justify-center"
               variants={containerVariants}
             >
+              <Link to="/student-browsing">
               <motion.button
                 onClick={() => setIsBookingOpen(true)}
                 className="bg_accent_one res-box text-blue-950 font-semibold py-2 px-6 rounded-full transition-colors"
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-              >
+                >
                 Book a Session
               </motion.button>
+                </Link>
               <motion.div
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
@@ -259,12 +261,14 @@ const Result = () => {
                   >
                     Cancel
                   </button>
+                  <Link to="/student-browsing">
                   <button
                     type="submit"
                     className="bg_primary_color hover:bg-blue-400 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
-                  >
+                    >
                     Book Session
                   </button>
+                    </Link>
                 </div>
               </form>
             </motion.div>

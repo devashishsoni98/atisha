@@ -22,8 +22,8 @@ const Protected = ({ allowedRole }) => {
 
     return (
         <div>
-            {/* { pathname === "/quiz/**" || pathname === "/create-profile/**" ? <Navbar /> : ""} */}
-            { pathname==="/quiz/**"||"/create-profile/**" ?<Navbar/>:""}
+            { pathname === "/quiz/**" || pathname === "/create-profile/**" ? <Navbar /> : ""}
+            {/* { pathname==="/quiz/**" ||"/create-profile/**" || "/quiz/start/*" ?<Navbar/>:""} */}
             <Outlet />
         </div>
     );
