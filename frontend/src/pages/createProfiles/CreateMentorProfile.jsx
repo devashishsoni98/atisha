@@ -1,34 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from 'axios';
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 const CreateMentorProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const token = useSelector((state) => state.user.token) || localStorage.getItem('token'); // Access token from Redux
+  const token = useSelector((state) => state.user.token) || localStorage.getItem("token");
 
   const { userRole, userId, userEmail, userName } = location.state || {};
   const [formData, setFormData] = useState({
-    user_id: userId || '', // Changed to match API requirement
-    name: userName || '',
-    email: userEmail || '',
+    user_id: userId || "",
+    name: userName || "",
+    email: userEmail || "",
+    image_url: "",
     expertise: "",
     bio: "",
-    certifications: [], // Changed to hold URLs
+    location: "",
+    certifications: [],
     degree: "",
     institution: "",
-    year_of_experience: "", // Changed to match API requirement
+    year_of_experience: "",
     type: "",
   });
 
   const [activeTab, setActiveTab] = useState("basic");
   const tabs = ["basic", "professional", "additional"];
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     if (!token) {
       console.error("No token found. Redirecting to signup.");
-      navigate('/signup');
+      navigate("/signup");
     }
   }, [token, navigate]);
 
@@ -36,8 +40,16 @@ const CreateMentorProfile = () => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "number" ? parseInt(value) : value,
+      [name]: type === "number" ? parseInt(value, 10) : value,
     }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   const handleCertificationsChange = (e) => {
@@ -46,6 +58,30 @@ const CreateMentorProfile = () => {
       ...prev,
       certifications: files,
     }));
+  };
+
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "atisha_preset");
+
+    try {
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/dz4xjnefv/image/upload",
+        formData
+      );
+
+      if (response.data && response.data.secure_url) {
+        console.log("Image uploaded successfully:", response.data.secure_url);
+        return response.data.secure_url;
+      } else {
+        console.error("No secure_url in Cloudinary response");
+        throw new Error("Invalid Cloudinary response");
+      }
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      throw new Error("Image upload failed");
+    }
   };
 
   const uploadCertifications = async (files) => {
@@ -76,36 +112,31 @@ const CreateMentorProfile = () => {
 
     if (!formData.user_id) {
       alert("User ID is missing. Please try signing up again.");
-      navigate('/signup');
-      return;
-    }
-
-    const requiredFields = [
-      "user_id", "expertise", "bio", "degree", "institution", "year_of_experience", "type"
-    ];
-
-    const missingFields = requiredFields.filter(field => !formData[field]);
-
-    if (missingFields.length > 0) {
-      alert(`Please fill in the following fields: ${missingFields.join(', ')}`);
+      navigate("/signup");
       return;
     }
 
     try {
+      let imageUrl = formData.image_url;
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+      }
+
       let certificationUrls = [];
       if (formData.certifications.length > 0) {
         certificationUrls = await uploadCertifications(formData.certifications);
       }
 
-      // Prepare data according to the API requirements
       const dataToSend = {
-        user_id: parseInt(formData.user_id), // Changed to match API requirement
+        user_id: parseInt(formData.user_id),
+        image_url: imageUrl,
         expertise: formData.expertise,
         bio: formData.bio,
-        certifications: certificationUrls, // Changed to match API requirement
+        location: formData.location,
+        certifications: certificationUrls,
         degree: formData.degree,
         institution: formData.institution,
-        year_of_experience: parseInt(formData.year_of_experience), // Changed to match API requirement
+        year_of_experience: parseInt(formData.year_of_experience),
         type: formData.type,
       };
 
@@ -114,8 +145,8 @@ const CreateMentorProfile = () => {
       const response = await fetch("http://localhost:4000/api/mentor/create", {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(dataToSend),
       });
@@ -131,7 +162,6 @@ const CreateMentorProfile = () => {
       console.log("Mentor profile created successfully", responseData);
 
       navigate(`/onboarding`);
-
     } catch (error) {
       console.error("Error creating mentor profile:", error);
       alert(`Error creating mentor profile: ${error.message}. Please try again.`);
@@ -156,168 +186,180 @@ const CreateMentorProfile = () => {
     switch (activeTab) {
       case "basic":
         return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Full Name
-                </label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:col-span-2">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                Full Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
+                Profile Picture
+              </label>
+              <div className="mt-1 flex items-center space-x-4">
                 <input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
+                  id="image"
+                  name="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
+                {imagePreview && (
+                  <img src={imagePreview} alt="Preview" className="h-20 w-20 object-cover rounded-full" />
+                )}
               </div>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  readOnly
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="expertise"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Expertise
-                </label>
-                <input
-                  id="expertise"
-                  name="expertise"
-                  value={formData.expertise}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  placeholder="e.g., Software Development"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="type"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Mentor Type
-                </label>
-                <select
-                  id="type"
-                  name="type"
-                  value={formData.type}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                >
-                  <option value="">Select type</option>
-                  <option value="chief">Chief</option>
-                  <option value="associate">Associate</option>
-                </select>
-              </div>
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+                readOnly
+              />
+            </div>
+            <div>
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                Location
+              </label>
+              <input
+                id="location"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
             </div>
           </div>
         );
-      
       case "professional":
         return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="degree"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Degree
-                </label>
-                <input
-                  id="degree"
-                  name="degree"
-                  value={formData.degree}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  placeholder="e.g., Master's in Computer Science"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="institution"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Institution
-                </label>
-                <input
-                  id="institution"
-                  name="institution"
-                  value={formData.institution}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  placeholder="e.g., University of Technology"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="yearOfExperience"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                 Years of Experience 
-                 </label> 
-                 <input 
-                 id= "yearOfExperience" 
-                 name= "year_of_experience" // Updated to match API requirement 
-                 type= "number" 
-                 value= {formData.year_of_experience} // Updated to match API requirement 
-                 onChange= {handleInputChange} 
-                 className= "mt -1 block w-full rounded-md border-gray -300 shadow-sm focus:ring-blue -500 focus:border-blue -500 sm:text-sm" 
-                 required /> 
-               </div> 
-               <div> 
-                 <label htmlFor= "certifications" 
-                 className= "block text-sm font-medium text-gray -700 mb -1">Certifications</label> 
-                 <input id= "certifications" 
-                 name= "certifications" 
-                 type= "file" 
-                 onChange={handleCertificationsChange} 
-                 className= "mt -1 block w-full text-sm text-gray -500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue -50 file:text-blue -700 hover:file:bg-blue -100" 
-                 multiple 
-                 accept= "image/*,.pdf" /> 
-               </div> 
-             </div> 
-           </div> 
-         ); 
-
-       case "additional": 
-         return ( 
-           <div className= "space-y -6"> 
-             <div> 
-               <label htmlFor= "bio" className= "block text-sm font-medium text-gray -700 mb -1">Bio</label> 
-               <textarea id= "bio" name= "bio" rows= "4" value= {formData.bio} onChange= {handleInputChange} className= "mt -1 block w-full rounded-md border-gray -300 shadow-sm focus:ring-blue -500 focus:border-blue -500 sm:text-sm" required placeholder= "Brief description of your experience and expertise"></textarea> 
-             </div> 
-           </div> 
-         ); 
-
-       default:
-         return null; 
-
-     } 
-
-   }; 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="expertise" className="block text-sm font-medium text-gray-700 mb-1">
+                Expertise
+              </label>
+              <input
+                id="expertise"
+                name="expertise"
+                value={formData.expertise}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="degree" className="block text-sm font-medium text-gray-700 mb-1">
+                Degree
+              </label>
+              <input
+                id="degree"
+                name="degree"
+                value={formData.degree}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="institution" className="block text-sm font-medium text-gray-700 mb-1">
+                Institution
+              </label>
+              <input
+                id="institution"
+                name="institution"
+                value={formData.institution}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="year_of_experience" className="block text-sm font-medium text-gray-700 mb-1">
+                Years of Experience
+              </label>
+              <input
+                id="year_of_experience"
+                name="year_of_experience"
+                type="number"
+                value={formData.year_of_experience}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
+                Mentor Type
+              </label>
+              <select
+                id="type"
+                name="type"
+                value={formData.type}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              >
+                <option value="">Select type</option>
+                <option value="chief">Chief</option>
+                <option value="associate">Associate</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="certifications" className="block text-sm font-medium text-gray-700 mb-1">
+                Certifications
+              </label>
+              <input
+                id="certifications"
+                name="certifications"
+                type="file"
+                onChange={handleCertificationsChange}
+                className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                multiple
+                accept="image/*,.pdf"
+              />
+            </div>
+          </div>
+        );
+      case "additional":
+        return (
+          <div className="grid grid-cols-1 gap-6">
+            <div>
+              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
+                Bio
+              </label>
+              <textarea
+                id="bio"
+                name="bio"
+                rows="4"
+                value={formData.bio}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              ></textarea>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 py-12 px-4 sm:px-6 lg:px-8">

@@ -1,29 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 const CreateInstituteProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const token =
-    useSelector((state) => state.user.token) || localStorage.getItem("token"); // Access token from Redux
+  const token = useSelector((state) => state.user.token) || localStorage.getItem("token");
 
   const { userRole, userId, userEmail, userName } = location.state || {};
   const [formData, setFormData] = useState({
-    user_id: userId || "", 
+    user_id: userId || "",
     name: userName || "",
-    email: userEmail || "",
-    image: null,
-    address: "",
-    contact_number: "", 
-    establish_year: "", 
-    institute_type: "", 
-    student_body: "", 
+    image_url: "",
+    plot_no: "",
+    street: "",
+    city: "",
+    state: "",
+    contact_number: "",
+    establish_year: "",
+    institute_type: "",
+    student_body: "",
+    institute_board: "",
+    spoc_name: "",
+    spoc_email: userEmail || "",
+    spoc_contact_number: "",
   });
 
   const [activeTab, setActiveTab] = useState("basic");
-  const tabs = ["basic", "details"];
+  const tabs = ["basic", "details", "spoc"];
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     if (!token) {
@@ -33,11 +40,19 @@ const CreateInstituteProfile = () => {
   }, [token, navigate]);
 
   const handleInputChange = (e) => {
-    const { name, value, type, files } = e.target;
+    const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "file" ? files[0] : value,
+      [name]: type === "number" ? parseInt(value, 10) : value,
     }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   const uploadImage = async (file) => {
@@ -72,74 +87,31 @@ const CreateInstituteProfile = () => {
       return;
     }
 
-    if (!formData.user_id) { 
+    if (!formData.user_id) {
       alert("User ID is missing. Please try signing up again.");
       navigate("/signup");
       return;
     }
 
-    const requiredFields = [
-      "user_id", 
-      "address",
-      "contact_number", 
-      "establish_year", 
-      "institute_type", 
-      "student_body", 
-    ];
-
-    const missingFields = requiredFields.filter((field) => !formData[field]);
-
-    if (missingFields.length > 0) {
-      alert(`Please fill in the following fields: ${missingFields.join(", ")}`);
-      return;
-    }
-
     try {
-      let imageUrl = null;
-
-      if (formData.image) {
-        try {
-          imageUrl = await uploadImage(formData.image);
-        } catch (error) {
-          alert("Failed to upload image. Please try again.");
-          return;
-        }
+      let imageUrl = formData.image_url;
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
       }
 
-      if (!imageUrl) {
-        alert(
-          "Image upload failed. Please ensure a valid image file is selected."
-        );
-        return;
-      }
-
-      // Prepare data according to the API requirements
       const dataToSend = {
-        user_id: parseInt(formData.user_id), 
-        image_url: imageUrl, 
-        address: formData.address,
-        contact_number: formData.contact_number, 
-        establish_year: parseInt(formData.establish_year), 
-        institute_type: formData.institute_type, 
-        student_body: formData.student_body, 
+        ...formData,
+        image_url: imageUrl,
       };
 
-      console.log(
-        "Sending data to server:",
-        JSON.stringify(dataToSend, null, 2)
-      );
-
-      const response = await fetch(
-        "http://localhost:4000/api/institute/info/create",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(dataToSend),
-        }
-      );
+      const response = await fetch("http://localhost:4000/api/institute/info/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(dataToSend),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -154,9 +126,7 @@ const CreateInstituteProfile = () => {
       navigate(`/onboarding`);
     } catch (error) {
       console.error("Error creating institute profile:", error);
-      alert(
-        `Error creating institute profile: ${error.message}. Please try again.`
-      );
+      alert(`Error creating institute profile: ${error.message}. Please try again.`);
     }
   };
 
@@ -178,160 +148,220 @@ const CreateInstituteProfile = () => {
     switch (activeTab) {
       case "basic":
         return (
-          <div className="space-y-6">
-            <div className="flex items-center space-x-6">
-              <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden">
-                {formData.image && (
-                  <img
-                    src={URL.createObjectURL(formData.image)}
-                    alt="Institute Logo"
-                    className="w-full h-full object-cover"
-                  />
-                )}
-              </div>
-              <div>
-                <label
-                  htmlFor="image"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Institute Logo
-                </label>
-                <input 
-                  id="image" // Fixed missing space in input id attribute
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:col-span-2">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                Institute Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
+                Institute Logo
+              </label>
+              <div className="mt-1 flex items-center space-x-4">
+                <input
+                  id="image"
                   name="image"
                   type="file"
-                  onChange={handleInputChange}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition duration-300 ease-in-out"
                   accept="image/*"
+                  onChange={handleImageChange}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
+                {imagePreview && (
+                  <img src={imagePreview} alt="Preview" className="h-20 w-20 object-cover rounded-full" />
+                )}
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Institute Name
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  readOnly
-                />
-              </div>
+            <div>
+              <label htmlFor="plot_no" className="block text-sm font-medium text-gray-700 mb-1">
+                Plot No
+              </label>
+              <input
+                id="plot_no"
+                name="plot_no"
+                value={formData.plot_no}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
+                Street
+              </label>
+              <input
+                id="street"
+                name="street"
+                value={formData.street}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                City
+              </label>
+              <input
+                id="city"
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
+                State
+              </label>
+              <input
+                id="state"
+                name="state"
+                value={formData.state}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
             </div>
           </div>
         );
-      
       case "details":
         return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="address"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Address
-                </label>
-                <input
-                  id="address"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="contact_number" // Updated for consistency with the state variable name.
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Contact Number
-                </label>
-                <input
-                  id="contact_number" // Updated for consistency with the state variable name.
-                  name="contact_number" // Updated for consistency with the state variable name.
-                  type="tel"
-                  value={formData.contact_number} // Updated for consistency with the state variable name.
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="establish_year" // Updated for consistency with the state variable name.
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                 Establishment Year 
-                 </label> 
-                 <input 
-                 id= "establish_year" 
-                 name= "establish_year" 
-                 type= "number" 
-                 value= {formData.establish_year} 
-                 onChange= {handleInputChange} 
-                 className= "mt -1 block w-full rounded-md border-gray -300 shadow-sm focus:ring-blue -500 focus:border-blue -500 sm:text-sm" 
-                 required /> 
-               </div> 
-               <div> 
-                 <label htmlFor= "institute_type" 
-                 className= "block text-sm font-medium text-gray -700 mb -1">Institute Type</label> 
-                 <select id= "institute_type" 
-                 name= "institute_type" 
-                 value= {formData.institute_type} 
-                 onChange= {handleInputChange} 
-                 className= "mt -1 block w-full rounded-md border-gray -300 shadow-sm focus:ring-blue -500 focus:border-blue -500 sm:text-sm" 
-                 required> 
-                   <option value="">Select type</option> 
-                   <option value= "private">Private</option> 
-                   <option value= "public">Public</option> 
-                   <option value= "govt">Government</option> 
-                   <option value= "semiGovt">Semi Government</option> 
-                 </select> 
-               </div> 
-              <div>
-                <label
-                  htmlFor="student_body"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Student Body Size
-                </label>
-                <input
-                  id="student_body"
-                  name="student_body"
-                  type="text"
-                  value={formData.student_body}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  placeholder="e.g., 500 students"
-                />
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="contact_number" className="block text-sm font-medium text-gray-700 mb-1">
+                Contact Number
+              </label>
+              <input
+                id="contact_number"
+                name="contact_number"
+                type="tel"
+                value={formData.contact_number}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="establish_year" className="block text-sm font-medium text-gray-700 mb-1">
+                Establishment Year
+              </label>
+              <input
+                id="establish_year"
+                name="establish_year"
+                type="number"
+                value={formData.establish_year}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="institute_type" className="block text-sm font-medium text-gray-700 mb-1">
+                Institute Type
+              </label>
+              <select
+                id="institute_type"
+                name="institute_type"
+                value={formData.institute_type}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              >
+                <option value="">Select type</option>
+                <option value="private">Private</option>
+                <option value="govt">Government</option>
+                <option value="semiGovt">Semi Government</option>
+                <option value="public">Public</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="student_body" className="block text-sm font-medium text-gray-700 mb-1">
+                Student Body Size
+              </label>
+              <input
+                id="student_body"
+                name="student_body"
+                type="text"
+                value={formData.student_body}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="institute_board" className="block text-sm font-medium text-gray-700 mb-1">
+                Institute Board
+              </label>
+              <select
+                id="institute_board"
+                name="institute_board"
+                value={formData.institute_board}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              >
+                <option value="">Select board</option>
+                <option value="cbse">CBSE</option>
+                <option value="icse">ICSE</option>
+                <option value="state">State</option>
+                <option value="international">International</option>
+              </select>
+            </div>
+          </div>
+        );
+      case "spoc":
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="spoc_name" className="block text-sm font-medium text-gray-700 mb-1">
+                SPOC Name
+              </label>
+              <input
+                id="spoc_name"
+                name="spoc_name"
+                value={formData.spoc_name}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="spoc_email" className="block text-sm font-medium text-gray-700 mb-1">
+                SPOC Email
+              </label>
+              <input
+                id="spoc_email"
+                name="spoc_email"
+                type="email"
+                value={formData.spoc_email}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="spoc_contact_number" className="block text-sm font-medium text-gray-700 mb-1">
+                SPOC Contact Number
+              </label>
+              <input
+                id="spoc_contact_number"
+                name="spoc_contact_number"
+                type="tel"
+                value={formData.spoc_contact_number}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              />
             </div>
           </div>
         );

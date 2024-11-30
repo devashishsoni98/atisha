@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Building2, Calendar, PieChart, GraduationCap, LogOut, MapPin, Phone, Mail, Clock, Users, BookOpen, School } from 'lucide-react';
+import { Building2, Calendar, PieChart, GraduationCap, LogOut, MapPin, Phone, Mail, Clock, Users, BookOpen, School, User } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -67,19 +67,17 @@ export default function InstituteDashboard() {
         switch (activeTab) {
             case 'Profile':
                 return <ProfileContent instituteData={instituteData} />;
-            case 'Institute Details':
-                return <DetailsContent instituteData={instituteData} />;
             case 'Activities':
-                return <ActivitiesContent activities={[]} />;
+                return <ActivitiesContent />;
             case 'Analysis':
-                return <AnalysisContent analysisData={[]} />;
+                return <AnalysisContent />;
             default:
                 return <ProfileContent instituteData={instituteData} />;
         }
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className="flex justify-center items-center h-screen">Loading...</div>;
     }
 
     return (
@@ -89,21 +87,20 @@ export default function InstituteDashboard() {
                 <motion.div className="w-64 min-h-screen bg-white p-6 shadow-lg" variants={slideIn}>
                     <div className="flex flex-col items-center mb-8">
                         <motion.img
-                            src={instituteData?.image_url || "/placeholder.svg?height=128&width=128"}
-                            alt={instituteData?.name}
+                            src={instituteData?.institute.image_url || "/placeholder.svg?height=128&width=128"}
+                            alt={instituteData?.institute.name}
                             className="w-24 h-24 rounded-full border-4 border-blue-200 shadow-lg mb-4"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
                         />
-                        <motion.h2 className="text-xl font-bold text-blue-800" variants={fadeIn}>{instituteData?.name}</motion.h2>
+                        <motion.h2 className="text-xl font-bold text-blue-800" variants={fadeIn}>{instituteData?.institute.name}</motion.h2>
                         <motion.p className="text-blue-600" variants={fadeIn}>Educational Institute</motion.p>
                     </div>
                     
                     <nav className="space-y-2">
                         {[
                             { name: 'Profile', icon: <Building2 className="w-4 h-4" /> },
-                            { name: 'Institute Details', icon: <School className="w-4 h-4" /> },
                             { name: 'Activities', icon: <Calendar className="w-4 h-4" /> },
                             { name: 'Analysis', icon: <PieChart className="w-4 h-4" /> }
                         ].map((item) => (
@@ -152,41 +149,60 @@ function ProfileContent({ instituteData }) {
                 <div className="p-8">
                     <motion.h1 className="text-3xl font-bold text-gray-800 mb-6" variants={fadeIn}>Institute Profile</motion.h1>
                     <div className="grid md:grid-cols-2 gap-6">
-                        {/* Accessing institute data according to the new structure */}
-                        <ProfileItem icon={<Building2 className="text-blue-500" />} label="Institute Name" value={instituteData?.name} />
-                        <ProfileItem icon={<Mail className="text-blue-500" />} label="Email" value={instituteData?.user.email} />
-                        <ProfileItem icon={<MapPin className="text-blue-500" />} label="Address" value={instituteData?.address || 'N/A'} />
-                        <ProfileItem icon={<Phone className="text-blue-500" />} label="Contact Number" value={instituteData?.contact_number || 'N/A'} />
-                        <ProfileItem icon={<Clock className="text-blue-500" />} label="Established Year" value={instituteData?.establish_year ? instituteData.establish_year.toString() : 'N/A'} />
-                        <ProfileItem icon={<Building2 className="text-blue-500" />} label="Type" value={instituteData?.institute_type || 'N/A'} />
-                        <ProfileItem icon={<Users className="text-blue-500" />} label="Student Body Size" value={instituteData?.student_body || 'N/A'} />
+                        <ProfileItem icon={<Building2 className="text-blue-500" />} label="Institute Name" value={instituteData?.institute.name} />
+                        <ProfileItem icon={<Mail className="text-blue-500" />} label="Email" value={instituteData?.institute.user.email} />
+                        <ProfileItem icon={<MapPin className="text-blue-500" />} label="Address" value={`${instituteData?.institute.plot_no}, ${instituteData?.institute.street}, ${instituteData?.institute.city}, ${instituteData?.institute.state}`} />
+                        <ProfileItem icon={<Phone className="text-blue-500" />} label="Contact Number" value={instituteData?.institute.contact_number} />
+                        <ProfileItem icon={<Clock className="text-blue-500" />} label="Established Year" value={instituteData?.institute.establish_year.toString()} />
+                        <ProfileItem icon={<Building2 className="text-blue-500" />} label="Type" value={instituteData?.institute.institute_type} />
+                        <ProfileItem icon={<Users className="text-blue-500" />} label="Student Body Size" value={instituteData?.institute.student_body} />
+                        <ProfileItem icon={<BookOpen className="text-blue-500" />} label="Institute Board" value={instituteData?.institute.institute_board} />
+                        <ProfileItem icon={<GraduationCap className="text-blue-500" />} label="Institute Type" value={instituteData?.institute.institute_type} />
                     </div>
+                </div>
+            </motion.div>
+            
+            <motion.div className="bg-white shadow-lg rounded-2xl overflow-hidden" variants={slideIn}>
+                <div className="p-8">
+                    <motion.h2 className="text-2xl font-bold text-gray-800 mb-6" variants={fadeIn}>SPOC Details</motion.h2>
+                    {instituteData?.spocs.map((spoc, index) => (
+                        <div key={index} className="mb-4 last:mb-0">
+                            <h3 className="text-lg font-semibold mb-2">SPOC {index + 1}</h3>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <ProfileItem icon={<User className="text-blue-500" />} label="Name" value={spoc.name} />
+                                <ProfileItem icon={<Mail className="text-blue-500" />} label="Email" value={spoc.email} />
+                                <ProfileItem icon={<Phone className="text-blue-500" />} label="Contact Number" value={spoc.contact_number} />
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </motion.div>
         </motion.div>
     );
 }
 
-function DetailsContent({ instituteData }) {
+function ActivitiesContent() {
     return (
         <motion.div className="space-y-6" initial="initial" animate="animate" exit="exit" variants={fadeIn}>
-            {/* Additional details content can be added here */}
+            <motion.div className="bg-white shadow-lg rounded-2xl overflow-hidden" variants={slideIn}>
+                <div className="p-8">
+                    <motion.h1 className="text-3xl font-bold text-gray-800 mb-6" variants={fadeIn}>Activities</motion.h1>
+                    <p className="text-gray-600">No activities to display at the moment.</p>
+                </div>
+            </motion.div>
         </motion.div>
     );
 }
 
-function ActivitiesContent({ activities }) {
+function AnalysisContent() {
     return (
         <motion.div className="space-y-6" initial="initial" animate="animate" exit="exit" variants={fadeIn}>
-            {/* Activities content can be added here */}
-        </motion.div>
-    );
-}
-
-function AnalysisContent({ analysisData }) {
-    return (
-        <motion.div className="space-y-6" initial="initial" animate="animate" exit="exit" variants={fadeIn}>
-            {/* Analysis content can be added here */}
+            <motion.div className="bg-white shadow-lg rounded-2xl overflow-hidden" variants={slideIn}>
+                <div className="p-8">
+                    <motion.h1 className="text-3xl font-bold text-gray-800 mb-6" variants={fadeIn}>Analysis</motion.h1>
+                    <p className="text-gray-600">No analysis data available at the moment.</p>
+                </div>
+            </motion.div>
         </motion.div>
     );
 }

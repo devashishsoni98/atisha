@@ -11,10 +11,10 @@ from email.mime.multipart import MIMEMultipart
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"]}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:5175", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"]}})
 
 # Database connection
-DATABASE_URL = "postgresql://postgres:amanjain17@localhost:5432/atisha_db"
+DATABASE_URL = "postgresql://postgres:devashish@localhost:5432/atisha_db"
 conn = psycopg2.connect(DATABASE_URL)
 
 # ------------------------------------------------------------------------------------------------------------------
