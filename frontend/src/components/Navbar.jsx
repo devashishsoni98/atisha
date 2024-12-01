@@ -298,7 +298,8 @@ const Navbar = () => {
               <nav className="flex gap-8 mr-8">
                 <Link to="/carrer/roadmaps/explore" className="text-gray-700 hover:text-[#0F67B1] transition-colors font-medium">Explore Career</Link>
                 <Link to="/sessions/explore" className="text-gray-700 hover:text-[#0F67B1] transition-colors font-medium">Workshop & Events</Link>
-                <Link to="/testimonials" className="text-gray-700 hover:text-[#0F67B1] transition-colors font-medium">Testimonials</Link>
+                <Link to="/interactive-contents" className="text-gray-700 hover:text-[#0F67B1] transition-colors font-medium">Interactive Content</Link>
+                <Link to="/career-library" className="text-gray-700 hover:text-[#0F67B1] transition-colors font-medium">Career Library</Link>
                 <Link to="/about" className="text-gray-700 hover:text-[#0F67B1] transition-colors font-medium">About Us</Link>
                 <Link to="/contactus" className="text-gray-700 hover:text-[#0F67B1] transition-colors font-medium">Contact</Link>
               </nav>
@@ -353,7 +354,8 @@ const Navbar = () => {
               <nav className="flex flex-col p-4">
                 <Link to="/carrer/roadmaps/explore" className="py-2 text-gray-700 hover:text-[#0F67B1]" onClick={closeMenu}>Explore Career</Link>
                 <Link to="/sessions/explore" className="py-2 text-gray-700 hover:text-[#0F67B1]" onClick={closeMenu}>Workshop & Events</Link>
-                <Link to="/testimonials" className="py-2 text-gray-700 hover:text-[#0F67B1]" onClick={closeMenu}>Testimonials</Link>
+                <Link to="/interactive-contents" className="py-2 text-gray-700 hover:text-[#0F67B1]" onClick={closeMenu}>Interactive Contents</Link>
+                <Link to="/career-library" className="py-2 text-gray-700 hover:text-[#0F67B1]" onClick={closeMenu}>Career Library</Link>
                 <Link to="/about" className="py-2 text-gray-700 hover:text-[#0F67B1]" onClick={closeMenu}>About Us</Link>
                 <Link to="/contactus" className="py-2 text-gray-700 hover:text-[#0F67B1]" onClick={closeMenu}>Contact</Link>
 
