@@ -20,6 +20,7 @@ const QuizFormsPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [showTimeoutDialog, setShowTimeoutDialog] = useState(false)
   const [totalTime, setTotalTime] = useState(0)
+  
   const navigator = useNavigate()
 
   const { register, handleSubmit, reset, setValue } = useForm()
@@ -287,13 +288,22 @@ const QuizFormsPage = () => {
         />
       </div>
 
-      <QuestionCard
+      {/* <QuestionCard
         question={quizData[currentQuestion - 1]}
         onSubmit={handleSubmit(onSubmit)}
         onSkip={handleSkip}
         register={register}
         setValue={setValue}
-      />
+      /> */}
+<QuestionCard
+  question={quizData[currentQuestion - 1]}
+  onSubmit={handleSubmit(onSubmit)} // Pass handleSubmit directly
+  onSkip={handleSkip}
+  register={register}
+  setValue={setValue}
+  currentQuestionNumber={currentQuestion} // Pass current question number
+  totalQuestions={quizData.length} // Optional: Pass total questions if needed
+/>
 
       <AnimatePresence>
         {showTimeoutDialog && (

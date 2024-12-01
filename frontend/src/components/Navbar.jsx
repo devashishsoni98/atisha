@@ -218,7 +218,33 @@ const Navbar = () => {
       // setNotifications(data);
       
       // Simulated data (empty for this example)
-      setNotifications([]);
+      setNotifications([
+        {
+          "id": 1,
+          "message": "You have a new message from John Doe.",
+          "timestamp": "2024-11-30T10:00:00Z"
+        },
+        {
+          "id": 2,
+          "message": "Your profile has been updated successfully.",
+          "timestamp": "2024-11-30T09:45:00Z"
+        },
+        {
+          "id": 3,
+          "message": "New comment on your post: 'Great article!'",
+          "timestamp": "2024-11-30T09:30:00Z"
+        },
+        {
+          "id": 4,
+          "message": "You have a new follower: Jane Smith.",
+          "timestamp": "2024-11-30T09:15:00Z"
+        },
+        {
+          "id": 5,
+          "message": "Reminder: Your meeting starts in 15 minutes.",
+          "timestamp": "2024-11-30T09:00:00Z"
+        }
+      ]);
     } catch (error) {
       console.error("Error fetching notifications:", error);
       setNotifications([]);
@@ -252,7 +278,7 @@ const Navbar = () => {
   };
 
   return (
-    <Headroom className="z-50 relative">
+    <Headroom className="z-[19] relative">
       <header className="bg-slate-50 shadow-sm">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center py-3 px-4 md:px-6 relative">
@@ -391,7 +417,7 @@ const Navbar = () => {
               animate="open"
               exit="closed"
               variants={sidebarVariants}
-              className="fixed inset-y-0 right-0 w-full sm:w-80 bg-white shadow-lg z-50"
+              className="fixed inset-y-0 right-0 w-ful h-screen sm:w-80 bg-white shadow-lg z-50 "
               ref={notificationSidebarRef}
             >
               <div className="flex flex-col h-full">
@@ -405,7 +431,7 @@ const Navbar = () => {
                     <FaTimes size={24} />
                   </button>
                 </div>
-                <div className="flex-grow overflow-y-auto">
+                <div className="flex-grow h-screen bg-white overflow-y-auto">
                   {isLoading ? (
                     <div className="flex items-center justify-center h-full">
                       <p className="text-gray-500">Loading...</p>
