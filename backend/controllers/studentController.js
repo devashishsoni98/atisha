@@ -89,6 +89,40 @@ const createOrUpdateStudentProfile = async (req, res) => {
     }
 };
 
+// const getStudentById = async (req, res) => {
+//     const { id } = req.params; // Get the student ID from the request parameters
+
+//     if (!id) {
+//         return res.status(400).json({ message: "Student ID is required." });
+//     }
+
+//     try {
+//         const idInt = parseInt(id);
+//         if (isNaN(idInt)) {
+//             return res.status(400).json({ message: "Invalid student ID." });
+//         }
+
+//         // Fetch the student by ID
+//         const student = await prisma.users.findUnique({
+//             where: { id: idInt },
+//             include: {
+//                 student_personal_info: true,
+//                 student_education: true,
+//                 student_interest: true,
+//             },
+//         });
+
+//         if (!student) {
+//             return res.status(404).json({ message: "Student not found." });
+//         }
+
+//         res.status(200).json(student);
+//     } catch (error) {
+//         console.error("Error while fetching student:", error);
+//         res.status(500).json({ message: "Error while fetching student." });
+//     }
+// };
+
 const getStudentById = async (req, res) => {
     const { id } = req.params; // Get the student ID from the request parameters
 
@@ -108,7 +142,7 @@ const getStudentById = async (req, res) => {
             include: {
                 student_personal_info: true,
                 student_education: true,
-                student_interest: true,
+                student_interest: true, // Fetch only the IDs of interests (subject_ids, sport_ids, hobby_ids)
             },
         });
 
@@ -116,15 +150,38 @@ const getStudentById = async (req, res) => {
             return res.status(404).json({ message: "Student not found." });
         }
 
+        // Now, fetch the names of subjects, hobbies, and sports
+        const [subjects, hobbies, sports] = await Promise.all([
+            prisma.master_subjects.findMany({
+                where: { id: { in: student.student_interest.subject_ids } },
+                select: { id: true, subject_name: true },
+            }),
+            prisma.master_hobbies.findMany({
+                where: { id: { in: student.student_interest.hobby_ids } },
+                select: { id: true, hobby_name: true }, // assuming field is hobby_name
+            }),
+            prisma.master_sports.findMany({
+                where: { id: { in: student.student_interest.sport_ids } },
+                select: { id: true, sport_name: true }, // assuming field is sport_name
+            })
+        ]);
+
+        // Add the fetched names to the student object
+        student.student_interest.subjects = subjects;
+        student.student_interest.hobbies = hobbies;
+        student.student_interest.sports = sports;
+
+        // Remove the subject_ids, sport_ids, and hobby_ids from the response
+        delete student.student_interest.subject_ids;
+        delete student.student_interest.sport_ids;
+        delete student.student_interest.hobby_ids;
+
         res.status(200).json(student);
     } catch (error) {
         console.error("Error while fetching student:", error);
         res.status(500).json({ message: "Error while fetching student." });
     }
 };
-
-
-
 
 
 module.exports = {

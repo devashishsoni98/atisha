@@ -31,6 +31,9 @@ export default function CreateStudentProfile() {
   
   // State for storing uploaded image URL
   const [imageUrl, setImageUrl] = useState(null);
+  
+  // State for error messages
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (!token) {
@@ -71,7 +74,34 @@ export default function CreateStudentProfile() {
         ...prev,
         [name]: value,
       }));
+      
+      // Validate input on change
+      validateField(name, value);
     }
+  };
+
+  const validateField = (name, value) => {
+    let errorMsg = "";
+
+    switch (name) {
+      case "contact_number":
+        if (!/^\d{10}$/.test(value)) {
+          errorMsg = "Contact number must be exactly 10 digits.";
+        }
+        break;
+      case "class_level":
+        if (!/^\d+$/.test(value)) {
+          errorMsg = "Class level must be a number.";
+        }
+        break;
+      default:
+        break;
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: errorMsg,
+    }));
   };
 
   const handleInterestChange = (type, value) => {
@@ -97,7 +127,7 @@ export default function CreateStudentProfile() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {   
     e.preventDefault();
     
     if (activeTab !== tabs[tabs.length - 1]) {
@@ -120,9 +150,9 @@ export default function CreateStudentProfile() {
     const missingFields = requiredFields.filter(field => 
       !formData[field] || (Array.isArray(formData[field]) && formData[field].length === 0)
     );
-    
-    if (missingFields.length > 0) {
-      alert(`Please fill in the following fields: ${missingFields.join(', ')}`);
+
+    if (missingFields.length > 0 || Object.values(errors).some(error => error)) {
+      alert(`Please fill in the following fields correctly: ${missingFields.join(', ')}. ${Object.values(errors).filter(error => error).join(' ')}`);
       return; 
     }
   
@@ -183,7 +213,6 @@ export default function CreateStudentProfile() {
       setActiveTab(tabs[currentIndex - 1]);
     }
   };
-
   const renderTabContent = () => {
     switch (activeTab) {
       case "basic":
