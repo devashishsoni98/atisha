@@ -4,11 +4,14 @@ const prisma = new PrismaClient();
 // Generic function to handle adding values dynamically for different types
 const addMasterValue = async (req, res) => {
   const { type } = req.params;  // The type (subjects, sports, hobbies)
-  const { name } = req.body;  // The name of the value to add (e.g., subject name, hobby name)
+  const { name } = req.body;  // The comma-separated names of the values to add
 
   if (!name) {
     return res.status(400).json({ message: "Name is required." });
   }
+
+  // Convert the comma-separated string into an array
+  const namesArray = name.split(',').map(item => item.trim());
 
   try {
     // Dynamically map type to the corresponding Prisma model and column
@@ -31,34 +34,46 @@ const addMasterValue = async (req, res) => {
         return res.status(400).json({ message: "Invalid master type." });
     }
 
-    // Check if the value already exists in the corresponding table
-    const existingValue = await model.findUnique({
-      where: {
-        [column]: name, // Dynamically reference the column name
-      },
-    });
+    const results = [];
 
-    if (existingValue) {
-        return res.status(400).json({
-            message: `${name} already exists.`,
-            existingValue: {
-              id: existingValue.id,
-              name: existingValue[column], // Dynamically access the name field
-            }
-          });
+    // Loop through each name and check if it exists
+    for (let name of namesArray) {
+      const existingValue = await model.findUnique({
+        where: {
+          [column]: name, // Dynamically reference the column name
+        },
+      });
+
+      if (existingValue) {
+        // If value already exists, add it to the results with ID and name
+        results.push({
+          message: `${name} already exists.`,
+          existingValue: {
+            id: existingValue.id,
+            name: existingValue[column], // Dynamically access the name field
+          },
+        });
+      } else {
+        // If value does not exist, add it to the database
+        const newValue = await model.create({
+          data: { [column]: name }, // Dynamically pass the column name
+        });
+        results.push({
+          message: `${name} added successfully.`,
+          newValue: newValue,
+        });
+      }
     }
 
-    // Insert the new value into the corresponding table
-    const result = await model.create({
-      data: { [column]: name }, // Dynamically pass the column name
-    });
+    // Return the results for each name processed
+    res.status(201).json(results);
 
-    res.status(201).json(result);
   } catch (error) {
     console.error("Error adding custom value:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 // Generic function to handle fetching values dynamically for different types
 const getMasterValues = async (req, res) => {

@@ -43,7 +43,7 @@ const QuizFormsPage = () => {
 
   const fetchQuizData = async () => {
     try {
-      const response = await axios.get('YOUR_API_ENDPOINT_HERE')
+      const response = await axios.get('http://local:7000/fetch_generate_questions')
       if (response.data && response.data.questions) {
         setQuizData(response.data.questions)
         setTotalTime(QUESTION_TIME_LIMIT * response.data.questions.length)
