@@ -299,47 +299,55 @@ const ProfileContent = ({studentData}) => (
     ) : null // Render nothing if studentData is null
 );
 
-const InterestContent = ({interests}) => (
-    interests ? (
+const InterestContent = ({ interests }) => {
+    if (!interests) {
+        return <div>No interests available</div>; // Handle case where interests are not available
+    }
+
+    return (
         <motion.div className="space-y-6" initial="initial" animate="animate" exit="exit" variants={fadeIn}>
             <motion.div className="bg-white rounded-2xl p-6 shadow-md" variants={slideIn}>
                 <motion.h2 className="text-2xl font-bold mb-6 text-blue-800" variants={fadeIn}>Interests</motion.h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {interests.subject_ids?.map((subject_id) => (
-                        <motion.div
-                            key={`subject-${subject_id}`}
-                            className="bg-white border-2 border-blue-100 rounded-xl p-4 text-center hover:border-blue-300 transition-colors"
-                            whileHover={{scale: 1.05}}
-                            whileTap={{scale: 0.95}}
-                        >
-                            <motion.h3 className="font-medium text-blue-700">Subject {subject_id}</motion.h3>
-                        </motion.div>
-                    ))}
-                    {interests.sport_ids.map((sport_id) => (
-                        <motion.div
-                            key={`sport-${sport_id}`}
-                            className="bg-white border-2 border-blue-100 rounded-xl p-4 text-center hover:border-blue-300 transition-colors"
-                            whileHover={{scale: 1.05}}
-                            whileTap={{scale: 0.95}}
-                        >
-                            <motion.h3 className="font-medium text-blue-700">Sport {sport_id}</motion.h3>
-                        </motion.div>
-                    ))}
-                    {interests.hobby_ids.map((hobby_id) => (
-                        <motion.div
-                            key={`hobby-${hobby_id}`}
-                            className="bg-white border-2 border-blue-100 rounded-xl p-4 text-center hover:border-blue300 transition-colors"
-                            whileHover={{scale: 1.05}}
-                            whileTap={{scale: 0.95}}
-                        >
-                            <motion.h3 className="font-medium text-blue-700">Hobby {hobby_id}</motion.h3>
-                        </motion.div>
-                    ))}
+
+                {/* Subjects Section */}
+                <div className="mb-4">
+                    <h3 className="text-xl font-semibold text-blue-700">Subjects</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {interests.subjects.map((subject) => (
+                            <motion.div key={`subject-${subject.id}`} className="bg-white border-2 border-blue-100 rounded-xl p-4 text-center hover:border-blue-300 transition-colors" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                <motion.h4 className="font-medium text-blue-700">{subject.subject_name}</motion.h4>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Hobbies Section */}
+                <div className="mb-4">
+                    <h3 className="text-xl font-semibold text-blue-700">Hobbies</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {interests.hobbies.map((hobby) => (
+                            <motion.div key={`hobby-${hobby.id}`} className="bg-white border-2 border-blue-100 rounded-xl p-4 text-center hover:border-blue-300 transition-colors" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                <motion.h4 className="font-medium text-blue-700">{hobby.hobby_name}</motion.h4>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Sports Section */}
+                <div>
+                    <h3 className="text-xl font-semibold text-blue-700">Sports</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {interests.sports.map((sport) => (
+                            <motion.div key={`sport-${sport.id}`} className="bg-white border-2 border-blue-100 rounded-xl p-4 text-center hover:border-blue-300 transition-colors" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                <motion.h4 className="font-medium text-blue-700">{sport.sport_name}</motion.h4>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
             </motion.div>
         </motion.div>
-    ) : null // Render nothing if interests is null
-);
+    );
+};
 
 
 const SessionContent = () => {
