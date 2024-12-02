@@ -36,6 +36,7 @@ import SomeComponent from "../pages/Chat.jsx";
 import EventPreview from "../pages/EventPreview.jsx";
 import InteractiveContent from "../pages/InteractiveContents.jsx";
 import CareerLibrary from "../pages/CareerLibrary.jsx";
+import Level from "../components/Level.jsx";
 
 
 
@@ -143,6 +144,9 @@ const Router = createBrowserRouter([
       {
         path: "/career-library",
         element: <CareerLibrary/>
+      },{
+        path: "/level",
+        element: <Level/>
       },
       {
         path: "/resources",

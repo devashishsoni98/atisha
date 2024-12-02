@@ -6,7 +6,7 @@ const fetchUpcomingEvents = async (req, res) => {
   try {
     const upcomingEvents = await prisma.events.findMany({
       where: {
-        status: 'scheduled', // Filter events with status "scheduled"
+        status: 'pending', // Filter events with status "scheduled"
         start_date: {
           gte: new Date(), // Ensure start_date is greater than or equal to the current date
         },
