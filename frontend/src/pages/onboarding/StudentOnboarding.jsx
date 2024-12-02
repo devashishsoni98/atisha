@@ -5,11 +5,13 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import { ArrowRight, Sparkles, Target, Rocket, BookOpen, Users, Lightbulb } from 'lucide-react';
 import photo from "../../assets/welcome.png"
+import {getStudentTraitsByStudentId} from "../../api/StudebtTraitsApi.jsx";
 
 const StudentOnboarding = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [studentTrait, setStudentTrait] = useState(null);
 
   const userId = useSelector((state) => state.user.id) || localStorage.getItem('userId');
   const roleType = useSelector((state) => state.user.roleType) || localStorage.getItem('userType');
@@ -27,6 +29,11 @@ const StudentOnboarding = () => {
     };
 
     fetchUserData();
+
+
+    const traits = getStudentTraitsByStudentId(userId);
+    setStudentTrait(traits);
+    console.log(studentTrait)
   }, [userId, roleType]);
 
   const dashboardLink = () => {
