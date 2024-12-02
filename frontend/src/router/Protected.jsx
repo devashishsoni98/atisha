@@ -7,7 +7,8 @@ import Navbar from '../components/Navbar';
 const Protected = ({ allowedRole }) => {
     const token = useSelector((state) => state.user.token) || localStorage.getItem('token'); // Check localStorage if not in Redux
     const navigate = useNavigate(); 
-    const pathname = useLocation();
+    const location = useLocation();
+    const pathname = location.pathname;
 
     useEffect(() => {
         console.log(pathname);
@@ -22,8 +23,14 @@ const Protected = ({ allowedRole }) => {
 
     return (
         <div>
-            { pathname === "/quiz/**" || pathname === "/create-profile/**" ? <Navbar /> : ""}
-            {/* { pathname==="/quiz/**" ||"/create-profile/**" || "/quiz/start/*" ?<Navbar/>:""} */}
+            {(() => {
+            // Check if the pathname starts with "/quiz/" or "/create-profile/"
+            if (pathname.startsWith("/quiz/") || pathname.startsWith("/create-profile/")) {
+                return null; // Do not render Navbar
+            } else {
+                return <Navbar />; // Render Navbar
+            }
+        })()}
             <Outlet />
         </div>
     );

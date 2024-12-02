@@ -7,7 +7,8 @@ const {
     deleteSessionReport,
     getSessionReportByMentorId,
     getSessionReportByStudentId,
-    getSessionReportByCounselorId
+    getSessionReportByCounselorId,
+    getSessionByCounselorBookingId
 } = require('../controllers/sessionsReportsController');
 
 const router = express.Router();
@@ -43,5 +44,10 @@ router.get('/student/:student_id', getSessionReportByStudentId);
 // Get session reports by counselor ID
 // End point: /api/session-reports/counselor/:counselor_id
 router.get('/counselor/:counselor_id', getSessionReportByCounselorId);
+
+// Get session reports by counselor booking ID
+// End point: /api/session-reports/counselor-booking/:booking_id
+router.get('/counselor-booking/:booking_id', getSessionByCounselorBookingId);
+
 
 module.exports = router;

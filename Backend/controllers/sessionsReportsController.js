@@ -7,6 +7,8 @@ const createSessionReport = async (req, res) => {
         student_id,
         counselor_id,
         mentor_id,
+        mentor_booking_id,
+        counselor_booking_id,
         session_date,
         session_time,
         student_name,
@@ -27,9 +29,11 @@ const createSessionReport = async (req, res) => {
     try {
         const sessionReport = await prisma.session_reports.create({
             data: {
-                student_id,
-                counselor_id,
-                mentor_id,
+                student_id: parseInt(student_id),
+                counselor_id:parseInt(counselor_id),
+                mentor_id: parseInt(mentor_id),
+                mentor_booking_id: parseInt(mentor_booking_id),
+                counselor_booking_id: parseInt(counselor_booking_id),
                 session_date,
                 session_time,
                 student_name,
@@ -176,6 +180,24 @@ const getSessionReportByCounselorId = async (req, res) => {
 };
 
 
+const getSessionByCounselorBookingId = async (req, res) => {
+    const { booking_id } = req.params;
+    try {
+        const session = await prisma.session_reports.findFirst({
+            where: { counselor_booking_id: parseInt(booking_id) },
+            include: {
+                student: true,
+                counselor: true,
+                counselor_bookings: true
+            }
+        });
+        res.json(session);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'An error occurred while fetching the session.' });
+    }
+}
+
 module.exports = {
     createSessionReport,
     getSessionReports,
@@ -184,5 +206,6 @@ module.exports = {
     deleteSessionReport,
     getSessionReportByMentorId,
     getSessionReportByStudentId,
-    getSessionReportByCounselorId
+    getSessionReportByCounselorId,
+    getSessionByCounselorBookingId
 };

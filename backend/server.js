@@ -86,8 +86,11 @@ const sessionsReportsRoutes = require('./routes/sessionsReportsRoutes');
 const counselorBookingRoutes = require('./routes/counselorBookingRoutes');
 const mentorBookingRoutes = require('./routes/mentorBookingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-const masterRoutes = require('./routes/masterRoutes')
-// Use routes with a prefix
+// const meetingRoutes = require('./routes/meetingRoutes');
+const masterRoutes = require('./routes/masterRoutes');
+const eventRoutes = require('./routes/eventsRoutes');
+
+// Use routes with a prefixs
 app.use('/api/auth', userRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/counselor', counselorRoutes);
@@ -97,7 +100,10 @@ app.use('/api/session-reports', sessionsReportsRoutes);
 app.use('/api/counselor-booking', counselorBookingRoutes);
 app.use('/api/mentor-booking', mentorBookingRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/master', masterRoutes);
+// app.use('/api/meetings', meetingRoutes);
+app.use("/api/master", masterRoutes);
+app.use('/api/events', eventRoutes);
+
 // Initialize Socket.IO
 const messageRoutes = require('./routes/messageRoutes');
 const conversationRoutes = require('./routes/conversationRoutes');

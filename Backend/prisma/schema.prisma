@@ -534,9 +534,10 @@ model counselor_bookings {
   location                  String? // Location of the session
   created_at                DateTime @default(now()) // Timestamp when the booking was created
 
-  student      users                  @relation("student_bookings", fields: [student_id], references: [id]) // Relationship to User model for student
-  counselor    users                  @relation("counselor_bookings", fields: [counselor_id], references: [id]) // Relationship to User model for counselor
-  availability counselor_availability @relation(fields: [counselor_availability_id], references: [id]) // Relationship to availability
+  student         users                  @relation("student_bookings", fields: [student_id], references: [id]) // Relationship to User model for student
+  counselor       users                  @relation("counselor_bookings", fields: [counselor_id], references: [id]) // Relationship to User model for counselor
+  availability    counselor_availability @relation(fields: [counselor_availability_id], references: [id]) // Relationship to availability
+  session_reports session_reports[]
 
   @@map("counselor_bookings") // Specify the table name in snake_case
 }
@@ -568,9 +569,10 @@ model mentor_bookings {
   location               String? // Location of the session
   created_at             DateTime @default(now()) // Timestamp when the booking was created
 
-  student      users               @relation("student_mentor_bookings", fields: [student_id], references: [id]) // Relationship to User model for student
-  mentor       users               @relation("mentor_bookings", fields: [mentor_id], references: [id]) // Relationship to User model for mentor
-  availability mentor_availability @relation(fields: [mentor_availability_id], references: [id]) // Relationship to availability
+  student         users               @relation("student_mentor_bookings", fields: [student_id], references: [id]) // Relationship to User model for student
+  mentor          users               @relation("mentor_bookings", fields: [mentor_id], references: [id]) // Relationship to User model for mentor
+  availability    mentor_availability @relation(fields: [mentor_availability_id], references: [id]) // Relationship to availability
+  session_reports session_reports[]
 
   @@map("mentor_bookings") // Specify the table name in snake_case
 }
@@ -580,6 +582,8 @@ model session_reports {
   student_id            Int // ID of the student
   counselor_id          Int? // ID of the counselor (nullable)
   mentor_id             Int? // ID of the mentor (nullable)
+  mentor_booking_id     Int? // ID of the booking
+  counselor_booking_id  Int? // ID of the booking
   session_date          DateTime @db.Date // Date of the session
   session_time          DateTime @db.Time // Time of the session
   student_name          String? // Name of the student
@@ -598,9 +602,12 @@ model session_reports {
 
   created_at DateTime @default(now()) // Timestamp for record creation
 
-  student   users  @relation("StudentSessions", fields: [student_id], references: [id])
-  counselor users? @relation("CounselorSessions", fields: [counselor_id], references: [id])
-  mentor    users? @relation("MentorSessions", fields: [mentor_id], references: [id])
+  student         users            @relation("StudentSessions", fields: [student_id], references: [id])
+  counselor       users?           @relation("CounselorSessions", fields: [counselor_id], references: [id])
+  mentor          users?           @relation("MentorSessions", fields: [mentor_id], references: [id])
+  mentor_bookings mentor_bookings? @relation(fields: [mentor_booking_id], references: [id])
+
+  counselor_bookings counselor_bookings? @relation(fields: [counselor_booking_id], references: [id])
 
   @@map("session_reports")
 }

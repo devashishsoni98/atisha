@@ -33,6 +33,9 @@ import StudentCounselorBrowsing from "../pages/StudentBrowsing.jsx";
 import CounselorTrainingProgram from "../pages/CounselorTrainingProgram.jsx";
 import MentorBookings from "../pages/MentorBookings.jsx";
 import SomeComponent from "../pages/Chat.jsx";
+import EventPreview from "../pages/EventPreview.jsx";
+import InteractiveContent from "../pages/InteractiveContents.jsx";
+import CareerLibrary from "../pages/CareerLibrary.jsx";
 
 
 
@@ -134,8 +137,20 @@ const Router = createBrowserRouter([
         element: <Mentors/>
       },
       {
+        path: "/interactive-contents",
+        element: <InteractiveContent/>
+      },
+      {
+        path: "/career-library",
+        element: <CareerLibrary/>
+      },
+      {
         path: "/resources",
         element: <Resources/>
+      },
+      {
+        path: "/preview-events/:eventId",
+        element: <EventPreview/>
       },
       { path: "/", element: <Home /> },
       {
