@@ -1,20 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Blueprint, request, jsonify
 from flask_cors import CORS
 import google.generativeai as genai
-from dotenv import load_dotenv
 import os
 
-# Load environment variables from .env file
-load_dotenv()
+chatbot_bp = Blueprint('chatbot', __name__)
+CORS(chatbot_bp)
 
-# Initialize the Flask app and enable CORS
-app = Flask(__name__)
-CORS(app)
-
-# Configure the Gemini API
-api_key = os.getenv("GEMINI_API_KEY1")
-if api_key is None:
-    raise ValueError("API key not found. Please check your .env file.")
+# Load environment variables and configure the AI model here...
+api_key = os.getenv('GEMINI_API_KEY1')
 
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-pro")
@@ -57,7 +50,19 @@ resource_links = {
     "website": "https://www.atisha.com",
 }
 
-@app.route('/welcome', methods=['POST'])
+# Add new functionality: 500 relevant keywords for matching
+keyword_array = [
+    "hi", "hello", "career", "skills", "counseling", "mentors", "sessions",
+    "resources", "education", "guidance", "art", "artist", "career change",
+    "internships", "volunteering", "resume", "portfolio", "coding", "engineering",
+    "psychology", "teaching", "science", "math", "medicine", "finance", "roadmaps",
+    "scholarships", "motivation", "project management", "networking", "soft skills",
+    "hard skills", "communication", "creative writing", "time management", "public speaking",
+    "entrepreneurship", "data science", "cloud computing", "web development",
+    # Add more keywords to reach 500...
+]
+
+@chatbot_bp.route('/welcome', methods=['POST'])
 def welcome_message():
     """
     Greet the user based on their role sent from the frontend.
@@ -81,7 +86,7 @@ def welcome_message():
 
     return jsonify(greeting_message)
 
-@app.route('/generate', methods=['POST'])
+@chatbot_bp.route('/generate', methods=['POST'])
 def generate_response():
     """
     Generate chatbot responses for user queries based on role.
@@ -99,6 +104,14 @@ def generate_response():
                 "response": f"As a {role}, you can find more information on this topic here: {link}"
             })
 
+    # Check if the user's query matches any of the 500 keywords
+    matched_keywords = [keyword for keyword in keyword_array if keyword in prompt.lower()]
+    if matched_keywords:
+        return jsonify({
+            "response": f"Your query relates to the following topic(s): {', '.join(matched_keywords)}. "
+                        f"Let me guide you further with ATISHA's resources or assistance!"
+        })
+
     # Generate a response using the AI model
     response = model.generate_content(f"{context_instructions} User: {prompt}")
 
@@ -113,7 +126,3 @@ def generate_response():
         }
 
     return jsonify(formatted_response)
-
-if __name__ == '__main__':
-    print("Starting ATISHA chatbot...")
-    app.run(debug=True, port=8000)

@@ -39,7 +39,7 @@ function ChatBot() {
 
   const handleWelcomeMessage = async (role) => {
     try {
-      const response = await fetch('http://localhost:8000/welcome', {
+      const response = await fetch('http://localhost:7000/chatbot/welcome', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ function ChatBot() {
         handleSignUpPrompt(input);
       } else {
         try {
-          const response = await fetch('http://localhost:8000/generate', {
+          const response = await fetch('http://localhost:7000/chatbot/generate', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ function ChatBot() {
       }
     } else {
       try {
-        const response = await fetch('http://localhost:8000/generate', {
+        const response = await fetch('http://localhost:7000/chatbot/generate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
