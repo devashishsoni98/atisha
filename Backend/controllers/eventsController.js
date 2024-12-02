@@ -6,7 +6,7 @@ const fetchUpcomingEvents = async (req, res) => {
   try {
     const upcomingEvents = await prisma.events.findMany({
       where: {
-        status: 'pending', // Filter events with status "scheduled"
+        status: 'scheduled', // Filter events with status "scheduled"
         start_date: {
           gte: new Date(), // Ensure start_date is greater than or equal to the current date
         },
@@ -38,6 +38,7 @@ const fetchCompletedEvents = async (req, res) => {
       },
     });
 
+    console.log(completedEvents);
     res.status(200).json(completedEvents);
   } catch (error) {
     console.error('Error fetching completed events:', error);
