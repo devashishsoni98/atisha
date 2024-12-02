@@ -1,9 +1,10 @@
 import axios from 'axios';
+import apiBackend from '../utils/api'
 
 const BASE_URL = 'http://localhost:4000/api/counselor-booking';
 
 export const fetchAvailability = async (counselorId) => {
-    const response = await axios.get(`${BASE_URL}/get_availability/${counselorId}`);
+    const response = await apiBackend.get(`/counselor-booking/get_availability/${counselorId}`);
     return response.data.available_slots;
 };
 
@@ -22,7 +23,7 @@ export const setAvailability = async (counselorId, date, startTime, endTime) => 
 
     try {
         // Make the API request to set availability
-        const response = await axios.post(`${BASE_URL}/set_availability`, payload);
+        const response = await apiBackend.post(`/counselor-booking/set_availability`, payload);
         return response.data; // Return the response data
     } catch (error) {
         console.error('Error setting availability:', error);
@@ -34,12 +35,12 @@ export const setAvailability = async (counselorId, date, startTime, endTime) => 
 
 
 export const fetchBookingsForApproval = async (counselorId) => {
-    const response = await axios.get(`${BASE_URL}/get_bookings_for_approval/${counselorId}`);
+    const response = await apiBackend.get(`/counselor-booking/get_bookings_for_approval/${counselorId}`);
     return response.data;
 };
 
 export const updateBookingStatus = async (bookingId, status) => {
-    const response = await axios.post(`${BASE_URL}/update_booking_status`, {
+    const response = await apiBackend.post(`${BASE_URL}/update_booking_status`, {
         booking_id: bookingId,
         status
     });
@@ -47,13 +48,13 @@ export const updateBookingStatus = async (bookingId, status) => {
 };
 
 export const fetchBookingsForStarting = async (counselorId) => {
-    const response = await axios.get(`${BASE_URL}/get_bookings_for_starting/${counselorId}`);
+    const response = await apiBackend.get(`/counselor-booking/get_bookings_for_starting/${counselorId}`);
     return response.data;
 };
 
 export async function fetchCounselorsData() {
     try {
-        const response = await axios.get('http://localhost:4000/api/counselor');
+        const response = await apiBackend.get('/counselor');
         if (!response.data) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -69,7 +70,7 @@ export async function fetchSessionByStudentId (studentId) {
     const stundent_id = await studentId;
 
     try {
-        const session = await axios.get(`http://localhost:4000/api/counselor-booking/get_bookings_for_student/${stundent_id}`);
+        const session = await apiBackend.get(   `/counselor-booking/get_bookings_for_student/${stundent_id}`);
         console.log(session);
         return session.data
     }
@@ -81,7 +82,7 @@ export async function fetchSessionByStudentId (studentId) {
 
 export async function fetchCounselorSlots(counselorId) {
     try {
-        const response = await fetch(`http://localhost:4000/api/counselor-booking/get_availability/${counselorId}`);
+        const response = await apiBackend.get(`/counselor-booking/get_availability/${counselorId}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -95,7 +96,7 @@ export async function fetchCounselorSlots(counselorId) {
 export async function bookSlot(studentId, counselorAvailabilityId) {
     try {
         console.log({studentId, counselorAvailabilityId});
-        const response = await axios.post('http://localhost:4000/api/counselor-booking/book_slot',
+        const response = await apiBackend.post('/counselor-booking/book_slot',
 
             { student_id: studentId, counselor_availability_id: counselorAvailabilityId },
         );
@@ -112,7 +113,7 @@ export async function bookSlot(studentId, counselorAvailabilityId) {
 
 export async function fetchStudentCounselorBookings(studentId) {
     try {
-        const response = await axios.get(`http://localhost:4000/api/counselor-booking/get_bookings_for_student/${studentId}`);
+        const response = await apiBackend.get(`/counselor-booking/get_bookings_for_student/${studentId}`);
         if (!response) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

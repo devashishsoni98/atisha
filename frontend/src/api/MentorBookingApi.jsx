@@ -1,9 +1,10 @@
-import axios from 'axios';
+
+import apibackend from '../utils/api';
 
 const BASE_URL = 'http://localhost:4000/api/mentor-booking';
 
 export const fetchAvailability = async (mentorId) => {
-    const response = await axios.get(`${BASE_URL}/get_availability/${mentorId}`);
+    const response = await apibackend.get(`/mentor-booking/get_availability/${mentorId}`);
     return response.data.available_slots;
 };
 
@@ -21,7 +22,7 @@ export const setAvailability = async (mentorId, date, startTime, endTime) => {
 
     try {
         // Make the API request to set availability
-        const response = await axios.post(`${BASE_URL}/set_availability`, payload);
+        const response = await apibackend.post(`/mentor-booking/set_availability`, payload);
         return response.data; // Return the response data
     } catch (error) {
         console.error('Error setting availability:', error);
@@ -30,12 +31,12 @@ export const setAvailability = async (mentorId, date, startTime, endTime) => {
 };
 
 export const fetchBookingsForApproval = async (mentorId) => {
-    const response = await axios.get(`${BASE_URL}/get_bookings_for_approval/${mentorId}`);
+    const response = await apibackend.get(`/mentor-booking/get_bookings_for_approval/${mentorId}`);
     return response.data;
 };
 
 export const updateBookingStatus = async (bookingId, status) => {
-    const response = await axios.post(`${BASE_URL}/update_booking_status`, {
+    const response = await apibackend.post(`/mentor-booking/update_booking_status`, {
         booking_id: bookingId,
         status
     });
@@ -43,13 +44,13 @@ export const updateBookingStatus = async (bookingId, status) => {
 };
 
 export const fetchBookingsForStarting = async (mentorId) => {
-    const response = await axios.get(`${BASE_URL}/get_bookings_for_starting/${mentorId}`);
+    const response = await apibackend.get(`/mentor-booking/get_bookings_for_starting/${mentorId}`);
     return response.data;
 };
 
 export async function fetchMentorsData() {
     try {
-        const response = await axios.get('http://localhost:4000/api/mentor');
+        const response = await apibackend.get('/mentor');
         if (!response.data) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -65,7 +66,7 @@ export async function fetchSessionByStudentId(studentId) {
     const student_id = await studentId;
 
     try {
-        const session = await axios.get(`http://localhost:4000/api/mentor-booking/get_bookings_for_student/${student_id}`);
+        const session = await apibackend.get(`/mentor-booking/get_bookings_for_student/${student_id}`);
         console.log(session);
         return session.data;
     } catch (error) {
@@ -77,7 +78,7 @@ export async function fetchSessionByStudentId(studentId) {
 
 export async function fetchMentorSlots(mentorId) {
     try {
-        const response = await fetch(`http://localhost:4000/api/mentor-booking/get_availability/${mentorId}`);
+        const response = await apibackend(`/mentor-booking/get_availability/${mentorId}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -91,7 +92,7 @@ export async function fetchMentorSlots(mentorId) {
 export async function bookSlot(studentId, mentorAvailabilityId) {
     try {
         console.log({ studentId, mentorAvailabilityId });
-        const response = await axios.post('http://localhost:4000/api/mentor-booking/book_slot', {
+        const response = await apibackend.post('http://localhost:4000/api/mentor-booking/book_slot', {
             student_id: studentId,
             mentor_availability_id: mentorAvailabilityId
         });
@@ -108,7 +109,7 @@ export async function bookSlot(studentId, mentorAvailabilityId) {
 
 export async function fetchStudentMentorBookings(studentId) {
     try {
-        const response = await axios.get(`http://localhost:4000/api/mentor-booking/get_bookings_for_student/${studentId}`);
+        const response = await apibackend.get(`http://localhost:4000/api/mentor-booking/get_bookings_for_student/${studentId}`);
         if (!response) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
