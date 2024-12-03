@@ -150,28 +150,27 @@ model users {
 
   user_levels          user_levels[]
   task_recommendations task_recommendations[]
-  sent_messages        messages[]             @relation("sentMessages")
-  received_messages    messages[]             @relation("receivedMessages")
   user1_conversations  conversations[]        @relation("User1Conversations")
   user2_conversations  conversations[]        @relation("User2Conversations")
   chat_messages        chat_messages[]
 
-  webex_tokens     webex_tokens?     @relation(fields: [id], references: [user_id], onDelete: Cascade)
+  webex_tokens     webex_tokens?
   event_attendance event_attendance[]
+
   @@map("users")
 }
 
-model messages {
-  id          Int      @id @default(autoincrement())
-  sender_id   Int
-  receiver_id Int
-  content     String   @db.VarChar(500)
-  createdAt   DateTime @default(now())
+model notifications {
+  id          Int       @id @default(autoincrement()) // Unique identifier for the notification
+  recipientId String // ID of the user receiving the notification
+  content     String // The message content of the notification
+  category    String // Category of the notification (e.g., 'message', 'alert', etc.)
+  readAt      DateTime? // Timestamp when the notification was read (nullable)
+  canceledAt  DateTime? // Timestamp when the notification was canceled (nullable)
+  createdAt   DateTime  @default(now()) // Timestamp when the notification was created
 
-  sender   users @relation("sentMessages", fields: [sender_id], references: [id])
-  receiver users @relation("receivedMessages", fields: [receiver_id], references: [id])
-
-  @@map("messages")
+  @@index([recipientId]) // Index for faster queries by recipientId
+  @@map("notifications")
 }
 
 // Chat-related Prisma Models
@@ -434,7 +433,8 @@ model events {
 
   event_requests      event_requests[]
   event_registrations event_registrations[]
-  event_attendance event_attendance[]
+  event_attendance    event_attendance[]
+
   @@map("events")
 }
 
@@ -470,14 +470,14 @@ model event_registrations {
 //Define the quiz_questions model
 
 model quiz_questions {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   category   String
-  class     Int
+  class      Int
   traits     String?
-  question   String   @unique
+  question   String    @unique
   answer     String?
   options    String[]
-  created_at DateTime @default(now())
+  created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
   @@map("quiz_questions")
@@ -485,7 +485,7 @@ model quiz_questions {
 
 model user_traits_status {
   id                  Int      @id @default(autoincrement()) // Unique identifier for each record
-  user_id             Int  @unique// To associate the record with a specific user
+  user_id             Int      @unique // To associate the record with a specific user
   holland_code_traits String[] // Top Holland Code trait (array of text)
   big_five_traits     String[] // Top Big Five Personality trait (array of text)
   aptitude_status     String? // Aptitude Test status (e.g., Low, Mid, High)
@@ -661,34 +661,32 @@ model task_recommendations {
   @@map("task_recommendations")
 }
 
-
 // Prisma Model for 'webex_tokens'
 model webex_tokens {
-  id            Int       @id @default(autoincrement())
-  user_id        Int       @unique
-  access_token   String
-  refresh_token  String
-  expires_in     Int
-  token_type     String
-  created_at     DateTime  @default(now())
+  id            Int      @id @default(autoincrement())
+  user_id       Int      @unique
+  access_token  String
+  refresh_token String
+  expires_in    Int
+  token_type    String
+  created_at    DateTime @default(now())
 
-  users          users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
- @@map("webex_tokens")
+  users users @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("webex_tokens")
 }
-
 
 // Prisma Model for 'event_attendance'
 model event_attendance {
   id                Int       @id @default(autoincrement())
-  event_id           Int
-  user_id            Int
-  attendance_status  Boolean   @default(false)
-  attendance_time    DateTime?
+  event_id          Int
+  user_id           Int
+  attendance_status Boolean   @default(false)
+  attendance_time   DateTime?
 
-  events             events    @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  users              users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  events events @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users  users  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([event_id, user_id])
-
   @@map("event_attendance")
 }

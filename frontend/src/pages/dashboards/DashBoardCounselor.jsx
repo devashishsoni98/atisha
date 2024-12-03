@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import SessionsCounselorDashboard from "../SessionsCounselorDashboard";
 import { EventsContent } from "./EventsContent";
+import CounselorBooking from "../CounselorBooking";
 
 const fadeIn = {
   initial: { opacity: 0 },
@@ -31,7 +32,7 @@ const slideIn = {
   exit: { x: 20, opacity: 0 },
 };
 
-export default function CounselorDashboard() {
+export default function DashBoardCounselor() {
   const [activeTab, setActiveTab] = useState("Profile");
   const [counselorData, setCounselorData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -96,7 +97,7 @@ export default function CounselorDashboard() {
       case "Workspace":
         return <WorkspaceContent pastSessions={[]} />;
       case "Sessions":
-        return <SessionsContent />;
+        return <CounselorBooking />;
       case "Events":
         return <EventsContent />;
       default:

@@ -6,7 +6,7 @@ import {ExistingBookings} from "../components/couselorBooking/ExistingBookings.j
 import {useSelector} from "react-redux";
 
 
-const CounselorDashboard = () => {
+const CounselorBooking = () => {
     const counselorId =  useSelector((state) => state.user.id) || localStorage.getItem('userId') ; // Hardcoded for this example
     const [activeTab, setActiveTab] = useState('availability');
 
@@ -17,13 +17,12 @@ const CounselorDashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <header className="bg-blue-600 text-white py-6">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px
--8">
+        <div className="min-h-screen bg-gray-50 rounded-3xl ">
+            {/* <header className="bg-blue-600 text-white py-6 rounded-t-3xl">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h1 className="text-3xl font-bold">Counselor Dashboard</h1>
                 </div>
-            </header>
+            </header> */}
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="mb-8">
@@ -54,5 +53,5 @@ const CounselorDashboard = () => {
     );
 };
 
-export default CounselorDashboard;
+export default CounselorBooking;
 
