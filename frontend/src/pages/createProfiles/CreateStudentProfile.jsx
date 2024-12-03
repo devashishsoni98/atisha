@@ -173,51 +173,6 @@ export default function CreateStudentProfile() {
     });
   };
 
-  // const handleAddOther = async (type) => {
-  //   const otherValue = formData[`other${type.charAt(0).toUpperCase() + type.slice(1)}`];
-  //   if (otherValue.trim()) {
-  //     try {
-  //       let apiUrl;
-  //       switch (type) {
-  //         case 'subjects':
-  //           apiUrl = 'http://localhost:4000/api/master/subjects';
-  //           break;
-  //         case 'sports':
-  //           apiUrl = 'http://localhost:4000/api/master/sports';
-  //           break;
-  //         case 'hobbies':
-  //           apiUrl = 'http://localhost:4000/api/master/hobbies';
-  //           break;
-  //         default:
-  //           throw new Error('Invalid type');
-  //       }
-  //       const response = await axios.post(apiUrl, { name: otherValue }, {
-  //         headers: { 'Authorization': `Bearer ${token}` }
-  //       });
-  //       const newItems = response.data.map(item => {
-  //         if (item.newValue) {
-  //           return { id: item.newValue.id, name: item.newValue[`${type.slice(0, -1)}_name`] || item.newValue.name };
-  //         } else if (item.existingValue) {
-  //           return { id: item.existingValue.id, name: item.existingValue.name };
-  //         }
-  //         return null;
-  //       }).filter(Boolean);
-  //       setFormData((prev) => ({
-  //         ...prev,
-  //         [type]: [...prev[type], ...newItems.map(item => item.id)],
-  //         [`other${type.charAt(0).toUpperCase() + type.slice(1)}`]: "",
-  //         [`other${type.charAt(0).toUpperCase() + type.slice(1)}Open`]: false,
-  //       }));
-  //       setCustomItems((prev) => ({
-  //         ...prev,
-  //         [type]: [...prev[type], ...newItems]
-  //       }));
-  //     } catch (error) {
-  //       console.error(`Error adding other ${type}:`, error);
-  //       setErrors((prev) => ({ ...prev, [type]: `Failed to add ${type}. Please try again.` }));
-  //     }
-  //   }
-  // };
   const handleAddOther = async (type) => {
     const otherValue = formData[`other${type.charAt(0).toUpperCase() + type.slice(1)}`];
     if (otherValue.trim()) {
