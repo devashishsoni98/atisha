@@ -141,7 +141,25 @@ const EventCreationForm = ({ onClose }) => {
           {errors.event_mode && <p className="text-red-500 text-sm mt-1">{errors.event_mode.message}</p>}
         </div>
 
-        {eventMode === 'online' || 'hybrid' && (
+        {eventMode === 'online'  && (
+          <div>
+            <label htmlFor="link" className="block mb-1 font-medium">Event Link</label>
+            <input
+              {...register('link', { 
+                required: 'Event link is required for online events',
+                pattern: {
+                  value: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
+                  message: 'Please enter a valid URL'
+                }
+              })}
+              type="url"
+              id="link"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.link && <p className="text-red-500 text-sm mt-1">{errors.link.message}</p>}
+          </div>
+        )}
+        {eventMode === 'hybrid'  && (
           <div>
             <label htmlFor="link" className="block mb-1 font-medium">Event Link</label>
             <input
@@ -160,7 +178,8 @@ const EventCreationForm = ({ onClose }) => {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-4">
+        {eventMode === 'offline' && (
+          <div className="grid grid-cols-2 gap-4">
           <div>
             <label htmlFor="city" className="block mb-1 font-medium">City</label>
             <input
@@ -182,6 +201,54 @@ const EventCreationForm = ({ onClose }) => {
             {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state.message}</p>}
           </div>
         </div>
+        )}
+        {eventMode === 'hybrid' && (
+          <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="city" className="block mb-1 font-medium">City</label>
+            <input
+              {...register('city', { required: 'City is required' })}
+              type="text"
+              id="city"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city.message}</p>}
+          </div>
+          <div>
+            <label htmlFor="state" className="block mb-1 font-medium">State</label>
+            <input
+              {...register('state', { required: 'State is required' })}
+              type="text"
+              id="state"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state.message}</p>}
+          </div>
+        </div>
+        )}
+
+        {/* <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="city" className="block mb-1 font-medium">City</label>
+            <input
+              {...register('city', { required: 'City is required' })}
+              type="text"
+              id="city"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city.message}</p>}
+          </div>
+          <div>
+            <label htmlFor="state" className="block mb-1 font-medium">State</label>
+            <input
+              {...register('state', { required: 'State is required' })}
+              type="text"
+              id="state"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state.message}</p>}
+          </div>
+        </div> */}
 
         <div className="grid grid-cols-2 gap-4">
           <div>
