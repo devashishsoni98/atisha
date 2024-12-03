@@ -167,7 +167,10 @@ def recommend_institutes(city,state):
 @events_bp.route('/create_event', methods=['POST'])
 def create_event():
     data = request.json
+
+    # Extract fields from the request body
     name = data.get("name")
+    image = data.get("image")  # Extract image URL
     description = data.get("description")
     event_type = data.get("event_type")
     start_date = data.get("start_date")
@@ -176,42 +179,34 @@ def create_event():
     capacity = data.get("capacity")
     link = data.get("link")
     event_mode = data.get("event_mode")
-    city  = data.get("city")
+    city = data.get("city")
     state = data.get("state")
     organizer_id = data.get("organizer_id")
 
+    # Validate required fields
     if not name or not event_type or not start_date or not event_mode or not organizer_id:
         return jsonify({"error": "Missing required fields"}), 400
 
-    # Insert into events table
+    # SQL query with 13 placeholders
     query = """
-        INSERT INTO events (name, description, event_type, start_date, end_date, duration, capacity, link, event_mode, city, state, organizer_id)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO events (name, image, description, event_type, start_date, end_date, duration, capacity, link, event_mode, city, state, organizer_id)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING id;
     """
-    with conn.cursor() as cursor:
-        cursor.execute(query, (name, description, event_type, start_date, end_date, duration, capacity, link, event_mode, city, state, organizer_id))
-        event_id = cursor.fetchone()[0]
-    conn.commit()
+    try:
+        with conn.cursor() as cursor:
+            # Ensure the tuple matches the query
+            cursor.execute(query, (name, image, description, event_type, start_date, end_date, duration, capacity, link, event_mode, city, state, organizer_id))
+            event_id = cursor.fetchone()[0]
+        conn.commit()
 
-    # Step 2: Recommend counselors/mentors or institutes based on event mode
-    recommendations = {"counselors_and_mentors": [], "institutes": []}
-    
-    if event_mode == 'online':
-        recommendations["counselors_and_mentors"] = recommend_counselors_mentors(description)
-    elif event_mode == 'offline':
-        recommendations["counselors_and_mentors"] = recommend_counselors_mentors(description)
-        recommendations["institutes"] = recommend_institutes(city, state)
-    elif event_mode == 'hybrid':
-        recommendations["counselors_and_mentors"] = recommend_counselors_mentors(description)
-        recommendations["institutes"] = recommend_institutes(city, state)
+        # Success response
+        return jsonify({"message": "Event created successfully", "event_id": event_id}), 201
 
-    return jsonify({
-        "message": "Event created successfully",
-        "event_id": event_id,
-        "recommendations": recommendations
-    }), 201
-
+    except Exception as e:
+        conn.rollback()
+        print(f"Error: {e}")
+        return jsonify({"error": "Failed to create event", "details": str(e)}), 500
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------
 

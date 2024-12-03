@@ -156,6 +156,8 @@ model users {
   user2_conversations  conversations[]        @relation("User2Conversations")
   chat_messages        chat_messages[]
 
+  webex_tokens     webex_tokens?     @relation(fields: [id], references: [user_id], onDelete: Cascade)
+  event_attendance event_attendance[]
   @@map("users")
 }
 
@@ -412,27 +414,27 @@ model programs {
 }
 
 model events {
-  id                  Int                   @id @default(autoincrement()) @map("id")
-  name                String                @map("name") @db.VarChar(255)
-  description         String?               @map("description") @db.Text
-  event_type          event_type_enum       @map("event_type")
-  start_date          DateTime              @map("start_date")
-  end_date            DateTime?             @map("end_date")
-  duration            Int? // Store duration as an integer (in seconds or minutes)
-  capacity            Int?                  @map("capacity")
-  link                String?               @map("link") @db.VarChar(255)
-  status              String?               @default("pending") @map("status") @db.VarChar(50)
-  event_mode          event_mode_enum       @map("event_mode")
-  organizer_id        Int?                  @map("organizer_id")
-  created_at          DateTime              @default(now()) @map("created_at")
-  updated_at          DateTime?             @updatedAt @map("updated_at")
-  city                String?               @map("city") @db.VarChar(50)
-  state               String?               @map("state") @db.VarChar(50)
-  organizer           users?                @relation(fields: [organizer_id], references: [id])
-  image               String?               @map("image") @db.VarChar(255)
+  id           Int             @id @default(autoincrement()) @map("id")
+  name         String          @map("name") @db.VarChar(255)
+  image        String
+  description  String?         @map("description") @db.Text
+  event_type   event_type_enum @map("event_type")
+  start_date   DateTime        @map("start_date")
+  end_date     DateTime?       @map("end_date")
+  duration     Int? // Store duration as an integer (in seconds or minutes)
+  capacity     Int?            @map("capacity")
+  link         String?         @map("link") @db.VarChar(255)
+  status       String?         @default("pending") @map("status") @db.VarChar(50)
+  event_mode   event_mode_enum @map("event_mode")
+  organizer_id Int?            @map("organizer_id")
+  created_at   DateTime        @default(now()) @map("created_at")
+  city         String?         @map("city") @db.VarChar(50)
+  state        String?         @map("state") @db.VarChar(50)
+  organizer    users?          @relation(fields: [organizer_id], references: [id])
+
   event_requests      event_requests[]
   event_registrations event_registrations[]
-
+  event_attendance event_attendance[]
   @@map("events")
 }
 
@@ -470,20 +472,20 @@ model event_registrations {
 model quiz_questions {
   id         Int      @id @default(autoincrement())
   category   String
-  grade      Int
+  class     Int
   traits     String?
   question   String   @unique
-  answer     String
+  answer     String?
   options    String[]
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime? @updatedAt
 
   @@map("quiz_questions")
 }
 
 model user_traits_status {
   id                  Int      @id @default(autoincrement()) // Unique identifier for each record
-  user_id             Int // To associate the record with a specific user
+  user_id             Int  @unique// To associate the record with a specific user
   holland_code_traits String[] // Top Holland Code trait (array of text)
   big_five_traits     String[] // Top Big Five Personality trait (array of text)
   aptitude_status     String? // Aptitude Test status (e.g., Low, Mid, High)
@@ -657,4 +659,36 @@ model task_recommendations {
   task  tasks @relation(fields: [task_id], references: [task_id])
 
   @@map("task_recommendations")
+}
+
+
+// Prisma Model for 'webex_tokens'
+model webex_tokens {
+  id            Int       @id @default(autoincrement())
+  user_id        Int       @unique
+  access_token   String
+  refresh_token  String
+  expires_in     Int
+  token_type     String
+  created_at     DateTime  @default(now())
+
+  users          users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+ @@map("webex_tokens")
+}
+
+
+// Prisma Model for 'event_attendance'
+model event_attendance {
+  id                Int       @id @default(autoincrement())
+  event_id           Int
+  user_id            Int
+  attendance_status  Boolean   @default(false)
+  attendance_time    DateTime?
+
+  events             events    @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users              users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([event_id, user_id])
+
+  @@map("event_attendance")
 }

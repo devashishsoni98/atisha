@@ -7,6 +7,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 from flask import Flask, request, jsonify
+from flask import request, jsonify, url_for
 from flask_cors import CORS, cross_origin  
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -109,7 +110,7 @@ if students.empty:
     # exit()  # Exit if no student data is available
 
 # Print columns for debugging purposes
-print("Students DataFrame Columns:", students.columns)  
+# print("Students DataFrame Columns:", students.columns)
 
 # Check if required columns exist before combining them
 required_columns = ['career1', 'career2', 'career3']
@@ -187,7 +188,7 @@ def find_matches(user_id=None, counselor_id=None, mentor_id=None):
 
 # Function to call the second API asynchronously
 def call_second_api(student_class):
-    second_api_url = 'http://127.0.0.1:7000/generate_questions'  # Replace with the actual URL
+    second_api_url = 'http://127.0.0.1:7000/questions/generate_questions'  # Replace with the actual URL
     try:
         # Send a POST request to the second API without waiting for a response
         requests.post(second_api_url, json={'class': student_class})
@@ -342,20 +343,22 @@ def calculate_results():
         try:
             with conn.cursor() as cursor:
                 cursor.execute("""
-                    INSERT INTO userTraitsStatus(
-                        userId, 
-                        hollandCodeTraits, 
-                        bigFiveTraits,
-                        aptitudeStatus, 
-                        iqStatus
-                    ) VALUES (%s, %s, %s, %s, %s)
-                """, (
-                    user_id,
-                    top_holland_traits,
-                    top_big_five_traits,
-                    aptitude_status,
-                    iq_status
-                ))
+            INSERT INTO user_traits_status(
+                user_id, 
+                holland_code_traits, 
+                big_five_traits,
+                aptitude_status, 
+                iq_status,
+                traits_counter
+            ) VALUES (%s, %s, %s, %s, %s, 1)
+            ON CONFLICT (user_id) DO UPDATE SET traits_counter = user_traits_status.traits_counter + 1
+        """, (
+            user_id,
+            top_holland_traits,
+            top_big_five_traits,
+            aptitude_status,
+            iq_status
+        ))
             conn.commit()
         except Exception as e:
             return jsonify({"error": "Failed to store results", "details": str(e)}), 500
@@ -377,8 +380,35 @@ def calculate_results():
             }
         }
 
+        # Step 8 : Call another api
+        # Step 3: Prepare the payload for /recommend_careers API
+        payload = {"user_id": user_id}
+
+        # Step 4: Make a request to the /recommend_careers API
+        recommend_url = url_for('recommend_careers.recommend_careers', _external=True)
+        response = requests.post(recommend_url, json=payload)
+
+        # Step 5: Handle response from /recommend_careers API
+        if response.status_code == 200:
+            career_recommendations = response.json()
+
+            # Step 6: Merge the results of both APIs
+            result["career_recommendations"] = career_recommendations
+            return jsonify(result), 200
+        else:
+            return jsonify({
+                "status": "error",
+                "message": "Failed to fetch career recommendations"
+            }), response.status_code
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
         # Display the result on the console
-        print("Result sent to client:", result)
+        # print("Result sent to client:", result)
 
         # Return the JSON response
         return jsonify(result)
@@ -398,100 +428,6 @@ def calculate_status(score, total_questions):
         return "Mid"
     else:
         return "High"
-    
-
-
-def generate_career_recommendations(holland_traits, big_five_traits, aptitude_status, iq_status):
-    """Generates career recommendations using Gemini API."""
-    prompt = f"""
-You are an AI model specializing in career recommendations. Based on the given traits, recommend the top 3 most suitable careers. Here is the data:
-
-Holland Code Traits:
-- Top Traits: {', '.join(holland_traits)}
-
-Big Five Personality Traits:
-- Top Traits: {', '.join(big_five_traits)}
-
-Aptitude Status:
-- {aptitude_status}
-
-IQ Status:
-- {iq_status}
-
-Provide concise career recommendations. List the top 3 careers.
-    """
-    try:
-        response = model.generate_content(prompt)
-        # Extract recommended careers
-        text_response = response.text
-        careers = [line.strip() for line in text_response.split("\n") if line.strip()]
-        return careers[:3]  # Return top 3 careers
-    except Exception as e:
-        raise Exception(f"Gemini API Error: {str(e)}")
-
-@quiz_bp.route('/recommend_careers', methods=['POST'])
-def recommend_careers():
-    data = request.json
-    user_id = data.get("user_id")
-
-    if not user_id:
-        return jsonify({"error": "User ID is required"}), 400
-
-    # Fetch user traits from the database
-    query = """
-        SELECT hollandcodetraits, bigfivetraits, aptitudestatus, iqstatus
-        FROM userTraitsStatus
-        WHERE userId = %s
-        ORDER BY createdAt DESC
-        LIMIT 1;
-    """
-    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-        cursor.execute(query, (user_id,))
-        user_traits = cursor.fetchone()
-
-    if not user_traits:
-        return jsonify({"error": "No traits found for the given user ID"}), 404
-
-    holland_traits = user_traits["hollandcodetraits"]
-    big_five_traits = user_traits["bigfivetraits"]
-    aptitude_status = user_traits["aptitudestatus"]
-    iq_status = user_traits["iqstatus"]
-
-    # Generate career recommendations using Gemini
-    try:
-        recommended_careers = generate_career_recommendations(
-            holland_traits,
-            big_five_traits,
-            aptitude_status,
-            iq_status
-        )
-
-        # Ensure we have exactly 3 recommendations
-        while len(recommended_careers) < 3:
-            recommended_careers.append("Career Placeholder")
-
-        # Store the recommended careers in the database
-        with conn.cursor() as cursor:
-            cursor.execute("""
-                INSERT INTO recommendedCareers (userId, career1, career2, career3)
-                VALUES (%s, %s, %s, %s)
-            """, (
-                user_id,
-                recommended_careers[0],
-                recommended_careers[1],
-                recommended_careers[2]
-            ))
-        conn.commit()
-
-    except Exception as e:
-        conn.rollback()  # Rollback if any error occurs
-        return jsonify({"error": "Failed to generate recommendations", "details": str(e)}), 500
-
-    # Return recommendations as JSON
-    return jsonify({
-        "user_id": user_id,
-        "recommended_careers": recommended_careers
-    })
 
 
 # Endpoint to search for matches based on student ID (for counselors)
