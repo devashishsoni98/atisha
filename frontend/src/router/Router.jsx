@@ -126,7 +126,7 @@ const Router = createBrowserRouter([
         element: <CounselorTrainingProgram />,
       },
       {
-        path: "/chats",
+      path: "/chats",
         element: <SomeComponent />,
       },
     ],
@@ -154,7 +154,7 @@ const Router = createBrowserRouter([
         element: <Resources/>
       },
       {
-        path: "/preview-events/:eventId",
+        path: "/preview-events/:id",
         element: <EventPreview/>
       },
       { path: "/", element: <Home /> },

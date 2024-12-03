@@ -79,10 +79,10 @@ export async function fetchSessionByStudentId(studentId) {
 export async function fetchMentorSlots(mentorId) {
     try {
         const response = await apibackend(`/mentor-booking/get_availability/${mentorId}`);
-        if (!response.ok) {
+        if (!response.data) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return await response.json();
+        return await response.data;
     } catch (error) {
         console.error("Error fetching mentor slots:", error);
         return null;

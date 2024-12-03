@@ -140,12 +140,12 @@
 // //         <p className="text-gray-600 text-sm line-clamp-3 mb-6">{event.description}</p>
         
 // //         <div className="flex flex-col sm:flex-row gap-3">
-// //           <a 
+// //           <div
 // //             href={`/events/details/${event.id}`}
 // //             className="flex-1 py-2 px-4 text-sm font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 text-center"
 // //           >
 // //             {isCompleted ? 'View Summary' : 'View Details'}
-// //           </a>
+// //           </div >
 // //           {!isCompleted && (
 // //             <button 
 // //               onClick={() => handleJoinEvent(event.id)}
@@ -416,14 +416,14 @@
 //         <p className="text-gray-600 text-sm line-clamp-3 mb-6">{event.description}</p>
         
 //         <div className="flex flex-col sm:flex-row gap-3">
-//           <motion.a 
+//           <motion.div
 //             whileHover={{ scale: 1.02 }}
 //             whileTap={{ scale: 0.98 }}
 //             href={`/events/details/${event.id}`}
 //             className="flex-1 py-2 px-4 text-sm font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 text-center"
 //           >
 //             {isCompleted ? 'View Summary' : 'View Details'}
-//           </motion.a>
+//           </motion.div >
 //           {!isCompleted && (
 //             <motion.button 
 //               whileHover={{ scale: 1.02 }}
@@ -529,6 +529,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getUpcommingEvents, getCompletedEvents } from '../api/EventsApi';
+import {Link} from "react-router-dom";
 
 const WorkshopEventsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -624,18 +625,23 @@ const WorkshopEventsPage = () => {
         <p className="text-gray-600 text-sm line-clamp-3 mb-6">{event.description}</p>
         
         <div className="flex flex-col sm:flex-row gap-3">
-          <motion.a 
+            <Link to={`/preview-events/${event.id}`}
+            className="flex-1 py-2 px-4 text-sm font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 text-center"
+            >
+          <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             href={event.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 py-2 px-4 text-sm font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 text-center"
+            className=""
           >
             {isCompleted ? 'View Summary' : 'View Details'}
-          </motion.a>
+
+          </motion.div >
+            </Link>
           {!isCompleted && (
-            <motion.button 
+            <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="flex-1 py-2 px-4 text-sm font-semibold rounded-full bg-green-600 text-white hover:bg-green-700 transition-colors duration-300 text-center"

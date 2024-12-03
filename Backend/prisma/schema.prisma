@@ -412,23 +412,24 @@ model programs {
 }
 
 model events {
-  id           Int             @id @default(autoincrement()) @map("id")
-  name         String          @map("name") @db.VarChar(255)
-  description  String?         @map("description") @db.Text
-  event_type   event_type_enum @map("event_type")
-  start_date   DateTime        @map("start_date")
-  end_date     DateTime?       @map("end_date")
-  duration     Int? // Store duration as an integer (in seconds or minutes)
-  capacity     Int?            @map("capacity")
-  link         String?         @map("link") @db.VarChar(255)
-  status       String?         @default("pending") @map("status") @db.VarChar(50)
-  event_mode   event_mode_enum @map("event_mode")
-  organizer_id Int?            @map("organizer_id")
-  created_at   DateTime        @default(now()) @map("created_at")
-  city         String?         @map("city") @db.VarChar(50)
-  state        String?         @map("state") @db.VarChar(50)
-  organizer    users?          @relation(fields: [organizer_id], references: [id])
-
+  id                  Int                   @id @default(autoincrement()) @map("id")
+  name                String                @map("name") @db.VarChar(255)
+  description         String?               @map("description") @db.Text
+  event_type          event_type_enum       @map("event_type")
+  start_date          DateTime              @map("start_date")
+  end_date            DateTime?             @map("end_date")
+  duration            Int? // Store duration as an integer (in seconds or minutes)
+  capacity            Int?                  @map("capacity")
+  link                String?               @map("link") @db.VarChar(255)
+  status              String?               @default("pending") @map("status") @db.VarChar(50)
+  event_mode          event_mode_enum       @map("event_mode")
+  organizer_id        Int?                  @map("organizer_id")
+  created_at          DateTime              @default(now()) @map("created_at")
+  updated_at          DateTime?             @updatedAt @map("updated_at")
+  city                String?               @map("city") @db.VarChar(50)
+  state               String?               @map("state") @db.VarChar(50)
+  organizer           users?                @relation(fields: [organizer_id], references: [id])
+  image               String?               @map("image") @db.VarChar(255)
   event_requests      event_requests[]
   event_registrations event_registrations[]
 

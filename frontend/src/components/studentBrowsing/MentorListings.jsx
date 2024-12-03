@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import AvailabilityCalendar from "./AvailabilityCalendar.jsx";
 import { fetchMentorSlots, bookSlot } from "../../api/MentorBookingApi.jsx";
+import { useSelector } from "react-redux";
 
 
 const MentorCard = ({ mentor, onSelect }) => {
@@ -59,13 +60,14 @@ const MentorDetails = ({ mentor }) => {
     const [selectedSlot, setSelectedSlot] = useState(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [bookingHistory, setBookingHistory] = useState([])
+    const studentId = useSelector((state) => state.user.id) || localStorage.getItem('userId') ;
 
     useEffect(() => {
         async function loadSlots() {
             setLoading(true)
             try {
                 const slotsData = await fetchMentorSlots(mentor.user_id)
-                setAvailableSlots(slotsData.available_slots || [])
+                setAvailableSlots(slotsData?.available_slots || [])
             } catch (error) {
                 console.error('Error fetching slots:', error)
             } finally {
@@ -84,8 +86,34 @@ const MentorDetails = ({ mentor }) => {
     const handleBookingConfirm = async () => {
         if (selectedSlot) {
             setLoading(true)
+
             try {
-                const result = await bookSlot(mentor.user_id, selectedSlot.id)
+                const result = await bookSlot(studentId, selectedSlot.id)
+                if (result.message == "Booking request sent") {
+                    alert("Booking request sent");
+                    setIsDialogOpen(false);
+                    return;
+                  }
+          
+                  if (result.error === "Slot not available") {
+                    alert(
+                      "Sorry, this slot is no longer available. Please choose another slot."
+                    );
+                    setIsDialogOpen(false);
+                    return;
+                  } else if (
+                    result.error === "Student has already booked a slot on this date."
+                  ) {
+                    alert(
+                      "You have already booked a slot on this date. Please choose a different date."
+                    );
+                    setIsDialogOpen(false);
+                    return;
+                  } else {
+                    // alert("Failed to book the slot. Please try again.");
+                    setIsDialogOpen(false);
+                  }
+          
                 if (result) {
                     const newBooking = {
                         id: result.bookingId,
@@ -96,14 +124,14 @@ const MentorDetails = ({ mentor }) => {
                     setBookingHistory(prev => [newBooking, ...prev])
                     alert('Booking confirmed successfully!')
                     // Refresh available slots after booking
-                    const updatedSlots = await fetchMentorSlots(mentor.id)
+                    const updatedSlots = await fetchMentorSlots(mentor.user_id)
                     setAvailableSlots(updatedSlots.available_slots || [])
                 } else {
-                    alert('Failed to book the slot. Please try again.')
+                    // alert('Failed to book the slot. Please try again.')
                 }
             } catch (error) {
                 console.error('Error during booking:', error)
-                alert('An error occurred while booking. Please try again.')
+                // alert('An error occurred while booking. Please try again.')
             } finally {
                 setLoading(false)
             }

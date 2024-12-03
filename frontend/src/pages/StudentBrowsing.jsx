@@ -15,7 +15,10 @@ const StudentBrowsing = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('browse counselor');
 
-    const studentId = useSelector((state) => state.user.id) || localStorage.getItem('userId') || '123';
+    const studentId = useSelector((state) => state.user.id) || localStorage.getItem('userId') ;
+
+    console.log(studentId);
+    
 
     useEffect(() => {
         async function loadCounselorData() {
@@ -78,7 +81,7 @@ const StudentBrowsing = () => {
 
             <main className="container mx-auto px-4 py-12">
                 <div className="mb-8 flex space-x-4">
-                    {['browse counselor', 'browse mentors', 'sessions', 'requests'].map((tab) => (
+                    {['browse counselor', 'browse mentors', 'sessions'].map((tab) => (
                         <button
                             key={tab}
                             className={`px-4 py-2 rounded-lg transition-colors ${

@@ -83,10 +83,10 @@ export async function fetchSessionByStudentId (studentId) {
 export async function fetchCounselorSlots(counselorId) {
     try {
         const response = await apiBackend.get(`/counselor-booking/get_availability/${counselorId}`);
-        if (!response.ok) {
+        if (!response) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return await response.json();
+        return await response.data;
     } catch (error) {
         console.error("Error fetching counselor slots:", error);
         return null;
