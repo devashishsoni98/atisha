@@ -83,17 +83,29 @@ def load_data():
         # Fetch student data from PostgreSQL
         cursor.execute("SELECT * FROM recommended_careers;")  # Of Students
         students_data = cursor.fetchall()
+<<<<<<< Updated upstream
         # print("Fetched Students Data:", students_data)  # Debugging line
+=======
+        print("Fetched Students Data:", students_data)  # Debugging line
+>>>>>>> Stashed changes
         
         # Fetch counselor data from PostgreSQL
         cursor.execute("SELECT * FROM counselor_professional;")
         counselors_data = cursor.fetchall()
+<<<<<<< Updated upstream
         # print("Fetched Counselors Data:", counselors_data)  # Debugging line
+=======
+        print("Fetched Counselors Data:", counselors_data)  # Debugging line
+>>>>>>> Stashed changes
 
         # Fetch mentor data from PostgreSQL
         cursor.execute("SELECT * FROM mentors;")
         mentors_data = cursor.fetchall()
+<<<<<<< Updated upstream
         # print("Fetched Mentors Data:", mentors_data)  # Debugging line
+=======
+        print("Fetched Mentors Data:", mentors_data)  # Debugging line
+>>>>>>> Stashed changes
 
     except Exception as e:
         print("Error fetching data from database:", e)

@@ -34,7 +34,7 @@ const fetchCompletedEvents = async (req, res) => {
         },
       },
       orderBy: {
-        end_date: 'desc', // Order events by end date (latest first)
+        end_date: 'desc',  // Order events by end date (latest first)
       },
     });
 
