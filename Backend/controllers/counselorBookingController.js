@@ -1,8 +1,9 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { addHours } = require('date-fns');
+// const { addHours } = require('date-fns');
+const { formatISO } = require('date-fns')
 
-// Set Availability
+
 const setAvailability = async (req, res) => {
   const { counselor_id, date, start_time, end_time } = req.body;
 
@@ -10,7 +11,7 @@ const setAvailability = async (req, res) => {
 
   // Validate input
   if (!counselor_id || !date || !start_time || !end_time) {
-    return res.status(400).json({ error: "Missing required fields" });
+    return res.status(100).json({ error: "Missing required fields" });
   }
 
   try {
@@ -28,32 +29,46 @@ const setAvailability = async (req, res) => {
     }
 
     const intervals = [];
-    let currentStart = startTime;
+    
+    // Round down to the nearest hour for the first slot
+    let currentStart = new Date(startTime);
+    currentStart.setMinutes(0); // Set minutes to zero
 
     while (currentStart < endTime) {
       let nextEnd = new Date(currentStart);
-      nextEnd.setHours(currentStart.getHours() + 2); // Add 2 hours
+      nextEnd.setHours(currentStart.getHours() + 2); // Add 2 hours for each slot
+      
+      // Round nextEnd down to the nearest hour
+      nextEnd.setMinutes(0); // Set minutes to zero
 
-      if (nextEnd > endTime) nextEnd = endTime;
-
+      // Ensure nextEnd does not exceed endTime
+      if (nextEnd > endTime) nextEnd = new Date(endTime);
+      
       intervals.push({
         counselor_id: parseInt(counselor_id),
         date: new Date(date), // Store only the date part
-        start_time: currentStart.toISOString(), // Store as ISO string
-        end_time: nextEnd.toISOString() // Store as ISO string
+        start_time: formatISO(currentStart), // Store as ISO string
+        end_time: formatISO(nextEnd) // Store as ISO string
       });
 
-      currentStart = nextEnd;
+      // Move to the next slot (increment by 2 hours)
+      currentStart.setHours(currentStart.getHours() + 2); 
+      currentStart.setMinutes(0); // Ensure it's rounded down to the nearest hour
     }
 
     console.log(intervals);
+    
     await prisma.counselor_availability.createMany({ data: intervals });
+    
     res.status(201).json({ message: "Availability added successfully", slots_added: intervals });
+
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ error: "Failed to add availability", details: err.message });
   }
 };
+
+
 
 const getAvailability = async (req, res) => {
   const { counselor_id } = req.params;
@@ -88,14 +103,23 @@ const getAvailability = async (req, res) => {
       ]
     });
 
+    // Format times to ISO strings before sending response
+    const formattedSlots = slots.map(slot => ({
+      id: slot.id,
+      date: slot.date,
+      start_time:formatISO(slot.start_time), // Convert timestamp to ISO string
+      end_time: formatISO(slot.end_time) // Convert timestamp to ISO string
+    }));
+
     // Send the response with available slots
-    res.status(200).json({ available_slots: slots });
+    res.status(200).json({ available_slots: formattedSlots });
   } catch (err) {
     // Handle any errors that occur during the fetch
-    console.log("Error fetching availability:", err);
+    console.error("Error fetching availability:", err);
     res.status(500).json({ error: "Failed to fetch availability", details: err.message });
   }
-}
+};
+
 
 // Book Slot
 const bookSlot = async (req, res) => {
@@ -111,8 +135,11 @@ const bookSlot = async (req, res) => {
       include: { counselor_bookings: true }
     });
 
+    console.log(slot.is_booked);
+    
     if (!slot || slot.is_booked) {
-      return res.status(400).json({ error: "Slot not available" });
+      console.log({ error: "Slot not available" });
+      return res.status(200).json({ error: "Slot not available" });
     }
 
     // Ensure no duplicate booking
@@ -121,7 +148,8 @@ const bookSlot = async (req, res) => {
     });
 
     if (existingBooking) {
-      return res.status(400).json({ error: "Student has already booked a slot on this date." });
+      console.log({ error: "Student has already booked a slot on this date." });
+      return res.status(200).json({ error: "Student has already booked a slot on this date." });
     }
 
     await prisma.counselor_availability.update({
@@ -140,11 +168,15 @@ const bookSlot = async (req, res) => {
         status: "pending"
       }
     });
-
+    console.log("book slot successfully");
+    
    res.status(201).json({ message: "Booking request sent" , response: response });
 
     // res.status(201).json({ message: "Booking request sent" });
   } catch (err) {
+    
+    
+    console.log({ error: "Failed to book slot", details: err.message });
     res.status(500).json({ error: "Failed to book slot", details: err.message });
   }
 };

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const SessionsLists = ({ sessions, loading }) => {
     console.log(sessions);
@@ -46,11 +47,11 @@ const SessionsLists = ({ sessions, loading }) => {
                         <motion.div
                             key={session.id}
                             variants={itemVariants}
-                            className="bg-white rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl"
+                            className="bg-white rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl "
                         >
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-xl font-semibold text-gray-800">
-                                    Session with {session.counselor.name}
+                                    Session with {session.counselor ? session.counselor?.name : session.mentor?.name }
                                 </h3>
                                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                                     session.status === 'approved'
@@ -60,6 +61,8 @@ const SessionsLists = ({ sessions, loading }) => {
                                     {session.status.charAt(0).toUpperCase() + session.status.slice(1)}
                                 </span>
                             </div>
+                            <div className="flex  justify-between items-end"> 
+
                             <div className="space-y-2">
                                 <p className="text-gray-600">
                                     <span className="font-medium">Date:</span> {new Date(session.date).toLocaleDateString()} at {new Date(session.start_time).toLocaleTimeString()}
@@ -70,6 +73,13 @@ const SessionsLists = ({ sessions, loading }) => {
                                 <p className="text-gray-600">
                                     <span className="font-medium">Email:</span> {session.student.email}
                                 </p>
+                            </div>
+                            <div className="">
+                                {/* <Link to={`/chats/${session.counselor? session.counselor.id : session.mentor.id}`}> */}
+                                <Link to="/chats">
+                                hey
+                                </Link>
+                            </div>
                             </div>
                         </motion.div>
                     ))}

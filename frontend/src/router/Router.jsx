@@ -37,9 +37,7 @@ import EventPreview from "../pages/EventPreview.jsx";
 import InteractiveContent from "../pages/InteractiveContents.jsx";
 import CareerLibrary from "../pages/CareerLibrary.jsx";
 import Level from "../components/Level.jsx";
-
 import OAuthCallback from "../pages/Callback.jsx";
-
 
 const Router = createBrowserRouter([
   {
@@ -126,7 +124,7 @@ const Router = createBrowserRouter([
         element: <CounselorTrainingProgram />,
       },
       {
-        path: "/chats",
+      path: "/chats",
         element: <SomeComponent />,
       },
     ],
@@ -154,7 +152,7 @@ const Router = createBrowserRouter([
         element: <Resources/>
       },
       {
-        path: "/preview-events/:eventId",
+        path: "/preview-events/:id",
         element: <EventPreview/>
       },
       { path: "/", element: <Home /> },
@@ -189,7 +187,8 @@ const Router = createBrowserRouter([
       {
         path: "webex/callback",
         element: <OAuthCallback />
-      }
+      },
+      
     ],
   },
 ]);

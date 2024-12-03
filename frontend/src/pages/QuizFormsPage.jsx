@@ -6,6 +6,7 @@ import Header from '../components/quiz/Header'
 import QuestionCard from '../components/quiz/QuestionCard'
 import TimeoutDialog from '../components/quiz/TimeoutDialog'
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 
 const QUESTION_TIME_LIMIT = 60 // 60 seconds per question
@@ -22,6 +23,10 @@ const QuizFormsPage = () => {
   const [totalTime, setTotalTime] = useState(0)
   
   const navigator = useNavigate()
+
+  const userId = useSelector((state) => state.user.id) || localStorage.getItem('userId')
+  console.log(userId);
+  
 
   const { register, handleSubmit, reset, setValue } = useForm()
 
@@ -43,67 +48,17 @@ const QuizFormsPage = () => {
 
   const fetchQuizData = async () => {
     try {
-      const response = await axios.get('http://local:7000/fetch_generate_questions')
+
+      const StudentInfo = await axios.get(`http://localhost:4000/api/student/${userId}`)
+      console.log({class:StudentInfo.data?.student_education.class});
+      
+      const response = await axios.post('http://localhost:7000/quiz/fetch_generate_questions',{class:StudentInfo.data?.student_education.class})
       if (response.data && response.data.questions) {
         setQuizData(response.data.questions)
         setTotalTime(QUESTION_TIME_LIMIT * response.data.questions.length)
       } else {
         // Fallback to existing data if API returns null or invalid data
         const fallbackData = [
-          {
-            id: 1,
-            question: "A man is looking at a photograph of someone. His friend asks, 'Who is it you are looking at?' The man replies, 'Brothers and sisters, I have none. But that man's father is my father's son.' Who is in the photograph?",
-            options: ["His son", "His Father", "Himself", "His Grandfather", "hiii"],
-            timeLimit: QUESTION_TIME_LIMIT,
-          },
-          {
-            id: 1,
-            question: "A man is looking at a photograph of someone. His friend asks, 'Who is it you are looking at?' The man replies, 'Brothers and sisters, I have none. But that man's father is my father's son.' Who is in the photograph?",
-            options: ["His son", "His Father", "Himself", "His Grandfather", "hiii"],
-            timeLimit: QUESTION_TIME_LIMIT,
-          },
-          {
-            id: 1,
-            question: "A man is looking at a photograph of someone. His friend asks, 'Who is it you are looking at?' The man replies, 'Brothers and sisters, I have none. But that man's father is my father's son.' Who is in the photograph?",
-            options: ["His son", "His Father", "Himself", "His Grandfather", "hiii"],
-            timeLimit: QUESTION_TIME_LIMIT,
-          },
-          {
-            id: 1,
-            question: "A man is looking at a photograph of someone. His friend asks, 'Who is it you are looking at?' The man replies, 'Brothers and sisters, I have none. But that man's father is my father's son.' Who is in the photograph?",
-            options: ["His son", "His Father", "Himself", "His Grandfather", "hiii"],
-            timeLimit: QUESTION_TIME_LIMIT,
-          },
-          {
-            id: 1,
-            question: "A man is looking at a photograph of someone. His friend asks, 'Who is it you are looking at?' The man replies, 'Brothers and sisters, I have none. But that man's father is my father's son.' Who is in the photograph?",
-            options: ["His son", "His Father", "Himself", "His Grandfather", "hiii"],
-            timeLimit: QUESTION_TIME_LIMIT,
-          },
-          {
-            id: 1,
-            question: "A man is looking at a photograph of someone. His friend asks, 'Who is it you are looking at?' The man replies, 'Brothers and sisters, I have none. But that man's father is my father's son.' Who is in the photograph?",
-            options: ["His son", "His Father", "Himself", "His Grandfather", "hiii"],
-            timeLimit: QUESTION_TIME_LIMIT,
-          },
-          {
-            id: 1,
-            question: "A man is looking at a photograph of someone. His friend asks, 'Who is it you are looking at?' The man replies, 'Brothers and sisters, I have none. But that man's father is my father's son.' Who is in the photograph?",
-            options: ["His son", "His Father", "Himself", "His Grandfather", "hiii"],
-            timeLimit: QUESTION_TIME_LIMIT,
-          },
-          {
-            id: 1,
-            question: "A man is looking at a photograph of someone. His friend asks, 'Who is it you are looking at?' The man replies, 'Brothers and sisters, I have none. But that man's father is my father's son.' Who is in the photograph?",
-            options: ["His son", "His Father", "Himself", "His Grandfather", "hiii"],
-            timeLimit: QUESTION_TIME_LIMIT,
-          },
-          {
-            id: 1,
-            question: "A man is looking at a photograph of someone. His friend asks, 'Who is it you are looking at?' The man replies, 'Brothers and sisters, I have none. But that man's father is my father's son.' Who is in the photograph?",
-            options: ["His son", "His Father", "Himself", "His Grandfather", "hiii"],
-            timeLimit: QUESTION_TIME_LIMIT,
-          },
           {
             id: 1,
             question: "A man is looking at a photograph of someone. His friend asks, 'Who is it you are looking at?' The man replies, 'Brothers and sisters, I have none. But that man's father is my father's son.' Who is in the photograph?",
@@ -148,28 +103,54 @@ const QuizFormsPage = () => {
     }
   }
 
-  const submitQuizAnswers = async () => {
-    try {
-      const formattedAnswers = Object.entries(answers).map(([questionId, response]) => ({
-        question_id: parseInt(questionId),
-        response: response
-      }))
+  // const submitQuizAnswers = async () => {
+  //   try {
+  //     const formattedAnswers = Object.entries(answers).map(([questionId, response]) => ({
+  //       question_id: parseInt(questionId),
+  //       response: response
+  //     }))
 
-      const payload = {
-        user_id: 2, // Replace with actual user ID
-        responses: formattedAnswers
-      }
+  //     const payload = {
+  //       user_id: 2, // Replace with actual user ID
+  //       responses: formattedAnswers
+  //     }
 
-      console.log(payload);
+  //     console.log(payload);
       
 
-      await axios.post('YOUR_SUBMISSION_API_ENDPOINT_HERE', payload)
+  //     await axios.post('http://localhost:7000/quiz/calculate_results', payload)
+  //     // Handle successful submission (e.g., show a success message)
+  //   } catch (error) {
+  //     console.error("Error submitting quiz answers:", error)
+  //     // Handle submission error (e.g., show an error message)
+  //   }
+  // }
+
+
+  const submitQuizAnswers = async () => {
+    try {
+      const formattedAnswers = Object.entries(answers).map(([questionNumber, response]) => {
+        const questionId = quizData[questionNumber - 1]?.id; // Get the ID using the question number
+        return {
+          question_id: questionId, // Use the fetched question ID
+          response: response
+        };
+      });
+  
+      const payload = {
+        user_id: userId, // Replace with actual user ID
+        responses: formattedAnswers
+      };
+  
+      console.log(payload);
+      
+      await axios.post('http://localhost:7000/quiz/calculate_results', payload);
       // Handle successful submission (e.g., show a success message)
     } catch (error) {
-      console.error("Error submitting quiz answers:", error)
+      console.error("Error submitting quiz answers:", error);
       // Handle submission error (e.g., show an error message)
     }
-  }
+  };
 
   const handleQuestionSelect = (questionNumber) => {
     setCurrentQuestion(questionNumber)
@@ -178,21 +159,38 @@ const QuizFormsPage = () => {
     )
   }
 
+  // const onSubmit = (data) => {
+  //   setAnswers((prev) => ({ ...prev, [currentQuestion]: data.answer }))
+  //   setAnsweredQuestions((prev) =>
+  //     prev.includes(currentQuestion) ? prev : [...prev, currentQuestion]
+  //   )
+
+  //   if (currentQuestion < quizData.length) {
+  //     handleQuestionSelect(currentQuestion + 1)
+  //     reset() // Reset the form for the next question
+  //   } else {
+  //     setIsFinished(true)
+  //     submitQuizAnswers()
+  //     // Navigate to result page (implement your navigation logic here)
+  //   }
+  // }
+
+
   const onSubmit = (data) => {
-    setAnswers((prev) => ({ ...prev, [currentQuestion]: data.answer }))
+    setAnswers((prev) => ({ ...prev, [currentQuestion]: data.answer })); // currentQuestion is already in number format
     setAnsweredQuestions((prev) =>
       prev.includes(currentQuestion) ? prev : [...prev, currentQuestion]
-    )
-
+    );
+  
     if (currentQuestion < quizData.length) {
-      handleQuestionSelect(currentQuestion + 1)
-      reset() // Reset the form for the next question
+      handleQuestionSelect(currentQuestion + 1);
+      reset(); // Reset the form for the next question
     } else {
-      setIsFinished(true)
-      submitQuizAnswers()
+      setIsFinished(true);
+      submitQuizAnswers(); // This will now use correct IDs
       // Navigate to result page (implement your navigation logic here)
     }
-  }
+  };
 
   const handleSkip = () => {
     if (currentQuestion < quizData.length) {

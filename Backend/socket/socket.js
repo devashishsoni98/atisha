@@ -12,7 +12,7 @@ class SocketService {
     initializeSocket(httpServer) {
         this.io = new Server(httpServer, {
             cors: {
-                origin: "http://localhost:5173", // Configure this to your frontend URL
+                origin: ["http://localhost:5173","http://localhost:5174"], // Configure this to your frontend URL
                 methods: ["GET", "POST"]
             }
         });
