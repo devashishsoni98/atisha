@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import { ArrowRight, Sparkles, Target, Rocket, BookOpen, Users, Lightbulb } from 'lucide-react';
 import photo from "../../assets/welcome.png"
-import {getStudentTraitsByStudentId} from "../../api/StudebtTraitsApi.jsx";
+import {getStudentTraitsByStudentId} from "../../api/StudentTraitsApi.jsx";
 
 const StudentOnboarding = () => {
   const [userData, setUserData] = useState(null);
