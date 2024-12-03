@@ -7,9 +7,6 @@ import {getToken} from "../store/userActions.js"; // Import useSelector to acces
 
 export default function StudentOnboarding() {
 
-
-
-
   const token = localStorage.getItem('token');
   console.log(token);
   const userId =localStorage.getItem('userId'); // Retrieve user ID from Redux store
