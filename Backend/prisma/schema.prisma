@@ -156,7 +156,8 @@ model users {
 
   webex_tokens     webex_tokens?  
   event_attendance event_attendance[]
-
+  institutesAsInstitute institute_student[] @relation("InstituteRelation")
+  studentsAsStudent   institute_student[] @relation("StudentRelation")
   @@map("users")
 }
 
@@ -689,4 +690,17 @@ model event_attendance {
 
   @@unique([event_id, user_id])
   @@map("event_attendance")
+}
+
+model institute_student {
+  id          Int       @id @default(autoincrement())
+  institute_id Int
+  student_id   Int
+  joined_at    DateTime  @default(now())
+
+  institute   users @relation("InstituteRelation",fields: [institute_id], references: [id])
+  student     users   @relation("StudentRelation",fields: [student_id], references: [id])
+
+  @@unique([institute_id, student_id]) // Ensures no duplicate entries
+  @@map("institute_student")
 }

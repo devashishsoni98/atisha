@@ -6,7 +6,7 @@ import Signup from './components/Signup';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import EventPreview from './components/EventPreview';
-
+import OAuthCallback from './components/callback';
 function App() {
   return (
     <Provider store={store}>
@@ -19,6 +19,7 @@ function App() {
             <Route path="/preview" element={<EventPreview />} />
           </Route>
           <Route path="*" element={<Login />} />
+          <Route path="/webex/callback" element={<OAuthCallback />}/>
         </Routes>
       </Router>
     </Provider>

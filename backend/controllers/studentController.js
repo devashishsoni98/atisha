@@ -1,12 +1,101 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-const createOrUpdateStudentProfile = async (req, res) => {
-    const { user_id, image, dob, gender, location, contact_number, school_name, class_level, subject_ids, sport_ids, hobby_ids } = req.body;
+
+
+// const createOrUpdateStudentProfile = async (req, res) => {
+//     const { user_id, image, dob, gender, location, contact_number, school_name, class_level, subject_ids, sport_ids, hobby_ids } = req.body;
  
-    // Check for required fields
-    if (!user_id || !dob || !gender || !location || !contact_number || !school_name || !class_level || !subject_ids || !sport_ids || !hobby_ids) {
-        return res.status(400).json({ message: "All fields are required." });
+//     // Check for required fields
+//     if (!user_id || !dob || !gender || !location || !contact_number || !school_name || !class_level || !subject_ids || !sport_ids || !hobby_ids) {
+//         return res.status(400).json({ message: "All fields are required." });
+//     }
+
+//     try {
+//         // Ensure dob is a valid date
+//         const formattedDob = new Date(dob);
+//         if (isNaN(formattedDob.getTime())) {
+//             return res.status(400).json({ message: "Invalid date of birth." });
+//         }
+
+//         // Ensure userId is an integer
+//         const userIdInt = parseInt(user_id);
+//         if (isNaN(userIdInt)) {
+//             return res.status(400).json({ message: "Invalid user ID." });
+//         }
+
+//         // Create or update student personal info
+//         const personalInfo = await prisma.student_personal_info.upsert({
+//             where: { user_id: userIdInt },
+//             update: {
+//                 image:image,
+//                 dob: formattedDob,
+//                 gender:gender,
+//                 location:location,
+//                 contact_number :contact_number,
+//             },
+//             create: {
+//                 user_id: userIdInt,
+//                 image:image,
+//                 dob: formattedDob,
+//                 gender:gender,
+//                 location:location,
+//                 contact_number :contact_number,
+//             },
+//         });
+
+//         // Create or update student education info
+//         const educationInfo = await prisma.student_education.upsert({
+//             where: { user_id: userIdInt },
+//             update: {
+//                 school_name:school_name,
+//                 class: class_level,
+//             },
+//             create: {
+//                 user_id: userIdInt,
+//                 school_name:school_name,
+//                 class: class_level,
+//             },
+//         });
+
+//         // Ensure subjectIds, sportIds, and hobbyIds are arrays
+//         const subjectIdsArray = Array.isArray(subject_ids) ? subject_ids : [];
+//         const sportIdsArray = Array.isArray(sport_ids) ? sport_ids : [];
+//         const hobbyIdsArray = Array.isArray(hobby_ids) ? hobby_ids : [];
+
+//         // Create or update student interests info
+//         const interestsInfo = await prisma.student_interest.upsert({
+//             where: { user_id: userIdInt },
+//             update: {
+//                 subject_ids: subjectIdsArray,
+//                 sport_ids: sportIdsArray,
+//                 hobby_ids: hobbyIdsArray,
+//             },
+//             create: {
+//                 user_id: userIdInt,
+//                 subject_ids: subjectIdsArray,
+//                 sport_ids: sportIdsArray,
+//                 hobby_ids: hobbyIdsArray,
+//             },
+//         });
+
+//         res.status(201).json({
+//             message: "Student profile created/updated successfully",
+//             personalInfo,
+//             educationInfo,
+//             interestsInfo,
+//         });
+//     } catch (error) {
+//         console.error("Error while creating/updating student profile:", error);
+//         res.status(500).json({ message: "Error while creating/updating student profile." });
+//     }
+// };
+
+const createOrUpdateStudentProfile = async (req, res) => {
+    const { user_id, image, dob, gender, location, contact_number, school_name, school_code, class_level, subject_ids, sport_ids, hobby_ids } = req.body;
+
+    if (!user_id || !dob || !gender || !location || !contact_number || (!school_name && !school_code) || !class_level || !subject_ids || !sport_ids || !hobby_ids) {
+        return res.status(400).json({ message: "All fields are required, including either school_name or school_code." });
     }
 
     try {
@@ -22,38 +111,36 @@ const createOrUpdateStudentProfile = async (req, res) => {
             return res.status(400).json({ message: "Invalid user ID." });
         }
 
+        let instituteId = null;
+        let resolvedSchoolName = school_name;
+
+        // Fetch school info if school_code is provided
+        if (school_code) {
+            const schoolInfo = await prisma.institute_info.findUnique({
+                where: { institute_code:school_code },
+                select: { user_id: true, name: true },
+            });
+
+            if (!schoolInfo) {
+                return res.status(404).json({ message: "School code not found." });
+            }
+
+            instituteId = schoolInfo.user_id;
+            resolvedSchoolName = schoolInfo.name;
+        }
+
         // Create or update student personal info
         const personalInfo = await prisma.student_personal_info.upsert({
             where: { user_id: userIdInt },
-            update: {
-                image:image,
-                dob: formattedDob,
-                gender:gender,
-                location:location,
-                contact_number :contact_number,
-            },
-            create: {
-                user_id: userIdInt,
-                image:image,
-                dob: formattedDob,
-                gender:gender,
-                location:location,
-                contact_number :contact_number,
-            },
+            update: { image, dob: formattedDob, gender, location, contact_number },
+            create: { user_id: userIdInt, image, dob: formattedDob, gender, location, contact_number },
         });
 
         // Create or update student education info
         const educationInfo = await prisma.student_education.upsert({
             where: { user_id: userIdInt },
-            update: {
-                school_name:school_name,
-                class: class_level,
-            },
-            create: {
-                user_id: userIdInt,
-                school_name:school_name,
-                class: class_level,
-            },
+            update: { school_name: resolvedSchoolName, class: class_level },
+            create: { user_id: userIdInt, school_name: resolvedSchoolName, class: class_level },
         });
 
         // Ensure subjectIds, sportIds, and hobbyIds are arrays
@@ -64,18 +151,19 @@ const createOrUpdateStudentProfile = async (req, res) => {
         // Create or update student interests info
         const interestsInfo = await prisma.student_interest.upsert({
             where: { user_id: userIdInt },
-            update: {
-                subject_ids: subjectIdsArray,
-                sport_ids: sportIdsArray,
-                hobby_ids: hobbyIdsArray,
-            },
-            create: {
-                user_id: userIdInt,
-                subject_ids: subjectIdsArray,
-                sport_ids: sportIdsArray,
-                hobby_ids: hobbyIdsArray,
-            },
+            update: { subject_ids: subjectIdsArray, sport_ids: sportIdsArray, hobby_ids: hobbyIdsArray },
+            create: { user_id: userIdInt, subject_ids: subjectIdsArray, sport_ids: sportIdsArray, hobby_ids: hobbyIdsArray },
         });
+
+        // Add a record to institute_student if school_code is provided
+        if (instituteId) {
+            await prisma.institute_student.create({
+                data: {
+                    institute_id: instituteId,
+                    student_id: userIdInt,
+                },
+            });
+        }
 
         res.status(201).json({
             message: "Student profile created/updated successfully",
@@ -88,6 +176,7 @@ const createOrUpdateStudentProfile = async (req, res) => {
         res.status(500).json({ message: "Error while creating/updating student profile." });
     }
 };
+
 
 // const getStudentById = async (req, res) => {
 //     const { id } = req.params; // Get the student ID from the request parameters

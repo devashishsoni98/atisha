@@ -5,6 +5,9 @@ const InstituteController = require('../controllers/InstituteController');
 
 const router = express.Router();
 
+// Institute route to fetch institute name and code
+router.get('/fetch',InstituteController.fetchInstituteNameCode)
+
 // Route for creating or updating institute information
 // End point: POST /api/institute/info/create
 router.post('/info/create', InstituteController.createOrUpdateInstitute);
