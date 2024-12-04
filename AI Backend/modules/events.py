@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import os
 from dotenv import load_dotenv
+import requests
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import smtplib
@@ -24,6 +25,38 @@ CORS(events_bp, resources={r"/*": {"origins": "http://localhost:5173", "methods"
 # Database connection
 DB_URL = os.getenv('DATABASE_URL')
 conn = psycopg2.connect(DB_URL)
+
+# ----------------------------------------------------------------------------------------------------------------
+def update_event_with_web_link(event_id, web_link):
+    try:
+        # Assuming you already have a connection to the database (conn)
+        cursor = conn.cursor()
+
+        # SQL query to update the event with the web_link
+        update_query = """
+            UPDATE events
+            SET link = %s
+            WHERE id = %s;
+        """
+        
+        # Execute the update query
+        cursor.execute(update_query, (web_link, event_id))
+
+        # Commit the changes to the database
+        conn.commit()
+
+        # Check if any rows were updated
+        if cursor.rowcount > 0:
+            print(f"Event {event_id} updated successfully with webLink.")
+        else:
+            print(f"No event found with ID {event_id}.")
+
+        # Close the cursor after the update
+        cursor.close()
+
+    except Exception as e:
+        print(f"Error updating event {event_id} with webLink: {str(e)}")
+
 # ------------------------------------------------------------------------------------------------------------------
 
 # SMTP Email Configuration
@@ -128,40 +161,50 @@ def recommend_counselors_mentors(event_description):
         print(f"Error details: {str(e)}")
         return {"error": f"Failed to recommend counselors/mentors: {str(e)}"}
 
-
-
-def recommend_institutes(city,state):
+def recommend_institutes(city, state):
     """
     Recommend institutes based on the event location. First, try matching the city.
     If no city matches, fallback to matching institutes based on the state.
+    If no matches are found, recommend all institutes or any three random institutes.
     """
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
             # First, attempt to find institutes based on the city
-            cursor.execute("SELECT user_id, name, city, state, student_body FROM institute_info WHERE city = %s", (city,))
+            cursor.execute(
+                "SELECT user_id, name, city, state, student_body FROM institute_info WHERE city = %s",
+                (city,)
+            )
             institutes = pd.DataFrame(cursor.fetchall())
 
             # If no institutes found in the city, attempt to find institutes by state
             if institutes.empty:
-                # Check if location is a city or state
-                cursor.execute("SELECT user_id, name, city, state, student_body FROM institute_info WHERE state = %s", (state,))
+                cursor.execute(
+                    "SELECT user_id, name, city, state, student_body FROM institute_info WHERE state = %s",
+                    (state,)
+                )
                 institutes = pd.DataFrame(cursor.fetchall())
 
-                # If still no institutes found by state, check if location matches any known city/state pair
-                if institutes.empty:
-                    # Fallback to searching by both city and state if we have a state match
-                    cursor.execute("SELECT user_id, name, city, state, student_body FROM institute_info WHERE state = %s OR city = %s", (city, state))
-                    institutes = pd.DataFrame(cursor.fetchall())
+            # If still no institutes found, fallback to recommending all institutes or any 3
+            if institutes.empty:
+                cursor.execute("SELECT user_id, name, city, state, student_body FROM institute_info")
+                all_institutes = pd.DataFrame(cursor.fetchall())
+                
+                # If no institutes exist in the database, return an error
+                if all_institutes.empty:
+                    return {"error": "No institutes found in the database."}
+                
+                # Recommend any three random institutes if there are more than three
+                if len(all_institutes) > 3:
+                    institutes = all_institutes.sample(n=3)
+                else:
+                    institutes = all_institutes
 
-        # Return the results or an error if no institutes found
-        if institutes.empty:
-            return {"error": "No institutes found for the provided location (city or state)."}
-        
-        # Return the institutes found, either by city or state
+        # Return the results
         return institutes.to_dict(orient='records')
 
     except Exception as e:
         return {"error": f"Failed to recommend institutes: {str(e)}"}
+
 
 
 @events_bp.route('/create_event', methods=['POST'])
@@ -200,8 +243,26 @@ def create_event():
             event_id = cursor.fetchone()[0]
         conn.commit()
 
-        # Success response
-        return jsonify({"message": "Event created successfully", "event_id": event_id}), 201
+        # Step 2: Recommend counselors/mentors or institutes based on event mode
+        recommendations = {"counselors_and_mentors": [], "institutes": []}
+        
+        if event_mode == 'online':
+            recommendations["counselors_and_mentors"] = recommend_counselors_mentors(description)
+        elif event_mode == 'offline':
+            recommendations["counselors_and_mentors"] = recommend_counselors_mentors(description)
+            recommendations["institutes"] = recommend_institutes(city, state)
+        elif event_mode == 'hybrid':
+            recommendations["counselors_and_mentors"] = recommend_counselors_mentors(description)
+            recommendations["institutes"] = recommend_institutes(city, state)
+
+        return jsonify({
+            "message": "Event created successfully",
+            "event_id": event_id,
+            "recommendations": recommendations
+        }), 201
+
+        # # Success response
+        # return jsonify({"message": "Event created successfully", "event_id": event_id}), 201
 
     except Exception as e:
         conn.rollback()
@@ -361,7 +422,40 @@ def update_request_status():
             if accepted_count == total_active_requests and total_active_requests > 0:
                 print(f"All active requests accepted for event {event_id}. Updating event status to 'scheduled'.")
                 cursor.execute("UPDATE events SET status = 'scheduled' WHERE id = %s", (event_id,))
-                conn.commit()
+                # conn.commit()
+
+                # Check if the event is online
+                cursor.execute("SELECT name, description, start_date, duration, event_mode FROM events WHERE id = %s", (event_id,))
+                event = cursor.fetchone()
+
+                if event['event_mode'].lower() in ['online', 'hybrid']:
+                    print(f"Event {event_id} is {event['event_mode'].lower()}. Creating Webex meeting...")
+                    meeting_payload = {
+                        "user_id": 2,
+                        "title": event['name'],
+                        "start": event['start_date'].isoformat(),
+                        "duration": int(event['duration'] * 60),  # Convert hours to minutes
+                        "agenda": event['description']
+                    }
+                    print(meeting_payload)
+
+                    response = requests.post(
+                        "http://localhost:4000/api/meeting/create",
+                        json=meeting_payload
+                    )
+
+                    if response.status_code == 200:
+                        print(f"Webex meeting created successfully for event {event_id}.")
+                        # Extract the webLink from the Webex meeting response
+                        web_link = response.json().get('meeting', {}).get('webLink')
+                        
+                        if web_link:
+                            # Now update the event with the webLink in the database
+                            update_event_with_web_link(event_id, web_link)
+                        else:
+                            print(f"Webex meeting created, but no webLink found for event {event_id}.")
+                    else:
+                        print(f"Failed to create Webex meeting: {response.json()}")
 
             return jsonify({"message": f"Request {new_status} successfully"}), 200
 

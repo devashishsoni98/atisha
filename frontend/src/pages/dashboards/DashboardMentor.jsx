@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import  {useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
@@ -8,6 +9,15 @@ import {
 import apibackend from "../../utils/api.js";
 import axios from "axios";
 import MentorBookings from "../MentorBookings.jsx";
+=======
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { User, Mail, MapPin, BookOpen, Award, School, Calendar, Briefcase, MessageCircle, Bell, LogOut, ArrowLeft } from 'lucide-react';
+import { useCommonFunctions } from '../../utils/commonFunctions';
+
+>>>>>>> ea00de7986b3f312b2f0f90a14c445293a745535
 
 // Animation variants
 const fadeIn = {
@@ -17,6 +27,7 @@ const fadeIn = {
 const slideIn = {
     initial: {x: -20, opacity: 0}, animate: {x: 0, opacity: 1}, exit: {x: 20, opacity: 0}
 };
+
 
 // ProfileItem component
 function ProfileItem({icon, label, value}) {
@@ -33,11 +44,30 @@ function ProfileItem({icon, label, value}) {
 function ProfileContent({mentorData}) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+<<<<<<< HEAD
     return (<motion.div
             className="space-y-6"
             initial="initial"
             animate="animate"
             exit="exit"
+=======
+  return (
+    <motion.div
+      className="space-y-6"
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={fadeIn}
+    >
+      <motion.div
+        className="bg-white shadow-lg rounded-2xl overflow-hidden"
+        variants={slideIn}
+      >
+          
+        <div className="p-8">
+          <motion.h1
+            className="text-3xl font-bold text-gray-800 mb-6"
+>>>>>>> ea00de7986b3f312b2f0f90a14c445293a745535
             variants={fadeIn}
         >
             <motion.div
@@ -654,6 +684,7 @@ function EventsContent() {
 
 // Main MentorDashboard component
 export default function MentorDashboard() {
+<<<<<<< HEAD
     const [activeTab, setActiveTab] = useState("Profile");
     const [mentorData, setMentorData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -667,6 +698,42 @@ export default function MentorDashboard() {
             console.error("No token found. Redirecting to signup.");
             navigate("/signup");
             return;
+=======
+  const [activeTab, setActiveTab] = useState("Profile");
+  const [mentorData, setMentorData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { handleLogout } = useCommonFunctions();
+  
+  const token = useSelector((state) => state.user.token) || localStorage.getItem("token");
+  const userId = useSelector((state) => state.user.id) || localStorage.getItem("userId");
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    if (!token) {
+      console.error("No token found. Redirecting to signup.");
+      navigate("/signup");
+      return;
+    }
+
+    const fetchMentorData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:4000/api/mentor/${userId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.message || `HTTP error! status: ${response.status}`
+          );
+>>>>>>> ea00de7986b3f312b2f0f90a14c445293a745535
         }
 
         const fetchMentorData = async () => {
@@ -718,12 +785,29 @@ export default function MentorDashboard() {
         }
     };
 
+<<<<<<< HEAD
     if (loading) {
         return (<div className="flex justify-center items-center h-screen">
                 Loading...
             </div>);
+=======
+  
+  const renderContent = () => {
+    switch (activeTab) {
+      case "Profile":
+        return <ProfileContent mentorData={mentorData} />;
+      case "Schedule":
+        return <ScheduleContent />;
+      case "Workspace":
+        return <WorkspaceContent />;
+        case "Events":
+        return <EventsContent />;
+      default:
+        return <ProfileContent mentorData={mentorData} />;
+>>>>>>> ea00de7986b3f312b2f0f90a14c445293a745535
     }
 
+<<<<<<< HEAD
     return (<motion.div
             className="min-h-screen bg-blue-50"
             initial="initial"
@@ -756,6 +840,89 @@ export default function MentorDashboard() {
                             Mentor
                         </motion.p>
                     </div>
+=======
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      className="min-h-screen bg-blue-50"
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={fadeIn}
+    >
+      <div className="flex">
+        {/* Sidebar */}
+        <motion.div
+          className="w-64 min-h-screen bg-white p-6 shadow-lg relative"
+          variants={slideIn}
+        >
+          <Link
+            to="/onboarding"
+            className="absolute top-4 left-4 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white hover:bg-blue-600 transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </Link>
+          <div className="flex flex-col items-center mb-8 mt-12">
+            <motion.img
+              src={mentorData?.image_url || "/placeholder.svg?height=128&width=128"}
+              alt={mentorData?.user?.name}
+              className="w-24 h-24 rounded-full border-4 border-blue-200 shadow-lg mb-4 object-cover"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 260, damping: 20 }}
+            />
+            <motion.h2
+              className="text-xl font-bold text-blue-800"
+              variants={fadeIn}
+            >
+              {mentorData?.user?.name}
+            </motion.h2>
+            <motion.p className="text-blue-600" variants={fadeIn}>
+              Mentor
+            </motion.p>
+          </div>
+          
+          <nav className="space-y-2">
+            {[
+              { name: "Profile", icon: <User className="w-4 h-4" /> },
+              { name: "Schedule", icon: <Calendar className="w-4 h-4" /> },
+              { name: "Events", icon: <Bell className="w-4 h-4" /> },
+              { name: "Workspace", icon: <Briefcase className="w-4 h-4" /> },
+            ].map((item) => (
+              <motion.button
+                key={item.name}
+                onClick={() => setActiveTab(item.name)}
+                className={`w-full py-3 px-4 rounded-xl text-left transition-colors flex items-center space-x-3 ${
+                  activeTab === item.name
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-blue-100 text-gray-700"
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {item.icon}
+                <span>{item.name}</span>
+              </motion.button>
+            ))}
+            <motion.button
+              onClick={handleLogout}
+              className="w-full py-3 px-4 rounded-xl text-left text-red-500 hover:bg-red-50 mt-4 flex items-center space-x-3"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Logout</span>
+            </motion.button>
+          </nav>
+        </motion.div>
+>>>>>>> ea00de7986b3f312b2f0f90a14c445293a745535
 
                     <nav className="space-y-2">
                         {[{name: "Profile", icon: <User className="w-4 h-4"/>}, {

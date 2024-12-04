@@ -475,9 +475,9 @@ const CreateMentorProfile = () => {
                 required
               >
                 <option value="">Select mentor type</option>
-                <option value="academic">Academic</option>
-                <option value="career">Career</option>
-                <option value="life_skills">Life Skills</option>
+                <option value="associate">Associate</option>
+                <option value="chief">Chief</option>
+                {/* <option value="life_skills">Life Skills</option> */}
               </select>
               {errors.type && <p className="text-red-500 text-sm mt-1">{errors.type}</p>}
             </div>

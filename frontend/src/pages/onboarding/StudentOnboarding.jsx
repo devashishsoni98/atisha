@@ -73,7 +73,7 @@ const StudentOnboarding = () => {
           title: "Empower the Next Generation",
           description:
             "As an educational institute, you play a crucial role in shaping futures. Let's work together to create impactful programs and guide students towards success.",
-          cta: "Set Up Your Institute Profile",
+          cta: "Go to Dashboard",
           icon: <Target className="w-16 h-16 text-indigo-500" />,
           illustration: photo,
         };
@@ -82,7 +82,7 @@ const StudentOnboarding = () => {
           title: "Guide Paths to Success",
           description:
             "Your expertise can change lives. Prepare to inspire, mentor, and help students navigate their career journeys with confidence.",
-          cta: "Complete Your Counselor Profile",
+          cta: "Go to Dashboard",
           icon: <Sparkles className="w-16 h-16 text-purple-500" />,
           illustration: photo,
         };
@@ -91,7 +91,7 @@ const StudentOnboarding = () => {
           title: "Share Your Wisdom",
           description:
             "Your experience is invaluable. Get ready to mentor the next generation of professionals and help them reach their full potential.",
-          cta: "Set Up Your Mentorship Areas",
+          cta: "Go to Dashboard",
           icon: <Rocket className="w-16 h-16 text-teal-500" />,
           illustration: photo,
         };
@@ -100,7 +100,7 @@ const StudentOnboarding = () => {
           title: "Your Journey Begins Here",
           description:
             "Exciting opportunities await! Let's explore your interests, skills, and dreams to chart the perfect career path for you.",
-          cta: "Start Your Career Discovery",
+          cta: "Go to Dashboard",
           icon: <Sparkles className="w-16 h-16 text-blue-500" />,
           illustration: photo,
         };
@@ -172,7 +172,7 @@ const StudentOnboarding = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex flex-col">
-      <header className="bg-white bg-opacity-90 shadow-lg backdrop-blur-sm">
+      {/* <header className="bg-white bg-opacity-90 shadow-lg backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <motion.h1
@@ -198,7 +198,7 @@ const StudentOnboarding = () => {
             </motion.div>
           </div>
         </div>
-      </header>
+      </header> */}
 
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
         <AnimatedBackground />
@@ -251,12 +251,13 @@ const StudentOnboarding = () => {
               className="flex flex-col sm:flex-row items-center justify-center sm:justify-start space-y-4 sm:space-y-0 sm:space-x-4"
             >
               <Link
-                to={`${dashboardLink()}/profile`}
+                to={`${dashboardLink()}`}
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg"
               >
                 {welcomeContent.cta}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
+
               <Link
                 to="/explore"
                 className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 transition-all duration-300 shadow-md hover:shadow-lg"

@@ -9,13 +9,23 @@ from modules.questions import questions_bp
 from modules.quiz_and_match import quiz_bp
 from modules.recommend_events import recommend_events_bp
 from modules.recommend_careers import recommend_careers_bp
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # '2' to suppress warnings; '3' for errors only
 
 load_dotenv()
 
 app = Flask(__name__)
 
 # CORS(app)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]}})
+from flask_cors import CORS
+
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:5173", "http://localhost:5174"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # Register blueprints for modular routes
 app.register_blueprint(chatbot_bp, url_prefix='/chatbot')
@@ -25,6 +35,8 @@ app.register_blueprint(questions_bp, url_prefix='/questions')
 app.register_blueprint(quiz_bp, url_prefix='/quiz')
 app.register_blueprint(recommend_events_bp, url_prefix='/revents')
 app.register_blueprint(recommend_careers_bp, url_prefix='/rcareers')
+
+
 if __name__ == '__main__':
     # # Use Waitress to serve the app with multi-threading enabled
     # serve(app,port=7000, threads=4)
