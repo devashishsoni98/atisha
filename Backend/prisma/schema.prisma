@@ -150,29 +150,27 @@ model users {
 
   user_levels          user_levels[]
   task_recommendations task_recommendations[]
-  sent_messages        messages[]             @relation("sentMessages")
-  received_messages    messages[]             @relation("receivedMessages")
   user1_conversations  conversations[]        @relation("User1Conversations")
   user2_conversations  conversations[]        @relation("User2Conversations")
   chat_messages        chat_messages[]
 
-  webex_tokens     webex_tokens?     
+  webex_tokens     webex_tokens?  
   event_attendance event_attendance[]
 
   @@map("users")
 }
 
-model messages {
-  id          Int      @id @default(autoincrement())
-  sender_id   Int
-  receiver_id Int
-  content     String   @db.VarChar(500)
-  createdAt   DateTime @default(now())
+model notifications {
+  id          Int       @id @default(autoincrement()) // Unique identifier for the notification
+  recipientId String // ID of the user receiving the notification
+  content     String // The message content of the notification
+  category    String // Category of the notification (e.g., 'message', 'alert', etc.)
+  readAt      DateTime? // Timestamp when the notification was read (nullable)
+  canceledAt  DateTime? // Timestamp when the notification was canceled (nullable)
+  createdAt   DateTime  @default(now()) // Timestamp when the notification was created
 
-  sender   users @relation("sentMessages", fields: [sender_id], references: [id])
-  receiver users @relation("receivedMessages", fields: [receiver_id], references: [id])
-
-  @@map("messages")
+  @@index([recipientId]) // Index for faster queries by recipientId
+  @@map("notifications")
 }
 
 // Chat-related Prisma Models

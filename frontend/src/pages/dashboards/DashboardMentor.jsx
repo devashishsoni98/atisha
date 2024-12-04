@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Mail, MapPin, BookOpen, Award, School, Calendar, Briefcase, MessageCircle, Bell, LogOut } from 'lucide-react';
+import { User, Mail, MapPin, BookOpen, Award, School, Calendar, Briefcase, MessageCircle, Bell, LogOut, ArrowLeft } from 'lucide-react';
+import { useCommonFunctions } from '../../utils/commonFunctions';
+
 
 // Animation variants
 const fadeIn = {
@@ -16,6 +18,7 @@ const slideIn = {
   animate: { x: 0, opacity: 1 },
   exit: { x: 20, opacity: 0 }
 };
+
 
 // ProfileItem component
 function ProfileItem({ icon, label, value }) {
@@ -46,6 +49,7 @@ function ProfileContent({ mentorData }) {
         className="bg-white shadow-lg rounded-2xl overflow-hidden"
         variants={slideIn}
       >
+          
         <div className="p-8">
           <motion.h1
             className="text-3xl font-bold text-gray-800 mb-6"
@@ -365,11 +369,12 @@ export default function MentorDashboard() {
   const [activeTab, setActiveTab] = useState("Profile");
   const [mentorData, setMentorData] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const { handleLogout } = useCommonFunctions();
+  
   const token = useSelector((state) => state.user.token) || localStorage.getItem("token");
   const userId = useSelector((state) => state.user.id) || localStorage.getItem("userId");
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     if (!token) {
       console.error("No token found. Redirecting to signup.");
@@ -410,12 +415,7 @@ export default function MentorDashboard() {
     fetchMentorData();
   }, [token, userId, navigate]);
 
-  const handleLogout = () => {
-    // Implement logout logic here
-    console.log("Logging out...");
-    // Clear token, navigate to login page, etc.
-  };
-
+  
   const renderContent = () => {
     switch (activeTab) {
       case "Profile":
@@ -450,10 +450,16 @@ export default function MentorDashboard() {
       <div className="flex">
         {/* Sidebar */}
         <motion.div
-          className="w-64 min-h-screen bg-white p-6 shadow-lg"
+          className="w-64 min-h-screen bg-white p-6 shadow-lg relative"
           variants={slideIn}
         >
-          <div className="flex flex-col items-center mb-8">
+          <Link
+            to="/onboarding"
+            className="absolute top-4 left-4 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white hover:bg-blue-600 transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </Link>
+          <div className="flex flex-col items-center mb-8 mt-12">
             <motion.img
               src={mentorData?.image_url || "/placeholder.svg?height=128&width=128"}
               alt={mentorData?.user?.name}

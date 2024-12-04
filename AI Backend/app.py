@@ -9,6 +9,8 @@ from modules.questions import questions_bp
 from modules.quiz_and_match import quiz_bp
 from modules.recommend_events import recommend_events_bp
 from modules.recommend_careers import recommend_careers_bp
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # '2' to suppress warnings; '3' for errors only
 
 load_dotenv()
 

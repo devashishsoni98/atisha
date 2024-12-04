@@ -176,6 +176,7 @@ import Headroom from "react-headroom";
 import Logo1 from "../assets/logo1.png";
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../store/userActions';
+import {io} from "socket.io-client";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -216,7 +217,7 @@ const Navbar = () => {
       // const response = await fetch('https://api.example.com/notifications');
       // const data = await response.json();
       // setNotifications(data);
-      
+  
       // Simulated data (empty for this example)
       setNotifications([
         {
@@ -252,6 +253,41 @@ const Navbar = () => {
       setIsLoading(false);
     }
   };
+
+  //
+  // const fetchNotifications = async () => {
+  //   setIsLoading(true);
+  //   // setError(null); // Reset error state before fetching
+  //   try {
+  //     // Simulated API call (you can replace this with your actual API call)
+  //     await new Promise(resolve => setTimeout(resolve, 1500));
+  //
+  //     // Actual API call to fetch notifications
+  //     const response = await fetch('https://api.example.com/notifications'); // Replace with your actual API endpoint
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+  //     const data = await response.json();
+  //     setNotifications(data);
+  //   } catch (error) {
+  //     console.error("Error fetching notifications:", error);
+  //     setError("Failed to load notifications. Please try again later.");
+  //     setNotifications([]); // Clear notifications on error
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+  //
+
+  //
+  // import React, { useEffect } from 'react';
+  // import { useSelector } from 'react-redux';
+  // import io from 'socket.io-client';
+
+  
+
+
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {

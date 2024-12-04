@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import { User, Calendar, Briefcase, MessageCircle, LogOut, Star, Award, Users, Video, Mail, MapPin, Phone, BookOpen } from 'lucide-react'
 import axios from "axios";
 
-export default function CounselorDashboard() {
+export default function CounselorSessions() {
   const [activeTab, setActiveTab] = useState('Profile')
 
   // Static data for demonstration

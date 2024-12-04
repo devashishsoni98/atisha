@@ -15,7 +15,7 @@ const EventPreview = () => {
         if (!isAuthenticated) {
             navigate("/login");
         } else if (!formData || !apiResponse) {
-            navigate("/dashboard");
+            // navigate("/dashboard");
         }
     }, [formData, apiResponse, navigate, isAuthenticated]);
 

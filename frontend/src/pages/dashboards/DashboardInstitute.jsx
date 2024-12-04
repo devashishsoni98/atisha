@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Building2, Calendar, PieChart, GraduationCap, LogOut, MapPin, Phone, Mail, Clock, Users, BookOpen, School, User } from 'lucide-react';
+import { Building2, Calendar, PieChart, GraduationCap, LogOut, MapPin, Phone, Mail, Clock, Users, BookOpen, School, User, ArrowLeft } from 'lucide-react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCommonFunctions } from '../../utils/commonFunctions';
 
@@ -81,11 +81,17 @@ export default function InstituteDashboard() {
     }
 
     return (
-        <motion.div className="min-h-screen bg-blue-50" initial="initial" animate="animate" exit="exit" variants={fadeIn}>
+        <motion.div className="min-h-screen bg-blue-50 shadow-lg relative" initial="initial" animate="animate" exit="exit" variants={fadeIn}>
+             <Link
+            to="/onboarding"
+            className="absolute top-4 left-4 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white hover:bg-blue-600 transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </Link>
             <div className="flex">
                 {/* Sidebar */}
-                <motion.div className="w-64 min-h-screen bg-white p-6 shadow-lg" variants={slideIn}>
-                    <div className="flex flex-col items-center mb-8">
+                <motion.div className="w-64 min-h-screen bg-white p-6 shadow-lg " variants={slideIn}>
+                    <div className="flex flex-col items-center mb-8 mt-12">
                         <motion.img
                             src={instituteData?.institute.image_url || "/placeholder.svg?height=128&width=128"}
                             alt={instituteData?.institute.name}
