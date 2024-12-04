@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 
 const AnimatedBackground = () => (
@@ -53,7 +52,6 @@ export default function CreateStudentProfile() {
   const location = useLocation();
   const navigate = useNavigate();
   const token = useSelector((state) => state.user.token) || localStorage.getItem('token');
-  const dispatch = useDispatch();
 
   const { userRole, userId, userEmail, userName } = location.state || {};
   const [formData, setFormData] = useState({
@@ -64,18 +62,13 @@ export default function CreateStudentProfile() {
     dob: "",
     location: "",
     contact_number: "",
+    school_code: "",
     school_name: "",
     class_level: "",
     subjects: [],
     sports: [],
     hobbies: [],
     gender: "",
-    otherSubject: "",
-    otherSport: "",
-    otherHobby: "",
-    otherSubjectsOpen: false,
-    otherSportsOpen: false,
-    otherHobbiesOpen: false,
   });
 
   const [activeTab, setActiveTab] = useState("basic");
@@ -84,11 +77,7 @@ export default function CreateStudentProfile() {
   const [imageUrl, setImageUrl] = useState(null);
   const [errors, setErrors] = useState({});
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [customItems, setCustomItems] = useState({
-    subjects: [],
-    sports: [],
-    hobbies: []
-  });
+  const [institutes, setInstitutes] = useState([]);
 
   useEffect(() => {
     if (!token) {
@@ -96,6 +85,28 @@ export default function CreateStudentProfile() {
       navigate('/signup');
     }
   }, [token, navigate]);
+
+  useEffect(() => {
+    const fetchInstitutes = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/institute/fetch", {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch institutes');
+        }
+        const data = await response.json();
+        setInstitutes(data.data);
+      } catch (error) {
+        console.error("Error fetching institutes:", error);
+        setErrors(prev => ({ ...prev, institutes: "Failed to load institutes. Please try again." }));
+      }
+    };
+
+    fetchInstitutes();
+  }, [token]);
 
   const handleInputChange = async (e) => {
     const { name, value, type, files } = e.target;
@@ -173,120 +184,21 @@ export default function CreateStudentProfile() {
     });
   };
 
-  // const handleAddOther = async (type) => {
-  //   const otherValue = formData[`other${type.charAt(0).toUpperCase() + type.slice(1)}`];
-  //   if (otherValue.trim()) {
-  //     try {
-  //       let apiUrl;
-  //       switch (type) {
-  //         case 'subjects':
-  //           apiUrl = 'http://localhost:4000/api/master/subjects';
-  //           break;
-  //         case 'sports':
-  //           apiUrl = 'http://localhost:4000/api/master/sports';
-  //           break;
-  //         case 'hobbies':
-  //           apiUrl = 'http://localhost:4000/api/master/hobbies';
-  //           break;
-  //         default:
-  //           throw new Error('Invalid type');
-  //       }
-  //       const response = await axios.post(apiUrl, { name: otherValue }, {
-  //         headers: { 'Authorization': `Bearer ${token}` }
-  //       });
-  //       const newItems = response.data.map(item => {
-  //         if (item.newValue) {
-  //           return { id: item.newValue.id, name: item.newValue[`${type.slice(0, -1)}_name`] || item.newValue.name };
-  //         } else if (item.existingValue) {
-  //           return { id: item.existingValue.id, name: item.existingValue.name };
-  //         }
-  //         return null;
-  //       }).filter(Boolean);
-  //       setFormData((prev) => ({
-  //         ...prev,
-  //         [type]: [...prev[type], ...newItems.map(item => item.id)],
-  //         [`other${type.charAt(0).toUpperCase() + type.slice(1)}`]: "",
-  //         [`other${type.charAt(0).toUpperCase() + type.slice(1)}Open`]: false,
-  //       }));
-  //       setCustomItems((prev) => ({
-  //         ...prev,
-  //         [type]: [...prev[type], ...newItems]
-  //       }));
-  //     } catch (error) {
-  //       console.error(`Error adding other ${type}:`, error);
-  //       setErrors((prev) => ({ ...prev, [type]: `Failed to add ${type}. Please try again.` }));
-  //     }
-  //   }
-  // };
-  const handleAddOther = async (type) => {
-    const otherValue = formData[`other${type.charAt(0).toUpperCase() + type.slice(1)}`];
-    if (otherValue.trim()) {
-      try {
-        let apiUrl;
-        switch (type) {
-          case 'subjects':
-            apiUrl = 'http://localhost:4000/api/master/subjects';
-            break;
-          case 'sports':
-            apiUrl = 'http://localhost:4000/api/master/sports';
-            break;
-          case 'hobbies':
-            apiUrl = 'http://localhost:4000/api/master/hobbies';
-            break;
-          default:
-            throw new Error('Invalid type');
-        }
-        const response = await axios.post(apiUrl, { name: otherValue }, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        // Process each item in the response array
-        response.data.forEach(item => {
-          if (item.newValue) {
-            const newItem = {
-              id: item.newValue.id,
-              name: item.newValue.hobby_name || item.newValue.sport_name || item.newValue.subject_name || item.newValue.name
-            };
-            
-            // Update formData with the new item's ID
-            setFormData(prev => ({
-              ...prev,
-              [type]: [...prev[type], newItem.id],
-              [`other${type.charAt(0).toUpperCase() + type.slice(1)}`]: "",
-              [`other${type.charAt(0).toUpperCase() + type.slice(1)}Open`]: false,
-            }));
-
-            // Update customItems with the new item
-            setCustomItems(prev => ({
-              ...prev,
-              [type]: [...prev[type], newItem]
-            }));
-          }
-        });
-
-      } catch (error) {
-        console.error(`Error adding other ${type}:`, error);
-        setErrors(prev => ({ ...prev, [type]: `Failed to add ${type}. Please try again.` }));
-      }
-    }
-  };
   const uploadImage = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', 'atisha_preset');
 
     try {
-      const response = await axios.post(
+      const response = await fetch(
         `https://api.cloudinary.com/v1_1/dz4xjnefv/image/upload`,
-        formData,
         {
-          onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setUploadProgress(percentCompleted);
-          },
+          method: 'POST',
+          body: formData,
         }
       );
-      return response.data.secure_url;
+      const data = await response.json();
+      return data.secure_url;
     } catch (error) {
       console.error("Image upload failed", error);
       throw new Error('Image upload failed');
@@ -309,7 +221,7 @@ export default function CreateStudentProfile() {
 
     const requiredFields = [
       "user_id", "dob", "gender", "location", 
-      "contact_number", "school_name", "class_level", 
+      "contact_number", "class_level", 
       "subjects", "sports", "hobbies"
     ];
 
@@ -333,6 +245,7 @@ export default function CreateStudentProfile() {
         gender: formData.gender,
         location: formData.location,
         contact_number: formData.contact_number,
+        school_code: formData.school_code,
         school_name: formData.school_name,
         class_level: parseInt(formData.class_level),
         subject_ids: formData.subjects,
@@ -539,14 +452,45 @@ export default function CreateStudentProfile() {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
                 <label htmlFor="school_name" className="block text-sm font-medium text-gray-700 mb-1">School Name</label>
-                <input 
+                <select 
                   id="school_name" 
                   name="school_name" 
-                  value={formData.school_name} 
-                  onChange={handleInputChange} 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                  required 
-                />
+                  value={formData.school_code || (formData.school_name ? "other" : "")} 
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "other") {
+                      setFormData(prev => ({ ...prev, school_code: null, school_name: "" }));
+                    } else {
+                      setFormData(prev => ({ 
+                        ...prev, 
+                        school_code: value, 
+                        school_name: null 
+                      }));
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="">Select a school</option>
+                  {institutes.map((institute) => (
+                    <option key={institute.institute_code} value={institute.institute_code}>
+                      {institute.institute_code} - {institute.school_name}
+                    </option>
+                  ))}
+                  <option value="other">Other (Type your school name)</option>
+                </select>
+                {(formData.school_code === null || formData.school_name) && (
+                  <input
+                    type="text"
+                    id="custom_school_name"
+                    name="school_name"
+                    value={formData.school_name || ""}
+                    onChange={(e) => setFormData(prev => ({ ...prev, school_name: e.target.value }))}
+                    className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter your school name"
+                    required
+                  />
+                )}
                 {errors.school_name && <p className="text-red-500 text-sm mt-1">{errors.school_name}</p>}
               </div>
               <div>
@@ -603,42 +547,6 @@ export default function CreateStudentProfile() {
                       {item.name}
                     </div>
                   ))}
-                  {customItems[category.name].map((item, index) => (
-                    <div
-                      key={`custom-${category.name}-${index}`}
-                      className="p-3 rounded-lg cursor-pointer transition-all duration-300 bg-blue-500 text-white"
-                    >
-                      {item.name}
-                    </div>
-                  ))}
-                  <div
-                    className={`p-3 rounded-lg cursor-pointer transition-all duration-300 ${
-                      formData[`other${category.name.charAt(0).toUpperCase() + category.name.slice(1)}Open`]
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-100 hover:bg-gray-200"
-                    }`}
-                    onClick={() => setFormData(prev => ({ ...prev, [`other${category.name.charAt(0).toUpperCase() + category.name.slice(1)}Open`]: !prev[`other${category.name.charAt(0).toUpperCase() + category.name.slice(1)}Open`] }))}
-                  >
-                    Others +
-                  </div>
-                  {formData[`other${category.name.charAt(0).toUpperCase() + category.name.slice(1)}Open`] && (
-                    <div className="col-span-2 md:col-span-3">
-                      <input
-                        type="text"
-                        placeholder={`Other ${category.name.slice(0, -1)}`}
-                        value={formData[`other${category.name.charAt(0).toUpperCase() + category.name.slice(1)}`]}
-                        onChange={(e) => setFormData(prev => ({ ...prev, [`other${category.name.charAt(0).toUpperCase() + category.name.slice(1)}`]: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleAddOther(category.name)}
-                        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  )}
                 </div>
               </div>
             ))}
@@ -709,3 +617,4 @@ export default function CreateStudentProfile() {
     </div>
   );
 }
+
