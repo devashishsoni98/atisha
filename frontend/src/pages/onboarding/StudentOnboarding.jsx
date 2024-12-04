@@ -45,6 +45,7 @@ const StudentOnboarding = () => {
 
     const fetchDetails = async () => {
       const traits = await getStudentTraitsByStudentId(userId);
+
       setStudentTrait(traits);
       console.log(studentTrait);
     };

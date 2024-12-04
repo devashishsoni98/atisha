@@ -157,19 +157,24 @@ model users {
   webex_tokens     webex_tokens?
   event_attendance event_attendance[]
 
+  notifications notifications[]
+
   @@map("users")
 }
 
 model notifications {
-  id          Int       @id @default(autoincrement()) // Unique identifier for the notification
-  recipientId String // ID of the user receiving the notification
-  content     String // The message content of the notification
-  category    String // Category of the notification (e.g., 'message', 'alert', etc.)
-  readAt      DateTime? // Timestamp when the notification was read (nullable)
-  canceledAt  DateTime? // Timestamp when the notification was canceled (nullable)
-  createdAt   DateTime  @default(now()) // Timestamp when the notification was created
+  id           Int       @id @default(autoincrement())
+  recipient_id Int // ID of the user receiving the notification
+  content      String // The message content of the notification
+  is_read      Boolean   @default(false) // Indicates if the notification has been read
+  category     String // Category of the notification (e.g., 'message', 'alert', etc.)
+  read_at      DateTime? // Timestamp when the notification was read (nullable)
+  canceled_at  DateTime? // Timestamp when the notification was canceled (nullable)
+  created_at   DateTime  @default(now()) // Timestamp when the notification was created
+  link         String? // URL or link associated with the notification (nullable)
+  user         users     @relation(fields: [recipient_id], references: [id]) // Foreign key relationship
 
-  @@index([recipientId]) // Index for faster queries by recipientId
+  @@index([recipient_id])
   @@map("notifications")
 }
 
@@ -415,7 +420,7 @@ model programs {
 model events {
   id           Int             @id @default(autoincrement()) @map("id")
   name         String          @map("name") @db.VarChar(255)
-  image        String
+  image        String?         @map("image") @db.VarChar(255)
   description  String?         @map("description") @db.Text
   event_type   event_type_enum @map("event_type")
   start_date   DateTime        @map("start_date")

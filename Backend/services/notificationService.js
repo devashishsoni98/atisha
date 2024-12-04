@@ -1,57 +1,86 @@
-const { PrismaClient } = require('@prisma/client');
+const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 
-/**
- * Sends a notification to a user.
- * @param {string} userId - The ID of the user to send the notification to.
- * @param {string} message - The content of the notification.
- * @returns {Promise<Object>} - The created notification object.
- */
-async function sendNotification(userId, message) {
-    const notifications = await prisma.notifications.create({
-        data: {
-            recipientId: userId,
-            content: message,
-            category: 'message', // You can customize this as needed
-            readAt: null, // Default to unread
-            createdAt: new Date(),
-        },
-    });
 
-    // Optional: Emit the notification via socket if needed
-    // const socket = getSocketInstance(); // Implement this function to get your socket instance
-    // socket.to(userId).emit('new_notification', notification);
+const sendNotification = async (recipient_id, content, link,  category) => {
+    try {
+        console.log({ recipient_id, content, link, category });
+        const recipient = await prisma.users.findUnique({
+            where: {
+                id: recipient_id
+            }
+        });
+        if (!recipient) {
+            throw new Error('Recipient not found');
+        }
 
-    return notifications;
+        const notification = await prisma.notifications.create({
+            data: {
+                recipient_id,
+                content,
+                link,
+                category
+            }
+        });
+        return notification;
+    }
+    catch
+        (error)
+        {
+            console.error('Error sending notification:', error);
+            throw error;
+        }
 }
 
-/**
- * Retrieves all notifications for a user.
- * @param {string} userId - The ID of the user whose notifications to retrieve.
- * @returns {Promise<Array>} - An array of notifications.
- */
-async function getNotifications(userId) {
-    return prisma.notifications.findMany({
-        where: {recipientId: userId},
-        orderBy: {createdAt: 'desc'},
-    });
+const getNotificationsByRecipientId = async (recipient_id) => {
+    try {
+        const notifications = await prisma.notifications.findMany({
+            where: {
+                recipient_id: parseInt(recipient_id),
+                is_read: false
+            }
+        });
+        return notifications;
+    } catch (error) {
+        console.error('Error fetching notifications:', error);
+        throw error;
+    }
 }
 
-/**
- * Marks a specific notification as read.
- * @param {string} notificationId - The ID of the notification to mark as read.
- * @returns {Promise<Object>} - The updated notification object.
- */
-async function markAsRead(notificationId) {
-    return prisma.notifications.update({
-        where: {id: notificationId},
-        data: {readAt: new Date()},
-    });
+const markNotificationAsRead = async (notification_id) => {
+    try {
+        const notification = await prisma.notifications.update({
+            where: {
+                id: parseInt(notification_id)
+            },
+            data: {
+                is_read: true
+            }
+        });
+        return notification;
+    } catch (error) {
+        console.error('Error marking notification as read:', error);
+        throw error;
+    }
 }
 
-// Export the functions for use in other parts of your application
+const deleteNotification = async (notification_id) => {
+    try {
+        const notification = await prisma.notifications.delete({
+            where: {
+                id: parseInt(notification_id)
+            }
+        });
+        return notification;
+    } catch (error) {
+        console.error('Error deleting notification:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     sendNotification,
-    getNotifications,
-    markAsRead,
+    getNotificationsByRecipientId,
+    markNotificationAsRead,
+    deleteNotification
 };

@@ -288,8 +288,8 @@ def update_request_status():
 
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-            # Check if the request exists
-            cursor.execute("SELECT id, event_id FROM event_requests WHERE id = %s", (request_id,))
+            # Check if the request exists and fetch user_id
+            cursor.execute("SELECT id, event_id, user_id FROM event_requests WHERE id = %s", (request_id,))
             event_request = cursor.fetchone()
             if not event_request:
                 return jsonify({"error": "Request not found"}), 404
@@ -325,7 +325,7 @@ def update_request_status():
             cursor.execute(query, (request_id,))
             conn.commit()
 
-            # Get user_id from event_requests table and fetch their email
+            # Get user_id from the event_requests table and fetch their email
             user_id = event_request['user_id']
             cursor.execute("SELECT email FROM users WHERE id = %s", (user_id,))
             user = cursor.fetchone()

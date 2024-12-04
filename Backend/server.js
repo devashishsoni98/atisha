@@ -31,6 +31,9 @@ const sessionsReportsRoutes = require('./routes/sessionsReportsRoutes');
 const counselorBookingRoutes = require('./routes/counselorBookingRoutes');
 const mentorBookingRoutes = require('./routes/mentorBookingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const notificationRoutes = require('./routes/notificationsRoutes');
+const eventsRoutes = require('./routes/eventsRoutes');
+const studentTraitsRoutes = require('./routes/studentTraitsRoutes');
 
 
 // Use routes with a prefix
@@ -43,6 +46,9 @@ app.use('/api/session-reports', sessionsReportsRoutes);
 app.use('/api/counselor-booking', counselorBookingRoutes);
 app.use('/api/mentor-booking', mentorBookingRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/events', eventsRoutes);
+app.use('/api/student-traits', studentTraitsRoutes);
 
 
 // Start server

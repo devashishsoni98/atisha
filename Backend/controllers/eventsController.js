@@ -47,32 +47,118 @@ const fetchCompletedEvents = async (req, res) => {
 };
 
 const fetchEventById = async (req, res) => {
-    const eventId = parseInt(req.params.id);
-    try {
-        const event = await prisma.events.findUnique({
-            where: {id: eventId},
-            include: {
-                event_registrations: true,
-                event_requests: true,
-            },})
+        const eventId = parseInt(req.params.id);
+        try {
+            const event = await prisma.events.findUnique({
+                where: {id: eventId},
+                include: {
+                    event_registrations: true,
+                    event_requests: true,
+                },
+            })
 
-        if (!event) {
-            return res.status(404).json({message: 'Event not found'});
-        }
+            if (!event) {
+                return res.status(404).json({message: 'Event not found'});
+            }
 
-        res.status(200).json(event);
-    } catch
-        (error)
-        {
+            res.status(200).json(event);
+        } catch
+            (error) {
             console.error(error);
             res.status(500).json({message: 'Error fetching event.'});
         }
     }
-    ;
+;
+
+const fetchEventRequestByCounselorId = async (req, res) => {
+    const counselorId = parseInt(req.params.id);
+    try {
+        const eventRequests = await prisma.event_requests.findMany({
+            where: {
+                user_id: counselorId,
+                status: 'pending',
+            },
+            include: {
+                event: true,
+            }
+        });
+        res.status(200).json(eventRequests);
+        console.log(eventRequests);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: 'Error fetching event requests.'});
+    }
+}
 
 
-    module.exports = {
-        fetchUpcomingEvents,
-        fetchCompletedEvents,
-        fetchEventById,
-    };
+const fetchAcceptedEventByCounselorId = async (req, res) => {
+    const counselorId = parseInt(req.params.id);
+    try {
+        const eventRequests =await prisma.events.findMany({
+            where: {
+                status: 'scheduled',
+                event_requests: {
+                    some: {
+                        user_id: counselorId,
+                        status: 'accepted',
+                    },
+                },
+            },
+        });
+        res.status(200).json(eventRequests);
+        console.log(eventRequests);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: 'Error fetching event requests.'});
+    }
+}
+
+const fetchEventRequestByMentorId = async (req, res) => {
+    const counselorId = parseInt(req.params.id);
+    try {
+        const eventRequests = await prisma.event_requests.findMany({
+            where: {
+                user_id: mentorId,
+                status: 'pending',
+            },
+            include: {
+                event: true,
+            }
+        });
+        res.status(200).json(eventRequests);
+        console.log(eventRequests);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: 'Error fetching event requests.'});
+    }
+}
+
+
+const fetchAcceptedEventByMentorId = async (req, res) => {
+    const counselorId = parseInt(req.params.id);
+    try {
+        const eventRequests =await prisma.events.findMany({
+            where: {
+                status: 'scheduled',
+                event_requests: {
+                    some: {
+                        user_id: counselorId,
+                        status: 'accepted',
+                    },
+                },
+            },
+        });
+        res.status(200).json(eventRequests);
+        console.log(eventRequests);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: 'Error fetching event requests.'});
+    }
+}
+module.exports = {
+    fetchUpcomingEvents,
+    fetchCompletedEvents,
+    fetchEventById,
+    fetchEventRequestByCounselorId,
+    fetchAcceptedEventByCounselorId
+};
