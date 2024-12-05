@@ -100,7 +100,7 @@ const webexRoutes = require('./routes/webexRoutes');
 // Use routes with a prefixs
 const notificationRoutes = require('./routes/notificationsRoutes');
 const eventsRoutes = require('./routes/eventsRoutes');
-const studentTraitsRoutes = require('./routes/studentTraitsRoutes');
+// const studentTraitsRoutes = require('./routes/studentTraitsRoutes');
 
 
 // Use routes with a prefix

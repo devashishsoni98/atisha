@@ -154,10 +154,11 @@ model users {
   user2_conversations  conversations[]        @relation("User2Conversations")
   chat_messages        chat_messages[]
 
-  webex_tokens     webex_tokens?  
-  event_attendance event_attendance[]
+  webex_tokens          webex_tokens?
+  event_attendance      event_attendance[]
   institutesAsInstitute institute_student[] @relation("InstituteRelation")
-  studentsAsStudent   institute_student[] @relation("StudentRelation")
+  studentsAsStudent     institute_student[] @relation("StudentRelation")
+
   @@map("users")
 }
 
@@ -170,8 +171,8 @@ model notifications {
   read_at      DateTime? // Timestamp when the notification was read (nullable)
   canceled_at  DateTime? // Timestamp when the notification was canceled (nullable)
   created_at   DateTime  @default(now()) // Timestamp when the notification was created
-  link         String? // URL or link associated with the notification (nullable)
-  user         users     @relation(fields: [recipient_id], references: [id]) // Foreign key relationship
+  // link         String? // URL or link associated with the notification (nullable)
+  // users         users     @relation(fields: [recipient_id], references: [id]) // Foreign key relationship
 
   @@index([recipient_id])
   @@map("notifications")
@@ -335,6 +336,7 @@ model sessions {
 model institute_info {
   user_id         Int                       @id
   name            String?
+  institute_code  String                    @unique
   image_url       String?
   plot_no         String?                   @db.VarChar(50)
   street          String?                   @db.VarChar(100)
@@ -696,13 +698,13 @@ model event_attendance {
 }
 
 model institute_student {
-  id          Int       @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   institute_id Int
   student_id   Int
-  joined_at    DateTime  @default(now())
+  joined_at    DateTime @default(now())
 
-  institute   users @relation("InstituteRelation",fields: [institute_id], references: [id])
-  student     users   @relation("StudentRelation",fields: [student_id], references: [id])
+  institute users @relation("InstituteRelation", fields: [institute_id], references: [id])
+  student   users @relation("StudentRelation", fields: [student_id], references: [id])
 
   @@unique([institute_id, student_id]) // Ensures no duplicate entries
   @@map("institute_student")
