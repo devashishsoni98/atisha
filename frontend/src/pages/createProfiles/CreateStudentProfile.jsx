@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
 
 const AnimatedBackground = () => (
   <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -52,6 +54,7 @@ export default function CreateStudentProfile() {
   const location = useLocation();
   const navigate = useNavigate();
   const token = useSelector((state) => state.user.token) || localStorage.getItem('token');
+  const dispatch = useDispatch();
 
   const { userRole, userId, userEmail, userName } = location.state || {};
   const [formData, setFormData] = useState({
@@ -69,6 +72,12 @@ export default function CreateStudentProfile() {
     sports: [],
     hobbies: [],
     gender: "",
+    otherSubject: "",
+    otherSport: "",
+    otherHobby: "",
+    otherSubjectsOpen: false,
+    otherSportsOpen: false,
+    otherHobbiesOpen: false,
   });
 
   const [activeTab, setActiveTab] = useState("basic");
@@ -78,6 +87,11 @@ export default function CreateStudentProfile() {
   const [errors, setErrors] = useState({});
   const [uploadProgress, setUploadProgress] = useState(0);
   const [institutes, setInstitutes] = useState([]);
+  const [customItems, setCustomItems] = useState({
+    subjects: [],
+    sports: [],
+    hobbies: []
+  });
 
   useEffect(() => {
     if (!token) {
@@ -184,21 +198,74 @@ export default function CreateStudentProfile() {
     });
   };
 
+  const handleAddOther = async (type) => {
+    const otherValue = formData[`other${type.charAt(0).toUpperCase() + type.slice(1)}`];
+    if (otherValue.trim()) {
+      try {
+        let apiUrl;
+        switch (type) {
+          case 'subjects':
+            apiUrl = 'http://localhost:4000/api/master/subjects';
+            break;
+          case 'sports':
+            apiUrl = 'http://localhost:4000/api/master/sports';
+            break;
+          case 'hobbies':
+            apiUrl = 'http://localhost:4000/api/master/hobbies';
+            break;
+          default:
+            throw new Error('Invalid type');
+        }
+        const response = await axios.post(apiUrl, { name: otherValue }, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        // Process each item in the response array
+        response.data.forEach(item => {
+          if (item.newValue) {
+            const newItem = {
+              id: item.newValue.id,
+              name: item.newValue.hobby_name || item.newValue.sport_name || item.newValue.subject_name || item.newValue.name
+            };
+            
+            // Update formData with the new item's ID
+            setFormData(prev => ({
+              ...prev,
+              [type]: [...prev[type], newItem.id],
+              [`other${type.charAt(0).toUpperCase() + type.slice(1)}`]: "",
+              [`other${type.charAt(0).toUpperCase() + type.slice(1)}Open`]: false,
+            }));
+            // Update customItems with the new item
+            setCustomItems(prev => ({
+              ...prev,
+              [type]: [...prev[type], newItem]
+            }));
+          }
+        });
+      } catch (error) {
+        console.error(`Error adding other ${type}:`, error);
+        setErrors(prev => ({ ...prev, [type]: `Failed to add ${type}. Please try again.` }));
+      }
+    }
+  };
+
   const uploadImage = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', 'atisha_preset');
 
+    
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `https://api.cloudinary.com/v1_1/dz4xjnefv/image/upload`,
+        formData,
         {
-          method: 'POST',
-          body: formData,
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percentCompleted);
+          },
         }
       );
-      const data = await response.json();
-      return data.secure_url;
+      return response.data.secure_url;
     } catch (error) {
       console.error("Image upload failed", error);
       throw new Error('Image upload failed');
@@ -547,6 +614,42 @@ export default function CreateStudentProfile() {
                       {item.name}
                     </div>
                   ))}
+                  {customItems[category.name].map((item, index) => (
+                    <div
+                      key={`custom-${category.name}-${index}`}
+                      className="p-3 rounded-lg cursor-pointer transition-all duration-300 bg-blue-500 text-white"
+                    >
+                      {item.name}
+                    </div>
+                  ))}
+                  <div
+                    className={`p-3 rounded-lg cursor-pointer transition-all duration-300 ${
+                      formData[`other${category.name.charAt(0).toUpperCase() + category.name.slice(1)}Open`]
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-100 hover:bg-gray-200"
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, [`other${category.name.charAt(0).toUpperCase() + category.name.slice(1)}Open`]: !prev[`other${category.name.charAt(0).toUpperCase() + category.name.slice(1)}Open`] }))}
+                  >
+                    Others +
+                  </div>
+                  {formData[`other${category.name.charAt(0).toUpperCase() + category.name.slice(1)}Open`] && (
+                    <div className="col-span-2 md:col-span-3">
+                      <input
+                        type="text"
+                        placeholder={`Other ${category.name.slice(0, -1)}`}
+                        value={formData[`other${category.name.charAt(0).toUpperCase() + category.name.slice(1)}`]}
+                        onChange={(e) => setFormData(prev => ({ ...prev, [`other${category.name.charAt(0).toUpperCase() + category.name.slice(1)}`]: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleAddOther(category.name)}
+                        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
