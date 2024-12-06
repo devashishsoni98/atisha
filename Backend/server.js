@@ -48,7 +48,11 @@ const webexRoutes = require('./routes/webexRoutes');
 // Use routes with a prefixs
 const notificationRoutes = require('./routes/notificationsRoutes');
 const eventsRoutes = require('./routes/eventsRoutes');
+
 const activityRoutes = require('./routes/activityRoutes');
+const quizRoutes = require('./routes/quizRoutes'); // Added quiz routes
+const questionRoutes = require('./routes/questionRoutes'); // Added question routes
+const responseRoutes = require('./routes/responseRoutes');
 
 
 // Use routes with a prefix
@@ -72,8 +76,11 @@ app.use('/api/webex',webexRoutes)
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/student-traits', studentTraitsRoutes);
-app.use('/api/activities', activityRoutes); 
 
+app.use('/api/activities', activityRoutes); // Added activities route
+app.use('/api/quizzes', quizRoutes); // Added quizzes route
+app.use('/api/questions', questionRoutes); // Added questions route
+app.use('/api/responses', responseRoutes); // Added responses route
 // Start server
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
