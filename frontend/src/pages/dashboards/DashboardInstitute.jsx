@@ -231,7 +231,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCommonFunctions } from '../../utils/commonFunctions';
 import Activities from './Activities';
-
+import StudentUpload from './StudentUpload';
 const fadeIn = {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
@@ -298,6 +298,8 @@ export default function InstituteDashboard() {
                 return <Activities />;
             case 'Analysis':
                 return <AnalysisContent />;
+            case 'Students':
+                return <StudentUpload />;
             default:
                 return <ProfileContent instituteData={instituteData} />;
         }
@@ -335,7 +337,8 @@ export default function InstituteDashboard() {
                         {[
                             { name: 'Profile', icon: <Building2 className="w-4 h-4" /> },
                             { name: 'Activities', icon: <Calendar className="w-4 h-4" /> },
-                            { name: 'Analysis', icon: <PieChart className="w-4 h-4" /> }
+                            { name: 'Analysis', icon: <PieChart className="w-4 h-4" /> },
+                            { name: 'Students', icon: <Users className="w-4 h-4" /> }
                         ].map((item) => (
                             <motion.button
                                 key={item.name}

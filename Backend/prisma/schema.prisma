@@ -730,18 +730,20 @@ model institute_student {
 //   createdAt   DateTime @default(now())
 // }
 
-model Activity {
+model activity  {
   id          Int       @id @default(autoincrement())
   title       String
   description String
   type        String    // "webinar", "quiz", or "workshop"
   date        DateTime
-  createdAt   DateTime  @default(now())
+  created_at   DateTime  @default(now())
   speaker     String?   // Optional speaker for webinars/workshops
   instructor  String?   // Optional instructor for workshops
   quizId      Int?      // Optional ID for quizzes
   quiz        Quiz?     @relation("QuizActivities", fields: [quizId], references: [id]) // Optional relation to Quiz
   responses   Response[] // Opposite relation for responses
+
+  @@map("activity")
 }
 
 model Quiz {
@@ -749,7 +751,8 @@ model Quiz {
   title       String
   description String
   questions   Question[] // Questions related to this quiz
-  activities  Activity[] @relation("QuizActivities") // One-to-many relation to Activity
+  activities  activity[] @relation("QuizActivities") // One-to-many relation to Activity
+    @@map("quiz")
 }
 
 
@@ -764,6 +767,7 @@ model Question {
   correctOption String
   quiz          Quiz     @relation(fields: [quizId], references: [id])
   responses     Response[] // Opposite relation for responses
+    @@map("question")
 }
 
 model Response {
@@ -773,6 +777,7 @@ model Response {
   questionId Int
   answer    String
   timestamp DateTime @default(now())
-  activity  Activity @relation(fields: [activityId], references: [id]) // Activity relation
+  activity  activity @relation(fields: [activityId], references: [id]) // Activity relation
   question  Question @relation(fields: [questionId], references: [id]) // Question relation
+    @@map("response")
 }
