@@ -133,32 +133,37 @@ const fetchEventRequestByMentorId = async (req, res) => {
     }
 }
 
-
-const fetchAcceptedEventByMentorId = async (req, res) => {
-    const counselorId = parseInt(req.params.id);
+const fetchEventsForTomorrowAndToday = async (req, res) => {
     try {
-        const eventRequests =await prisma.events.findMany({
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        const events = await prisma.events.findMany({
             where: {
-                status: 'scheduled',
-                event_requests: {
-                    some: {
-                        user_id: counselorId,
-                        status: 'accepted',
-                    },
+                start_date: {
+                    gte: today,
+                    lte: tomorrow,
                 },
             },
         });
-        res.status(200).json(eventRequests);
-        console.log(eventRequests);
+        res.status(200).json(events);
+        console.log(events);
+        console.log(today);
+        console.log(tomorrow);
     } catch (error) {
         console.error(error);
-        res.status(500).json({message: 'Error fetching event requests.'});
+        res.status(500).json({message: 'Error fetching events.'});
     }
+
 }
+
+
+
 module.exports = {
     fetchUpcomingEvents,
     fetchCompletedEvents,
     fetchEventById,
     fetchEventRequestByCounselorId,
-    fetchAcceptedEventByCounselorId
+    fetchAcceptedEventByCounselorId,
+    fetchEventsForTomorrowAndToday
 };

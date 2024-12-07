@@ -205,7 +205,7 @@ def recommend_institutes(city, state):
     except Exception as e:
         return {"error": f"Failed to recommend institutes: {str(e)}"}
 
-
+# ---------------------------------------------------------------------------------------------------------------
 
 @events_bp.route('/create_event', methods=['POST'])
 def create_event():
@@ -227,20 +227,28 @@ def create_event():
     organizer_id = data.get("organizer_id")
 
     # Validate required fields
-    if not name or not event_type or not start_date or not event_mode or not organizer_id:
+    if not name or not event_type or not start_date or not event_mode:
         return jsonify({"error": "Missing required fields"}), 400
 
-    # SQL query with 13 placeholders
-    query = """
+    # SQL query to insert the event
+    insert_query = """
         INSERT INTO events (name, image, description, event_type, start_date, end_date, duration, capacity, link, event_mode, city, state, organizer_id)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING id;
     """
+    # SQL query to fetch the event details
+    fetch_query = "SELECT * FROM events WHERE id = %s;"
+
     try:
-        with conn.cursor() as cursor:
-            # Ensure the tuple matches the query
-            cursor.execute(query, (name, image, description, event_type, start_date, end_date, duration, capacity, link, event_mode, city, state, organizer_id))
-            event_id = cursor.fetchone()[0]
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            # Insert the event and get its ID
+            cursor.execute(insert_query, (name, image, description, event_type, start_date, end_date, duration, capacity, link, event_mode, city, state, organizer_id))
+            event_id = cursor.fetchone()["id"]
+
+            # Fetch the complete event details
+            cursor.execute(fetch_query, (event_id,))
+            event_details = cursor.fetchone()
+
         conn.commit()
 
         # Step 2: Recommend counselors/mentors or institutes based on event mode
@@ -255,14 +263,12 @@ def create_event():
             recommendations["counselors_and_mentors"] = recommend_counselors_mentors(description)
             recommendations["institutes"] = recommend_institutes(city, state)
 
+        # Return the event details along with recommendations
         return jsonify({
             "message": "Event created successfully",
-            "event_id": event_id,
+            "event": event_details,
             "recommendations": recommendations
         }), 201
-
-        # # Success response
-        # return jsonify({"message": "Event created successfully", "event_id": event_id}), 201
 
     except Exception as e:
         conn.rollback()
@@ -349,7 +355,7 @@ def update_request_status():
 
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-            # Check if the request exists and fetch user_id
+            # Check if the request exists
             cursor.execute("SELECT id, event_id, user_id FROM event_requests WHERE id = %s", (request_id,))
             event_request = cursor.fetchone()
             if not event_request:
@@ -386,7 +392,7 @@ def update_request_status():
             cursor.execute(query, (request_id,))
             conn.commit()
 
-            # Get user_id from the event_requests table and fetch their email
+            # Get user_id from event_requests table and fetch their email
             user_id = event_request['user_id']
             cursor.execute("SELECT email FROM users WHERE id = %s", (user_id,))
             user = cursor.fetchone()
@@ -422,7 +428,7 @@ def update_request_status():
             if accepted_count == total_active_requests and total_active_requests > 0:
                 print(f"All active requests accepted for event {event_id}. Updating event status to 'scheduled'.")
                 cursor.execute("UPDATE events SET status = 'scheduled' WHERE id = %s", (event_id,))
-                # conn.commit()
+                conn.commit()
 
                 # Check if the event is online
                 cursor.execute("SELECT name, description, start_date, duration, event_mode FROM events WHERE id = %s", (event_id,))

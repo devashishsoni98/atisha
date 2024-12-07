@@ -315,7 +315,11 @@ const Navbar = () => {
   useEffect(() => {
 
     setInterval(() => {
-      fetchNotifications();
+
+      if(userId){
+        fetchNotifications();
+      }
+
     }, 10000);
   }, []);
 

@@ -3,6 +3,8 @@ const prisma = new PrismaClient();
 
 
 const sendNotification = async (recipient_id, content, link,  category) => {
+    console.log(recipient_id);
+    
     try {
         console.log({ recipient_id, content, link, category });
         const recipient = await prisma.users.findUnique({

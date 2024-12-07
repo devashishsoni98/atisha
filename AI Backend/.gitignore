@@ -1,1 +1,30 @@
+# Byte-compiled / optimized files
+modules/__pycache__/
+*.py[cod]
+
+# Virtual environment
+.venv/
+venv/
+
+# Flask instance folder (for configuration and temporary files)
+instance/
+
+# Test and coverage reports
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Environment variables file
 .env
+
+# Web assets cache
+.webassets-cache
+
+# Other common exclusions
+*.log
+*.sqlite3

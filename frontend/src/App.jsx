@@ -8,6 +8,7 @@ import './App.css';
 import chatbotIcon from './assets/logo.png';
 import loadingGif from './assets/loading.gif';
 import botAvatar from './assets/main.gif';
+import NotificationProvider from './hooks/useNotifications';
 
 // Create a separate component for the chat functionality
 function ChatBot() {
@@ -229,7 +230,10 @@ function ChatBot() {
 function App() {
   return (
     <div className="relative min-h-screen">
+      <NotificationProvider>
+        
       <RouterProvider router={Router} />
+      </NotificationProvider>
       <ChatBot />
     </div>
   );
