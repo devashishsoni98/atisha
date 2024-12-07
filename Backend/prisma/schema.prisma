@@ -173,7 +173,7 @@ model notifications {
   canceled_at  DateTime? // Timestamp when the notification was canceled (nullable)
   created_at   DateTime  @default(now()) // Timestamp when the notification was created
   link         String? // URL or link associated with the notification (nullable)
-  user         users     @relation(fields: [recipient_id], references: [id]) // Foreign key relationship
+  users         users     @relation(fields: [recipient_id], references: [id]) // Foreign key relationship
 
   @@index([recipient_id])
   @@map("notifications")
@@ -337,6 +337,7 @@ model sessions {
 model institute_info {
   user_id         Int                       @id
   name            String?
+  institute_code  String                    @unique
   image_url       String?
   plot_no         String?                   @db.VarChar(50)
   street          String?                   @db.VarChar(100)
@@ -710,6 +711,7 @@ model institute_student {
   @@map("institute_student")
 }
 
+<<<<<<< HEAD
 model career_lens {
   id              Int      @id @default(autoincrement())
   name            String
@@ -720,4 +722,75 @@ model career_lens {
   salary          String   @db.Text
 
   @@map("career_lens")
+=======
+// model Activity {
+//   id          Int      @id @default(autoincrement())
+//   title       String
+//   description String
+//   type        String   // workshop, quiz, webinar, etc.
+//   date        DateTime
+//   createdAt   DateTime @default(now())
+// }
+// model Activity {
+//   id          Int      @id @default(autoincrement())
+//   title       String
+//   description String
+//   type        String   // workshop, quiz, webinar, etc.
+//   date        DateTime
+//   speaker     String?  // Optional field
+//   instructor  String?  // Optional field for the instructor
+//   createdAt   DateTime @default(now())
+// }
+
+model activity  {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  type        String    // "webinar", "quiz", or "workshop"
+  date        DateTime
+  created_at   DateTime  @default(now())
+  speaker     String?   // Optional speaker for webinars/workshops
+  instructor  String?   // Optional instructor for workshops
+  quizId      Int?      // Optional ID for quizzes
+  quiz        Quiz?     @relation("QuizActivities", fields: [quizId], references: [id]) // Optional relation to Quiz
+  responses   Response[] // Opposite relation for responses
+
+  @@map("activity")
+}
+
+model Quiz {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  questions   Question[] // Questions related to this quiz
+  activities  activity[] @relation("QuizActivities") // One-to-many relation to Activity
+    @@map("quiz")
+}
+
+
+model Question {
+  id            Int      @id @default(autoincrement())
+  quizId        Int      // Foreign key for the Quiz model
+  question      String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctOption String
+  quiz          Quiz     @relation(fields: [quizId], references: [id])
+  responses     Response[] // Opposite relation for responses
+    @@map("question")
+}
+
+model Response {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  activityId Int
+  questionId Int
+  answer    String
+  timestamp DateTime @default(now())
+  activity  activity @relation(fields: [activityId], references: [id]) // Activity relation
+  question  Question @relation(fields: [questionId], references: [id]) // Question relation
+    @@map("response")
+>>>>>>> eb5c2d5377a7b73c799ffeccec8ffc8d04d70ed7
 }
