@@ -73,9 +73,9 @@ const StudentBrowsing = () => {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <header className="bg-blue-600 text-white py-6">
+            <header className="text-blue-600 pt-6">
                 <div className="container mx-auto px-4">
-                    <h1 className="text-3xl font-bold">Student Counseling Portal</h1>
+                    <h1 className="text-4xl font-bold">Student Counseling Portal</h1>
                 </div>
             </header>
 
@@ -118,11 +118,7 @@ const StudentBrowsing = () => {
                 </AnimatePresence>
             </main>
 
-            <footer className="bg-white py-4 mt-8">
-                <div className="container mx-auto px-4 text-center text-sm text-gray-600">
-                    Need assistance? Reach out to our support team at support@careercompass.com
-                </div>
-            </footer>
+
         </div>
     );
 };

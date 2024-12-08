@@ -23,8 +23,6 @@ import CounselorTrainingProgram from "../CounselorTrainingProgram";
 import { useCommonFunctions } from "../../utils/commonFunctions";
 import apibackend from "../../utils/api";
 import axios from "axios";
-import Toaster from "../../components/Toaster";
-import { useNotification } from "../../hooks/useNotifications";
 
 const fadeIn = {
   initial: { opacity: 0 },
@@ -44,24 +42,7 @@ export default function DashBoardCounselor() {
   const [counselorData, setCounselorData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // const [toasts, setToasts] = useState([]);
 
-  // const addToast = (message, type) => {
-  //   const id = Date.now();
-  //   setToasts((prevToasts) => [...prevToasts, { id, message, type }]);
-  // };
-
-  // const removeToast = (id) => {
-  //   setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
-  // };
-
-  // // Example usage
-  // useEffect(() => {
-  //   addToast('Welcome to our app!', 'info');
-  //   // setTimeout(() => addToast('Your profile has been updated successfully!', 'success'), 1000);
-  //   // setTimeout(() => addToast('Please update your password', 'warning'), 2000);
-  //   // setTimeout(() => addToast('An error occurred while processing your request', 'error'), 3000);
-  // }, []);
 
   const token =
     useSelector((state) => state.user.token) || localStorage.getItem("token");
@@ -521,7 +502,7 @@ function EventsContent() {
 function ProfileContent({ counselorData }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const { addNotification } = useNotification();
+  
 
   return (
     <motion.div
@@ -531,12 +512,7 @@ function ProfileContent({ counselorData }) {
       exit="exit"
       variants={fadeIn}
     >
-      <button
-        onClick={() => addNotification("welcome", "success")}
-        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Add Success Notification
-      </button>
+   
       <motion.div
         className="bg-white shadow-lg rounded-2xl overflow-hidden"
         variants={slideIn}

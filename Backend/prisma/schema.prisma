@@ -711,18 +711,6 @@ model institute_student {
   @@map("institute_student")
 }
 
-<<<<<<< HEAD
-model career_lens {
-  id              Int      @id @default(autoincrement())
-  name            String
-  skills          String[] @db.Text
-  props           String[] @db.Text
-  cons            String[] @db.Text
-  related_careers String[] @db.Text
-  salary          String   @db.Text
-
-  @@map("career_lens")
-=======
 // model Activity {
 //   id          Int      @id @default(autoincrement())
 //   title       String
@@ -792,5 +780,15 @@ model Response {
   activity  activity @relation(fields: [activityId], references: [id]) // Activity relation
   question  Question @relation(fields: [questionId], references: [id]) // Question relation
     @@map("response")
->>>>>>> eb5c2d5377a7b73c799ffeccec8ffc8d04d70ed7
+}
+
+model career_lens {
+  id              Int      @id @default(autoincrement())
+  name            String
+  skills          String[] @db.Text
+  props           String[] @db.Text
+  cons            String[] @db.Text
+  related_careers String[] @db.Text
+  salary          String   @db.Text
+  @@map("career_lens")
 }
