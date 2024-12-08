@@ -711,7 +711,24 @@ model institute_student {
   @@map("institute_student")
 }
 
-
+// model Activity {
+//   id          Int      @id @default(autoincrement())
+//   title       String
+//   description String
+//   type        String   // workshop, quiz, webinar, etc.
+//   date        DateTime
+//   createdAt   DateTime @default(now())
+// }
+// model Activity {
+//   id          Int      @id @default(autoincrement())
+//   title       String
+//   description String
+//   type        String   // workshop, quiz, webinar, etc.
+//   date        DateTime
+//   speaker     String?  // Optional field
+//   instructor  String?  // Optional field for the instructor
+//   createdAt   DateTime @default(now())
+// }
 
 model activity  {
   id          Int       @id @default(autoincrement())
@@ -765,7 +782,6 @@ model Response {
     @@map("response")
 }
 
-
 model career_lens {
   id              Int      @id @default(autoincrement())
   name            String
@@ -774,6 +790,5 @@ model career_lens {
   cons            String[] @db.Text
   related_careers String[] @db.Text
   salary          String   @db.Text
-  
   @@map("career_lens")
 }

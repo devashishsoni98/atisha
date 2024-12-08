@@ -48,15 +48,11 @@ const webexRoutes = require('./routes/webexRoutes');
 // Use routes with a prefixs
 const notificationRoutes = require('./routes/notificationsRoutes');
 const eventsRoutes = require('./routes/eventsRoutes');
-<<<<<<< HEAD
-// const studentTraitsRoutes = require('./routes/studentTraitsRoutes');
-=======
 
 const activityRoutes = require('./routes/activityRoutes');
 const quizRoutes = require('./routes/quizRoutes'); // Added quiz routes
 const questionRoutes = require('./routes/questionRoutes'); // Added question routes
 const responseRoutes = require('./routes/responseRoutes');
->>>>>>> eb5c2d5377a7b73c799ffeccec8ffc8d04d70ed7
 
 
 // Use routes with a prefix
