@@ -46,7 +46,7 @@ const conversationRoutes = require('./routes/conversationRoutes');
 const careerRoutes = require('./routes/careerRoutes');
 const webexRoutes = require('./routes/webexRoutes');
 // Use routes with a prefixs
-const notificationRoutes = require('./routes/notificationsRoutes');
+// const notificationRoutes = require('./routes/notificationsRoutes');
 const eventsRoutes = require('./routes/eventsRoutes');
 
 const activityRoutes = require('./routes/activityRoutes');
@@ -73,7 +73,7 @@ app.use('/api/conversations', conversationRoutes);
 app.use('/api/student-traits', studentTraitsRoutes);
 app.use('/api/career',careerRoutes);
 app.use('/api/webex',webexRoutes)
-app.use('/api/notifications', notificationRoutes);
+// app.use('/api/notifications', notificationRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/student-traits', studentTraitsRoutes);
 
