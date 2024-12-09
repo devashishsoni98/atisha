@@ -9,6 +9,7 @@ import chatbotIcon from './assets/logo.png';
 import loadingGif from './assets/loading.gif';
 import botAvatar from './assets/main.gif';
 import NotificationProvider from './hooks/useNotifications';
+import MarkdownPreview from '@uiw/react-markdown-preview';
 
 // Create a separate component for the chat functionality
 function ChatBot() {
@@ -155,7 +156,7 @@ function ChatBot() {
 }`}>
       {/* Chat Header */}
       {isChatOpen ? (
-        <div className="bg-blue-500 p-4 cursor-pointer flex justify-between items-center">
+        <div className="bg-blue-500 p-4 cursor-pointer flex justify-between items-center rounded-t-2xl ">
           <div className="flex items-center p-0 overflow-hidden">
             <img src={botAvatar} alt="Chatbot Icon" className="h-12 w-12 mr-2 object-contain " />
             <h2 className="text-white text-xl font-bold">ATISHA Chatbot</h2>
@@ -179,7 +180,7 @@ function ChatBot() {
       {/* Chat Messages */}
       {isChatOpen && (
         <>
-          <div className="h-[calc(100%-8rem)] bg-gray-100 overflow-y-auto p-4" ref={chatRef}>
+          <div className="h-[calc(100%-8rem)] bg-gray-100 overflow-y-auto p-4 rounded-b-2xl border " ref={chatRef}>
             {messages.map((message, index) => (
               <div key={index} className={`mb-4 flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                 {message.type === 'bot' && (
@@ -189,10 +190,11 @@ function ChatBot() {
                 )}
                 <div className={`max-w-[70%] p-3 rounded-lg ${
                   message.type === 'user' 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-white text-gray-800 border border-gray-300'
+                    ? 'bg-white text-black border border-gray-300' 
+                    : 'bg-white text-gray-800 border border-gray-300 preview-container '
                 }`}>
-                  {message.content}
+                  {/* {message.content} */}
+                  <MarkdownPreview source={message.content}  />
                 </div>
               </div>
             ))}
@@ -202,7 +204,7 @@ function ChatBot() {
               </div>
             )}
           </div>
-          <form onSubmit={handleSubmit} className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
+          <form onSubmit={handleSubmit} className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 rounded-b-2xl border ">
             <div className="flex">
               <input
                 type="text"

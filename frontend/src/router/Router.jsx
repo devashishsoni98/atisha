@@ -6,7 +6,7 @@ import Home from "../pages/Home";
 import AuthPage from "../pages/AuthPage";
 import CareerRoadmaps from "../pages/CareerRoadmaps";
 import Roadmap from "../pages/Roadmap";
-import Sessions from "../pages/Sessions";
+import Sessions from "../pages/WorkshopEvents.jsx";
 import DashboardStudent from "../pages/dashboards/DashboardStudent";
 import DashBoardCounselor from "../pages/dashboards/DashBoardCounselor";
 import DashboardInstitute from "../pages/dashboards/DashboardInstitute";

@@ -61,6 +61,22 @@ $background-image: url("../assets/login_bg.jpg");
 }
 
 
+.preview-container {
+  flex: 1;
+  padding: 10px;
+  background-color: #fff !important; /* Make background transparent */
+  color: #000; /* Set text color for better visibility */
+}
+
+.preview-container h2 {
+  color: #000; /* Optional: Set header color */
+}
+
+/* Optional: Style for Markdown content */
+.markdown-preview {
+  background-color: transparent; /* Ensure markdown preview is also transparent */
+}
+
 //  HOME PAGE =============================================================================
 .center-2{
   max-width: fit-content;
