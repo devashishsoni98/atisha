@@ -6,6 +6,7 @@ import AvailabilityCalendar from "./AvailabilityCalendar.jsx";
 import { fetchCounselorSlots } from "../../api/CounselorBookingApi.jsx";
 import { bookSlot } from "../../api/CounselorBookingApi.jsx";
 import { useSelector } from "react-redux";
+import { useNotification } from "../../hooks/useNotifications.jsx";
 
 const CounselorCard = ({ counselor, onSelect }) => {
   return (
@@ -65,6 +66,7 @@ const CounselorDetails = ({ counselor }) => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [bookingHistory, setBookingHistory] = useState([]);
+  const {addNotification} = useNotification();
 
   const studentId = useSelector((state) => state.user.id) || localStorage.getItem('userId') ;
 
@@ -92,7 +94,7 @@ const CounselorDetails = ({ counselor }) => {
   const handleBookingConfirm = async () => {
     if (selectedSlot) {
       setLoading(true);
-      console.log(selectedSlot);
+      // console.log(selectedSlot);
       try {
         const response = await bookSlot(studentId, selectedSlot.id);
 
@@ -103,21 +105,21 @@ const CounselorDetails = ({ counselor }) => {
         }
 
         if (response.error === "Slot not available") {
-          alert(
-            "Sorry, this slot is no longer available. Please choose another slot."
+          addNotification(
+            "Sorry, this slot is no longer available. Please choose another slot.","info"
           );
           setIsDialogOpen(false);
           return;
         } else if (
           response.error === "Student has already booked a slot on this date."
         ) {
-          alert(
-            "You have already booked a slot on this date. Please choose a different date."
+          addNotification(
+            "You have already booked a slot on this date. Please choose a different date.","info"
           );
           setIsDialogOpen(false);
           return;
         } else {
-          alert("Failed to book the slot. Please try again.");
+          addNotification("Failed to book the slot. Please try again.", "error");
           setIsDialogOpen(false);
         }
 
@@ -132,13 +134,13 @@ const CounselorDetails = ({ counselor }) => {
             status: response.data.response.status,
           };
           setBookingHistory((prev) => [newBooking, ...prev]);
-          alert("Booking request sent successfully!");
+          addNotification("Booking request sent successfully!","success");
 
           // Refresh available slots after booking
           const updatedSlots = await fetchCounselorSlots(counselor.id);
           setAvailableSlots(updatedSlots.available_slots || []);
         } else {
-          alert("An unexpected error occurred. Please try again.");
+          addNotification("An unexpected error occurred. Please try again.","error");
         }
       } catch (error) {
         console.error("Error during booking:", error);
@@ -169,7 +171,7 @@ const CounselorDetails = ({ counselor }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+            className="fixed inset-0  bg-black bg-opacity-50 flex items-center justify-center"
           >
             <motion.div
               initial={{ y: -50, opacity: 0 }}

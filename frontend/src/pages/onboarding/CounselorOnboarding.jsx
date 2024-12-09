@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { UpcomingSessionsTab } from '../../components/counselorOnBoarding/UpcommingCounselorSessions'
 import SessionRequestsTab from '../../components/counselorOnBoarding/CounselorSessionRequest'
 import { CounselorStudentQueries } from '../../components/counselorOnBoarding/SessionQueires'
+import { useEffect } from 'react'
+
 
 
 export default function CounselorOnboarding() {
@@ -16,6 +18,8 @@ export default function CounselorOnboarding() {
     { id: 'schedule', label: 'Today\'s Schedule', icon: <Briefcase className="w-4 h-4" /> },
     { id: 'queries', label: 'Student Queries', icon: <MessageCircle className="w-4 h-4" /> },
   ]
+
+
 
   const renderTabContent = () => {
     switch (activeTab) {

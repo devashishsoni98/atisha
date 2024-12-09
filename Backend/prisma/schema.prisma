@@ -711,3 +711,14 @@ enum event_requests_status_enum {
   accepted
   rejected
 }
+
+model career_lens {
+  id              Int      @id @default(autoincrement())
+  name            String
+  skills          String[] @db.Text
+  props           String[] @db.Text
+  cons            String[] @db.Text
+  related_careers String[] @db.Text
+  salary          String   @db.Text
+  @@map("career_lens")
+}

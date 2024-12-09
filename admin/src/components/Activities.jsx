@@ -504,4 +504,3 @@ export default function Activities() {
         </motion.div>
     );
 }
-

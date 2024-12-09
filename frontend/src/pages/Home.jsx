@@ -83,6 +83,9 @@ export default function Home() {
     transition: { duration: 0.5 }
   }
 
+
+ 
+
   return (
     <>
     <div>
@@ -92,6 +95,7 @@ export default function Home() {
     </div>
     <div className="bg-gray-50 overflow-hidden">
       {/* Hero Section */}
+      {/* <motion.section 
       {/* <motion.section 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -194,6 +198,56 @@ export default function Home() {
           </div>
         </div>
       </motion.section>
+
+<motion.section 
+        className="pt-24 pb- px-4 sm:px-6 lg:px-8  bg-gradient-to-r from-blue-500 to-purple-600 h-screen"
+        initial="initial"
+        animate="animate"
+        variants={fadeIn}
+      >
+        <div className="max-w-7xl  mx-auto">
+          <div className="relative rounded-3xl h-[75vh] bg-gradient-to-br from-white via-gray-200 to-white p-8 md:p-16 overflow-hidden">
+            {/* Hero Content */}
+            <motion.div
+              className="relative z-10 max-w-3xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h1 className="text-4xl md:text-6xl font-bold text-blue-900 leading-tight mb-6">
+                Unlock Your Career Potential with Expert Guidance
+              </h1>
+              <p className="text-blue-800 text-lg md:text-xl max-w-2xl mb-8">
+                We provide personalized career counseling to help you navigate your professional journey and achieve your goals.
+              </p>
+              <motion.button
+                className="bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-700 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Get Started
+              </motion.button>
+            </motion.div>
+
+            {/* Illustrations */}
+            <motion.div
+              className="absolute bottom-[40%] right-[-10%] w-1/2 h-1/2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <img
+                src={lines}
+                alt="Career Illustration"
+                width={400}
+                height={300}
+                className="object-contain"
+              />
+            </motion.div>
+          </div>
+        </div>
+      </motion.section>
+
 
 
       {/* Features Section */}
