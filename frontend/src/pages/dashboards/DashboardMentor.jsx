@@ -6,6 +6,7 @@ import { User, Mail, MapPin, BookOpen, Award, School, Calendar, Briefcase, Bell,
 import axios from 'axios';
 import apibackend from "../../utils/api";
 import { useCommonFunctions } from '../../utils/commonFunctions';
+import MentorBookings from "../MentorBookings.jsx";
 
 // Animation variants
 const fadeIn = {
@@ -426,32 +427,6 @@ function EventsContent() {
             </div>
           </form>
         </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// MentorBookings component
-function MentorBookings() {
-  return (
-    <motion.div
-      className="space-y-6"
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      variants={fadeIn}
-    >
-      <motion.div
-        className="bg-white rounded-2xl p-6 shadow-md"
-        variants={slideIn}
-      >
-        <motion.h2
-          className="text-2xl font-bold text-gray-800 mb-6"
-          variants={fadeIn}
-        >
-          Mentor Bookings
-        </motion.h2>
-        <p className="text-gray-600">No bookings available at the moment.</p>
       </motion.div>
     </motion.div>
   );

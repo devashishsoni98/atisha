@@ -118,7 +118,7 @@ const bookMentorSlot = async (req, res) => {
 
         // Check if slot is available
         if (!slot || slot.is_booked) {
-            return res.status(400).json({ error: "Slot not available" });
+            return res.status(200).json({ error: "Slot not available" });
         }
 
         // Ensure no duplicate booking for the same date
@@ -131,7 +131,7 @@ const bookMentorSlot = async (req, res) => {
         });
 
         if (existingBooking) {
-            return res.status(400).json({ error: "Student has already booked a slot on this date." });
+            return res.status(200).json({ error: "Student has already booked a slot on this date." });
         }
 
         // Update availability status

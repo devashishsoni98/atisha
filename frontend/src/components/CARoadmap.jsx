@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import ReactFlow, { MiniMap, Controls, Background, addEdge } from "reactflow";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react"; // For the close button icon

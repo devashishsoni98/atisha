@@ -32,13 +32,14 @@ import CounselorBooking from "../pages/CounselorBooking.jsx";
 import StudentCounselorBrowsing from "../pages/StudentBrowsing.jsx";
 import CounselorTrainingProgram from "../pages/CounselorTrainingProgram.jsx";
 import MentorBookings from "../pages/MentorBookings.jsx";
-import SomeComponent from "../pages/Chat.jsx";
+import SomeComponent from "../pages/SessionPreview.jsx";
 import EventPreview from "../pages/EventPreview.jsx";
 import InteractiveContent from "../pages/InteractiveContents.jsx";
 import CareerLibrary from "../pages/CareerLibrary.jsx";
 import Level from "../components/Level.jsx";
 import OAuthCallback from "../pages/Callback.jsx";
 import CareerLens from "../pages/Lens.jsx";
+import SessionPreview from "../pages/SessionPreview.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -125,8 +126,8 @@ const Router = createBrowserRouter([
         element: <CounselorTrainingProgram />,
       },
       {
-      path: "/chats",
-        element: <SomeComponent />,
+      path: "/session-preview/:id",
+        element: <SessionPreview />,
       },
     ],
   },

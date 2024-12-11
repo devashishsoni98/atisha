@@ -44,8 +44,10 @@ const getNotificationsByRecipientId = async (recipient_id) => {
         });
         return notifications;
     } catch (error) {
+        console.log("error:",error);
+        
         console.error('Error fetching notifications:', error);
-        throw error;
+        
     }
 }
 
