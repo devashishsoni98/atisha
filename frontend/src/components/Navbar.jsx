@@ -592,14 +592,19 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const notificationSidebarRef = useRef(null);
+  const scriptAddedRef = useRef(false);
+
 
   useEffect(() => {
+    if (scriptAddedRef.current) return;
+
     const addScript = () => {
       const script = document.createElement("script");
       script.src =
           "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
       script.async = true;
       document.body.appendChild(script);
+      scriptAddedRef.current = true;
     };
 
     window.googleTranslateElementInit = () => {
@@ -613,7 +618,50 @@ const Navbar = () => {
       );
     };
     addScript();
-  }, []);
+
+    // Add custom styles for Google Translate
+    const style = document.createElement('style');
+    style.textContent = `
+      .google-te-gadget-simple {
+        border: none !important;
+        background-color: transparent !important;
+      }
+      .google-te-gadget-simple .goog-te-menu-value {
+        color: #4B5563 !important;
+      }
+      .google-te-banner-frame {
+        display: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
+
+  // useEffect(() => {
+  //   const addScript = () => {
+  //     const script = document.createElement("script");
+  //     script.src =
+  //         "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+  //     script.async = true;
+  //     document.body.appendChild(script);
+  //   };
+
+  //   window.googleTranslateElementInit = () => {
+  //     new window.google.translate.TranslateElement(
+  //         {
+  //           pageLanguage: "en",
+  //           layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+  //           autoDisplay: false,
+  //         },
+  //         "google_translate_element"
+  //     );
+  //   };
+  //   addScript();
+  // }, []);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
   const closeMenu = () => setMenuOpen(false);
@@ -778,15 +826,16 @@ const Navbar = () => {
                   </Link>
                   <Link
                       to="/interactive-contents"
+                      // to="/"
                       className="text-gray-700 hover:text-[#0F67B1] transition-colors font-medium"
                   >
                     Interactive Content
                   </Link>
                   <Link
-                      to="/career-library"
+                      to="/resources"
                       className="text-gray-700 hover:text-[#0F67B1] transition-colors font-medium"
                   >
-                    Career Library
+                    E - Resources
                   </Link>
                   <Link
                       to="/about"
