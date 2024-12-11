@@ -1,127 +1,146 @@
 import React, { useState } from 'react';
-import Papa from 'papaparse';  // Add the papaparse library to parse CSV
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
-function StudentsUpload() {
-    const [file, setFile] = useState(null);
-    const [studentsData, setStudentsData] = useState([]);
-    const [error, setError] = useState(null);
+const StudentsUpload = () => {
+  const [files, setFiles] = useState({});
+  const [studentsData, setStudentsData] = useState({});
+  const [error, setError] = useState(null);
 
-    // Handle file selection
-    const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
-        if (selectedFile && selectedFile.type === 'text/csv') {
-            setFile(selectedFile);
-            setError(null);
+  const handleFileChange = (e, classNumber) => {
+    const file = e.target.files[0];
+    if (file && (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.ms-excel')) {
+      setFiles(prevFiles => ({ ...prevFiles, [classNumber]: file }));
+      setError(null);
+    } else {
+      setError(`Please select a valid Excel file for Class ${classNumber}.`);
+    }
+  };
+
+  const handleUpload = async () => {
+    setError(null);
+    setStudentsData({});
+
+    for (const [classNumber, file] of Object.entries(files)) {
+      const data = await readExcelFile(file);
+      if (data.error) {
+        setError(`Error in Class ${classNumber} file: ${data.error}`);
+        return;
+      }
+      setStudentsData(prevData => ({ ...prevData, [classNumber]: data }));
+    }
+  };
+
+  const readExcelFile = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        const requiredHeaders = ['name', 'enrolNo', 'schoolId'];
+        const fileHeaders = Object.keys(jsonData[0] || {});
+
+        if (!requiredHeaders.every(header => fileHeaders.includes(header))) {
+          resolve({ error: 'The Excel file does not have the required headers.' });
         } else {
-            setError("Please select a valid CSV file.");
+          resolve(jsonData);
         }
-    };
+      };
+      reader.onerror = (error) => resolve({ error: 'Error reading file.' });
+      reader.readAsArrayBuffer(file);
+    });
+  };
 
-    // Handle CSV file upload and parsing
-    const handleFileUpload = () => {
-        if (!file) {
-            setError("No file selected.");
-            return;
-        }
+  const downloadTemplate = () => {
+    const templateData = [
+      ['name', 'enrolNo', 'schoolId'],
+      ['John Doe', 'EN001', 'SCHOOL001']
+    ];
 
-        Papa.parse(file, {
-            complete: (result) => {
-                // Assuming CSV headers are 'Student Name', 'Class', 'Roll Number'
-                const parsedData = result.data;
-                
-                // Check if the required columns are present in the CSV
-                const requiredHeaders = ['name', 'mobileNo', 'regNo', 'class', 'schoolId'];
-                const fileHeaders = Object.keys(parsedData[0]);
+    const ws = XLSX.utils.aoa_to_sheet(templateData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Students");
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(data, 'students_template.xlsx');
+  };
 
-                if (!requiredHeaders.every(header => fileHeaders.includes(header))) {
-                    setError('The CSV file does not have the required headers.');
-                    return;
-                }
-
-                setStudentsData(parsedData);
-            },
-            header: true, // Assuming CSV has headers
-            skipEmptyLines: true,
-        });
-    };
-
-    // Download the template CSV file
-    const downloadTemplate = () => {
-        const templateData = [
-            ['name', 'mobileNo', 'regNo', 'class', 'schoolId'],
-            ['', '', '', '', '']
-        ];
-
-        const csvContent = templateData.map(row => row.join(',')).join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'students_template.csv';
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    return (
-        <div className="space-y-6">
-            <div className="bg-white shadow-lg rounded-2xl overflow-hidden p-8">
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">Upload Students Data</h1>
-                
-                {error && <div className="text-red-500 mb-4">{error}</div>}
-
-                <div className="mb-4">
-                    <button
-                        onClick={downloadTemplate}
-                        className="bg-green-500 text-white py-2 px-4 rounded mb-4"
-                    >
-                        Download Template (CSV)
-                    </button>
-
-                    <input
-                        type="file"
-                        accept=".csv"
-                        onChange={handleFileChange}
-                        className="border rounded px-4 py-2"
-                    />
-                </div>
-
-                <button
-                    onClick={handleFileUpload}
-                    className="bg-blue-500 text-white py-2 px-4 rounded"
-                >
-                    Upload and Parse CSV
-                </button>
-            </div>
-
-            {studentsData.length > 0 && (
-                <div className="bg-white shadow-lg rounded-2xl overflow-hidden p-8">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">Student Data</h2>
-                    <table className="min-w-full bg-white border">
-                        <thead>
-                            <tr>
-                                <th className="border px-4 py-2">Name</th>
-                                <th className="border px-4 py-2">Mobile No</th>
-                                <th className="border px-4 py-2">Reg No</th>
-                                <th className="border px-4 py-2">Class</th>
-                                <th className="border px-4 py-2">School ID</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {studentsData.map((student, index) => (
-                                <tr key={index}>
-                                    <td className="border px-4 py-2">{student['name']}</td>
-                                    <td className="border px-4 py-2">{student['mobileNo']}</td>
-                                    <td className="border px-4 py-2">{student['regNo']}</td>
-                                    <td className="border px-4 py-2">{student['class']}</td>
-                                    <td className="border px-4 py-2">{student['schoolId']}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Upload Students Data (Classes 8-12)</h1>
+      
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <strong className="font-bold">Error!</strong>
+          <span className="block sm:inline"> {error}</span>
         </div>
-    );
-}
+      )}
+
+      <div className="space-y-4 mb-6">
+        <button
+          onClick={downloadTemplate}
+          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+        >
+          Download Template (Excel)
+        </button>
+
+        {[8, 9, 10, 11, 12].map((classNumber) => (
+          <div key={classNumber} className="flex items-center space-x-4">
+            <label htmlFor={`file-${classNumber}`} className="w-24">Class {classNumber}:</label>
+            <input
+              id={`file-${classNumber}`}
+              type="file"
+              accept=".xlsx, .xls"
+              onChange={(e) => handleFileChange(e, classNumber)}
+              className="block w-full text-sm text-gray-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-blue-50 file:text-blue-700
+                hover:file:bg-blue-100"
+            />
+          </div>
+        ))}
+      </div>
+
+      <button
+        onClick={handleUpload}
+        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mb-6"
+      >
+        Upload and Parse Excel Files
+      </button>
+
+      {Object.entries(studentsData).map(([classNumber, data]) => (
+        <div key={classNumber} className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">Class {classNumber} Data</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border border-gray-300">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="py-2 px-4 border-b text-left">Name</th>
+                  <th className="py-2 px-4 border-b text-left">Enrol No</th>
+                  <th className="py-2 px-4 border-b text-left">School ID</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((student, index) => (
+                  <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                    <td className="py-2 px-4 border-b">{student.name}</td>
+                    <td className="py-2 px-4 border-b">{student.enrolNo}</td>
+                    <td className="py-2 px-4 border-b">{student.schoolId}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default StudentsUpload;
