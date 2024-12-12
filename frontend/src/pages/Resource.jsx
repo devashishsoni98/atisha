@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, Filter, MapPin, Calendar, Briefcase, GraduationCap, Book, School, Building2, Users } from 'lucide-react';
 import CustomTabs from '../ui/Tabs';
@@ -144,6 +144,14 @@ const mockOpportunities = [
 ]
 
 const OpportunityCards=()=> {
+
+  const [ opportunities, setOpportunities ]= useState([]);
+
+  useEffect(()=>{
+    setOpportunities(mockOpportunities)
+  },[]);
+
+
   return (
     <div className="min-h-screen bg-gray-50 py-4 px-4 sm:px-6 lg:px-2">
       <div className="max-w-7xl mx-auto">
@@ -157,7 +165,7 @@ const OpportunityCards=()=> {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {mockOpportunities.map((opportunity, index) => (
+          {opportunities.map((opportunity, index) => (
             <motion.div
               key={index}
               className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
@@ -276,6 +284,13 @@ const mockScholarships = [
 ]
 
 const ScholarshipCards=()=> {
+
+  const [ scholarships, setScholarships ]= useState([]);
+
+  useEffect(()=>{
+    setScholarships(mockScholarships)
+  },[]);
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-2">
       <div className="max-w-7xl mx-auto">
@@ -289,7 +304,7 @@ const ScholarshipCards=()=> {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {mockScholarships.map((scholarship, index) => (
+          {scholarships.map((scholarship, index) => (
             <motion.div
               key={index}
               className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
@@ -417,6 +432,13 @@ const mockEducationalResources = [
 ]
 
 const EducationalResourceCards=()=> {
+
+  const [ resources, setResources ]= useState([]);
+
+  useEffect(()=>{
+    setResources(mockEducationalResources)
+  },[]);
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-2">
       <div className="max-w-7xl mx-auto">
@@ -430,7 +452,7 @@ const EducationalResourceCards=()=> {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {mockEducationalResources.map((resource, index) => (
+          {resources.map((resource, index) => (
             <motion.div
               key={index}
               className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
@@ -481,7 +503,7 @@ const EducationalResourceCards=()=> {
 
 const Resources = () => {
   const [userType, setUserType] = useState("student")
-  const [activeTab, setActiveTab] = useState("knowledge-base")
+  const [activeTab, setActiveTab] = useState("CareerLibrary")
 
 
 

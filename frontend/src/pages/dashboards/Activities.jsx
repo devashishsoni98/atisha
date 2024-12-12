@@ -30,17 +30,18 @@ export default function Activities() {
         activityType: '',
     });
 
+    const fetchActivities = async () => {
+        try {
+            const response = await fetch('http://localhost:4000/api/activities');
+            const data = await response.json();
+            setActivities(data);
+        } catch (error) {
+            console.error('Error fetching activities:', error);
+        }
+    };
+
     useEffect(() => {
         // Fetch activities from API
-        const fetchActivities = async () => {
-            try {
-                const response = await fetch('http://localhost:4000/api/activities');
-                const data = await response.json();
-                setActivities(data);
-            } catch (error) {
-                console.error('Error fetching activities:', error);
-            }
-        };
 
         fetchActivities();
     }, []);
@@ -66,7 +67,7 @@ export default function Activities() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:4000/api/activities/create', {
+            const response = await fetch('http://localhost:4000/api/activities', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -92,6 +93,7 @@ export default function Activities() {
                     activityType: '',
                 });
                 setShowForm(false);
+                fetchActivities();
             } else {
                 console.error('Failed to create activity');
             }

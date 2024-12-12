@@ -53,7 +53,8 @@ const activityRoutes = require('./routes/activityRoutes');
 const quizRoutes = require('./routes/quizRoutes'); // Added quiz routes
 const questionRoutes = require('./routes/questionRoutes'); // Added question routes
 const responseRoutes = require('./routes/responseRoutes');
-
+const MentorMatchingRoutes = require('./routes/MentorMatchingRoutes');
+const careerLensRoutes = require('./routes/careerLensRoutes');
 
 // Use routes with a prefix
 app.use('/api/auth', userRoutes);
@@ -76,7 +77,8 @@ app.use('/api/webex',webexRoutes)
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/student-traits', studentTraitsRoutes);
-
+app.use('/api/mentor-matching', MentorMatchingRoutes);
+app.use('/api/careerLens', careerLensRoutes);
 app.use('/api/activities', activityRoutes); // Added activities route
 app.use('/api/quizzes', quizRoutes); // Added quizzes route
 app.use('/api/questions', questionRoutes); // Added questions route

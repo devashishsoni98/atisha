@@ -812,6 +812,7 @@ const Navbar = () => {
               {/* Desktop Navigation and Right Section */}
               <div className="hidden md:flex items-center justify-end space-x-4 flex-1">
                 <nav className="flex gap-8 mr-8">
+                  
                   <Link
                       to="/carrer/roadmaps/explore"
                       className="text-gray-700 hover:text-[#0F67B1] transition-colors font-medium"
@@ -819,11 +820,12 @@ const Navbar = () => {
                     Explore Career
                   </Link>
                   <Link
-                      to="/sessions/explore"
+                      to="/lens"
                       className="text-gray-700 hover:text-[#0F67B1] transition-colors font-medium"
                   >
-                    Workshop & Events
+                    Lens
                   </Link>
+                
                   <Link
                       to="/interactive-contents"
                       // to="/"
@@ -945,6 +947,13 @@ const Navbar = () => {
                     className="fixed md:hidden top-[60px] right-0 w-full bg-white shadow-lg"
                 >
                   <nav className="flex flex-col p-4">
+                  <Link
+                        to="/lens"
+                        className="py-2 text-gray-700 hover:text-[#0F67B1]"
+                        onClick={closeMenu}
+                    >
+                      Lens
+                    </Link>
                     <Link
                         to="/carrer/roadmaps/explore"
                         className="py-2 text-gray-700 hover:text-[#0F67B1]"
@@ -952,13 +961,13 @@ const Navbar = () => {
                     >
                       Explore Career
                     </Link>
-                    <Link
-                        to="/sessions/explore"
-                        className="py-2 text-gray-700 hover:text-[#0F67B1]"
-                        onClick={closeMenu}
-                    >
-                      Workshop & Events
-                    </Link>
+                    {/*<Link*/}
+                    {/*    to="/sessions/explore"*/}
+                    {/*    className="py-2 text-gray-700 hover:text-[#0F67B1]"*/}
+                    {/*    onClick={closeMenu}*/}
+                    {/*>*/}
+                    {/*  Workshop & Events*/}
+                    {/*</Link>*/}
                     <Link
                         to="/interactive-contents"
                         className="py-2 text-gray-700 hover:text-[#0F67B1]"

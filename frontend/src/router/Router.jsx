@@ -40,6 +40,8 @@ import Level from "../components/Level.jsx";
 import OAuthCallback from "../pages/Callback.jsx";
 import CareerLens from "../pages/Lens.jsx";
 import SessionPreview from "../pages/SessionPreview.jsx";
+import CareerDetails from "../pages/CareerDetails.jsx";
+import SingleMentorPage from "../components/SingleMentorBookings.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -118,8 +120,8 @@ const Router = createBrowserRouter([
         element: <CounselorBooking  />
       },
       {
-        path:"/mentor-booking",
-        element: <MentorBookings  />
+        path:"/mentor-booking/:mentorId",
+        element: <SingleMentorPage  />
       },
       {
         path: "/training",
@@ -129,6 +131,7 @@ const Router = createBrowserRouter([
       path: "/session-preview/:id",
         element: <SessionPreview />,
       },
+      
     ],
   },
   {
@@ -193,6 +196,10 @@ const Router = createBrowserRouter([
       {
         path: "/lens",
         element: <CareerLens />
+      },
+      {
+        path: "/lens-details",
+        element: <CareerDetails />
       },
       
     ],

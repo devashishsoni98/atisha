@@ -221,6 +221,8 @@ function EventsContent() {
     try {
       const response = await apibackend.get(`/events/event-request/${userId}`);
       setInvitations(response.data);
+      console.log(invitations);
+      
     } catch (error) {
       console.error("Error fetching invitations:", error);
     }
@@ -230,6 +232,8 @@ function EventsContent() {
     try {
       const response = await apibackend.get(`/events/accepted-event/${userId}`);
       setScheduledEvents(response.data);
+      console.log(scheduledEvents);
+      
     } catch (error) {
       console.error("Error fetching scheduled events:", error);
     }
@@ -320,6 +324,7 @@ function EventsContent() {
               Event Invitations
             </h2>
             <div className="space-y-4 px-2 max-h-96 overflow-y-auto">
+             {invitations.length !== 0?<>
               {invitations.map((invitation) => (
                 <motion.div
                   key={invitation.id}
@@ -377,6 +382,12 @@ function EventsContent() {
                   </div>
                 </motion.div>
               ))}
+             </>
+              :<>
+              <div className=" h-[40vh] w-full flex justify-center items-center ">
+                <p className="p-2 px-4 rounded-lg bg-gray-300 font-bold opacity-50 ">No Inviations pending </p>
+              </div>
+              </>}
             </div>
           </div>
         </motion.div>
@@ -390,12 +401,15 @@ function EventsContent() {
               Scheduled Events
             </h2>
             <div className="space-y-4 px-2 max-h-96 overflow-y-auto">
+              {
+                scheduledEvents.length !==0?
+                <>
               {scheduledEvents.map((event) => (
                 <motion.div
-                  key={event.id}
-                  className="bg-blue-50 p-4 rounded-lg"
+                key={event.id}
+                className="bg-blue-50 p-4 rounded-lg"
                   whileHover={{ scale: 1.02 }}
-                >
+                  >
                   <h3 className="font-medium text-blue-700">{event.name}</h3>
                   <p className="text-sm text-gray-600">
                     Type: {event.event_type}
@@ -422,9 +436,15 @@ function EventsContent() {
                     <p className="text-sm text-gray-600 mt-2">
                       {event.description}
                     </p>
-                  )}
-                </motion.div>
-              ))}
+                  )}:
+                  </motion.div>
+                ))}
+                  </>
+                  :<>
+                  <div className=" h-[40vh] w-full flex justify-center items-center ">
+                    <p className="p-2 px-4 rounded-lg bg-gray-300 font-bold opacity-50 ">No Events Schedule pending </p>
+                  </div>
+                  </>}
             </div>
           </div>
         </motion.div>
