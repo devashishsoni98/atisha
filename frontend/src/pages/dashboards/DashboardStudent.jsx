@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCommonFunctions } from "../../utils/commonFunctions";
 import axios from "axios";
+import ActivitiesSchool from './ActivitiesSchool';
 import {
   User,
   Mail,
@@ -119,8 +120,10 @@ const DashboardStudent = () => {
         return <InterestContent interests={studentData?.student_interest} />;
       case "Session":
         return <SessionContent />;
-      case "Activities":
-        return <ActivitiesContent activities={[]} />;
+        case 'Activities':
+          return <ActivitiesSchool />;
+      // case "Activities":
+      //   return <ActivitiesContent activities={[]} />;
       case "Events":
         return <EventsContent />;
       default:

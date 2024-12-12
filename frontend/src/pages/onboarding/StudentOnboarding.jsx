@@ -360,6 +360,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { ArrowRight, Sparkles, Target, Rocket, BookOpen, Users, Lightbulb, ChevronDown, CheckCircle2, Globe, MessageCircle, Briefcase, FileText } from 'lucide-react';
 import { getStudentTraitsByStudentId } from "../../api/StudentTraitsApi.jsx";
+import StudentTimeline from "../../components/StudentTimeline.jsx";
 
 const StudentOnboarding = () => {
   const [userData, setUserData] = useState(null);
@@ -604,6 +605,7 @@ const StudentOnboarding = () => {
           </motion.div>
         </motion.div>
 
+<StudentTimeline/>
         <motion.div 
           className="bg-white rounded-3xl shadow-xl p-8 mb-12"
           initial={{ opacity: 0, y: 20 }}

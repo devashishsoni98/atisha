@@ -29,12 +29,12 @@ export default function About() {
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.5, 0]);
 
   const teamMembers = [
-    { name: "Hiya Gurbani", role: "Career Counselor", image: hiya },
-    { name: "Lavina Sevani", role: "Industry Liaison", image: lavina },
-    { name: "Jatin Nama", role: "Student Advisor", image: jatin },
-    { name: "Devashish Soni", role: "Workshop Facilitator", image: devashish },
-    { name: "Aman Jain", role: "Data Analyst", image: aman },
-    { name: "Karan Sukhwal", role: "Marketing Specialist", image: karan },
+    { name: "Hiya Gurbani", role: "Full Stack Developer", image: hiya },
+    { name: "Lavina Sevani", role: "Full Stack Developer", image: lavina },
+    { name: "Jatin Nama", role: "AI/ML Developer", image: jatin },
+    { name: "Devashish Soni", role: "Full Stack Developer", image: devashish },
+    { name: "Aman Jain", role: "Full Stack Developer", image: aman },
+    { name: "Karan Sukhwal", role: "Research and Development", image: karan },
   ];
 
   const nextSlide = () => {

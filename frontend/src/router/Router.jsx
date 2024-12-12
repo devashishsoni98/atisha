@@ -42,7 +42,8 @@ import CareerLens from "../pages/Lens.jsx";
 import TypingSpeedTest from "../components/TypingSpeedTest.jsx";
 import SessionPreview from "../pages/SessionPreview.jsx";
 import CareerDetails from "../pages/CareerDetails.jsx";
-import SingleMentorPage from "../components/SingleMentorBookings.jsx";
+import GymTrainerCareer from "../pages/GymTrainerCareer.jsx";
+import SingleMentorPage from "../pages/SingleMentorBookings.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -205,6 +206,10 @@ const Router = createBrowserRouter([
       {
         path: "/lens-details",
         element: <CareerDetails />
+      },
+      {
+        path: "/sample",
+        element: <GymTrainerCareer />
       },
       
     ],

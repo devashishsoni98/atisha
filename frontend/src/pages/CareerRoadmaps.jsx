@@ -20,12 +20,12 @@ const CareerRoadmap = () => {
         },
         {
           name: "CA",
-          path: "/roadmap/doctor",
+          path: "/roadmap/ca",
           description: "Plays instruments or sings, creating music",
         },
         {
           name: "IAS",
-          path: "/roadmap/doctor",
+          path: "/roadmap/ias",
           description: "Plays instruments or sings, creating music",
         },
       ],
