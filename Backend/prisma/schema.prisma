@@ -259,6 +259,7 @@ model mentor_education {
 model mentor_professional {
   user_id            Int              @id
   bio                String?
+  linkedin_profile   String?
   year_of_experience Int?
   type               mentor_type_enum
   mentor             mentors          @relation(fields: [user_id], references: [user_id])
@@ -600,50 +601,140 @@ model Response {
   @@map("response")
 }
 
+
+model school_students {
+  id        Int       @id @default(autoincrement())
+  name      String
+  enrolNo   String
+  schoolId  String
+  class     Int
+  createdAt DateTime  @default(now())
+
+  institute institute_info @relation(fields: [schoolId], references: [institute_code])
+}
+
 model institute_info {
-  user_id         Int                       @id
+  user_id         Int    @id
   name            String?
   image_url       String?
-  plot_no         String?                   @db.VarChar(50)
-  street          String?                   @db.VarChar(100)
-  city            String?                   @db.VarChar(50)
-  state           String?                   @db.VarChar(50)
+  plot_no         String? @db.VarChar(50)
+  street          String? @db.VarChar(100)
+  city            String? @db.VarChar(50)
+  state           String? @db.VarChar(50)
   contact_number  String?
   establish_year  Int?
   institute_type  institute_type_enum
   institute_board institute_board_type_enum
   student_body    String?
   website         String?
-  institute_code  String                    @unique
-  files           files_upload[]            @relation("InstituteFiles")
-  user            users                     @relation(fields: [user_id], references: [id])
+  institute_code  String @unique
+  user            users  @relation(fields: [user_id], references: [id])
 
-  @@map("institute_info")
+  school_students school_students[]
 }
 
-model files_upload {
-  id             Int               @id @default(autoincrement())
-  classNumber    Int
-  fileName       String
-  uploadTime     DateTime          @default(now())
-  instituteId    Int
-  institute_info institute_info    @relation("InstituteFiles", fields: [instituteId], references: [user_id])
-  students       school_students[] @relation("FileToStudents")
 
-  @@map("files_upload")
-}
+// model institute_info {
+//   user_id         Int                       @id
+//   name            String?
+//   image_url       String?
+//   plot_no         String?                   @db.VarChar(50)
+//   street          String?                   @db.VarChar(100)
+//   city            String?                   @db.VarChar(50)
+//   state           String?                   @db.VarChar(50)
+//   contact_number  String?
+//   establish_year  Int?
+//   institute_type  institute_type_enum
+//   institute_board institute_board_type_enum
+//   student_body    String?
+//   website         String?
+//   institute_code  String                    @unique
+//   //files           files_upload[]            @relation("InstituteFiles")
+//   user            users                     @relation(fields: [user_id], references: [id])
 
-model school_students {
-  id          Int          @id @default(autoincrement())
-  classNumber Int
-  name        String
-  enrolNo     String
-  schoolId    String
-  fileId      Int
-  file        files_upload @relation("FileToStudents", fields: [fileId], references: [id])
+//   @@map("institute_info")
+// }
 
-  @@map("school_students")
-}
+// model school_students {
+//   id        Int           @id @default(autoincrement())
+//   name      String
+//   enrolNo   String
+//   schoolId  String
+//   class     Int
+//   createdAt DateTime      @default(now())
+
+//   institute institute_info @relation(fields: [schoolId], references: [institute_code])
+
+//   @@map("school_students")
+// }
+
+
+// model institute_info {
+//   user_id         Int                       @id
+//   name            String?
+//   image_url       String?
+//   plot_no         String?                   @db.VarChar(50)
+//   street          String?                   @db.VarChar(100)
+//   city            String?                   @db.VarChar(50)
+//   state           String?                   @db.VarChar(50)
+//   contact_number  String?
+//   establish_year  Int?
+//   institute_type  institute_type_enum
+//   institute_board institute_board_type_enum
+//   student_body    String?
+//   website         String?
+//   institute_code  String                    @unique
+//   files           files_upload[]            @relation("InstituteFiles")
+//   user            users                     @relation(fields: [user_id], references: [id])
+
+//   @@map("institute_info")
+// }
+
+// model files_upload {
+//   id             Int               @id @default(autoincrement())
+//   classNumber    Int
+//   fileName       String
+//   uploadTime     DateTime          @default(now())
+//   instituteId    Int
+//   institute_info institute_info    @relation("InstituteFiles", fields: [instituteId], references: [user_id])
+//   // students       school_students[] @relation("FileToStudents")
+
+//   @@map("files_upload")
+// }
+
+// // model school_students {
+// //   id          Int          @id @default(autoincrement())
+// //   classNumber Int
+// //   name        String
+// //   enrolNo     String
+// //   schoolId    String
+// //   fileId      Int
+// //   file        files_upload @relation("FileToStudents", fields: [fileId], references: [id])
+
+// //   @@map("school_students")
+// // }
+// // model school_students {
+// //   id       Int    @id @default(autoincrement())
+// //   name     String
+// //   enrolNo  String
+// //   schoolId String
+// //   class    Int
+// //   createdAt DateTime @default(now())
+// // }
+
+// model school_students {
+//   id        Int           @id @default(autoincrement())
+//   name      String
+//   enrolNo   String
+//   schoolId  String
+//   class     Int
+//   createdAt DateTime      @default(now())
+
+//   institute institute_info @relation(fields: [schoolId], references: [institute_code])
+
+//   @@map("school_students")
+// }
+
 
 enum role_type {
   student
@@ -714,11 +805,19 @@ enum event_requests_status_enum {
 
 model career_lens {
   id              Int      @id @default(autoincrement())
-  name            String
-  skills          String[] @db.Text
-  props           String[] @db.Text
-  cons            String[] @db.Text
-  related_careers String[] @db.Text
-  salary          String   @db.Text
+  name            String?  @unique
+  description     String?
+  skills          String[] @db.Text // Required list of strings
+  pros            String[] @db.Text // Required list of strings
+  cons            String[] @db.Text // Required list of strings
+  related_careers String[] @db.Text // Required list of strings
+  salary          String?  @db.Text
+  trend           String? // Optional scalar
+  min_salary      Int?
+  max_salary      Int?
+  median_salary   Int?
+  currency        String?  @db.VarChar(10)
+  period          String?  @db.VarChar(20)
+
   @@map("career_lens")
 }

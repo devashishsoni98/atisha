@@ -12,7 +12,7 @@ export default function CareerInterestPopup({ careerName = "this career" }) {
     // Show popup after 30 seconds
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 30000);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -112,7 +112,7 @@ export default function CareerInterestPopup({ careerName = "this career" }) {
 
             {/* Links */}
             <div className="w-full space-y-4">
-                <Link to="/lens-details">     
+                {/* <Link to="/lens-details">     
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -123,7 +123,7 @@ export default function CareerInterestPopup({ careerName = "this career" }) {
               >
                 Book a Session <ChevronRight className="ml-2" />
               </motion.div>
-                </Link>
+                </Link> */}
              
             </div>
 

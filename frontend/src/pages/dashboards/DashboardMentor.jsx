@@ -83,7 +83,7 @@ function ProfileContent({ mentorData }) {
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-600">Degree</p>
                 <p className="text-lg font-semibold text-gray-800">
-                  {mentorData?.mentor_education[0]?.degree}
+                  {mentorData?.mentor_education?.degree}
                 </p>
               </div>
             </div>
@@ -102,17 +102,17 @@ function ProfileContent({ mentorData }) {
             <ProfileItem
               icon={<School className="text-blue-500"/>}
               label="Institution"
-              value={mentorData?.mentor_education[0]?.institution}
+              value={mentorData?.mentor_education?.institution}
             />
             <ProfileItem
               icon={<Calendar className="text-blue-500"/>}
               label="Years of Experience"
-              value={mentorData?.mentor_professional[0]?.year_of_experience.toString()}
+              value={mentorData?.mentor_professional?.year_of_experience.toString()}
             />
             <ProfileItem
               icon={<Briefcase className="text-blue-500"/>}
               label="Professional Type"
-              value={mentorData?.mentor_professional[0]?.type}
+              value={mentorData?.mentor_professional?.type}
             />
             <div className="md:col-span-2">
               <h2 className="text-xl font-semibold text-gray-800 mb-2">Bio</h2>

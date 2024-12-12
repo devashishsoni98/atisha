@@ -31,7 +31,7 @@ const createActivity = async (req, res) => {
       title,
       description,
       type,
-      date,
+      date: new Date(date),  // Convert date to Date object
       speaker,
       instructor,
       quizId: type === 'quiz' ? quizId : null,  // Only assign quizId for quiz activities

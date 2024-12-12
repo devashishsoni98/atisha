@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCommonFunctions } from '../../utils/commonFunctions';
 import Activities from './Activities';
 import StudentUpload from './StudentUpload';
+import AnalysisBox from './AnalysisBox';
+
 const fadeIn = {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
@@ -71,7 +73,7 @@ export default function InstituteDashboard() {
             case 'Activities':
                 return <Activities />;
             case 'Analysis':
-                return <AnalysisContent />;
+                return <AnalysisBox />;
             case 'Students':
                 return <StudentUpload />;
             default:

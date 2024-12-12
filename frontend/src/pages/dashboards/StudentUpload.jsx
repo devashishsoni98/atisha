@@ -148,6 +148,7 @@
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import axios from 'axios';
 
 const StudentUpload = () => {
   const [files, setFiles] = useState({});
@@ -155,6 +156,7 @@ const StudentUpload = () => {
   const [error, setError] = useState(null);
   const [searchTerms, setSearchTerms] = useState({});
 
+  // Handle file change (when user selects an Excel file)
   const handleFileChange = (e, classNumber) => {
     const file = e.target.files[0];
     if (file && (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.ms-excel')) {
@@ -165,20 +167,45 @@ const StudentUpload = () => {
     }
   };
 
+  // Handle file upload to the server
   const handleUpload = async () => {
     setError(null);
     setStudentsData({});
 
+    const formData = new FormData();
+
     for (const [classNumber, file] of Object.entries(files)) {
-      const data = await readExcelFile(file);
-      if (data.error) {
-        setError(`Error in Class ${classNumber} file: ${data.error}`);
-        return;
+      // Append the file and class number to FormData
+      formData.append('file', file);
+      formData.append('classNumber', classNumber);
+
+      try {
+        // Send the request to the backend
+        // const response = await axios.post('http://localhost:4000/uploadStudents', formData, {
+        //   headers: {
+        //     'Content-Type': 'multipart/form-data',
+        //   },
+        // });                             /api/school-students/upload
+        const response = await axios.post('http://localhost:4000/api/school-students/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        
+        // If the response contains student data, update state
+        if (response.data && response.data.students) {
+          setStudentsData((prevData) => ({
+            ...prevData,
+            [classNumber]: response.data.students,
+          }));
+        }
+      } catch (error) {
+        setError(`Error uploading Class ${classNumber} file: ${error.message}`);
       }
-      setStudentsData(prevData => ({ ...prevData, [classNumber]: data }));
     }
   };
 
+  // Read and validate the Excel file content
   const readExcelFile = (file) => {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -189,24 +216,26 @@ const StudentUpload = () => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-        const requiredHeaders = ['name', 'enrolNo', 'schoolId'];
+        const requiredHeaders = ['name', 'enrollNo', 'schoolId'];
         const fileHeaders = Object.keys(jsonData[0] || {});
 
+        // Check if the required headers exist in the file
         if (!requiredHeaders.every(header => fileHeaders.includes(header))) {
           resolve({ error: 'The Excel file does not have the required headers.' });
         } else {
           resolve(jsonData);
         }
       };
-      reader.onerror = (error) => resolve({ error: 'Error reading file.' });
+      reader.onerror = () => resolve({ error: 'Error reading file.' });
       reader.readAsArrayBuffer(file);
     });
   };
 
+  // Download an Excel template
   const downloadTemplate = () => {
     const templateData = [
       ['name', 'enrolNo', 'schoolId'],
-      ['John Doe', 'EN001', 'SCHOOL001']
+      ['John Doe', 'EN001', 'SCHOOL001'],
     ];
 
     const ws = XLSX.utils.aoa_to_sheet(templateData);
@@ -237,7 +266,7 @@ const StudentUpload = () => {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Upload Students Data (Classes 8-12)</h1>
-      
+
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
           <strong className="font-bold">Error!</strong>
