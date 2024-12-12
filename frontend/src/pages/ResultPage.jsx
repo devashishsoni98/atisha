@@ -332,9 +332,9 @@ const Result = () => {
   useEffect(() => {
     const fetchCareerRecommendations = async () => {
       try {
-        const response = await axios.post('http://localhost:4000/api/career/recommend', {
-          user_id: userId
-        });
+          const response = await axios.post('http://localhost:4000/api/career/recommend', {
+            user_id: userId
+          });
 
         const recommendedCareers = [
           response.data.career1,

@@ -16,51 +16,48 @@ const CounselorCard = ({ counselor, onSelect }) => {
       whileTap={{ scale: 0.98 }}
       onClick={onSelect}
     >
-      <div className="p-6">
+      <div className="p-6  ">
         <div className="flex items-start space-x-4">
           <img
             src={counselor.counselor_personal_info?.image || "/placeholder.svg"}
             alt={`${counselor.name}'s profile picture`}
             className="w-16 h-16 rounded-full object-cover"
           />
-          <div className="flex-grow">
-            <h3 className="text-lg font-semibold">{counselor.name}</h3>
-            <p className="text-sm text-gray-600 mb-2">
-              {counselor.counselor_professional?.counselor_speciality}
+          <div className="flex-grow space-y-2">
+            <h3 className="text-xl font-semibold  ">{counselor.name}</h3>
+            <p className="text-sm text-gray-600 mb-2 ">
+              <span className="bg-gray-300 px-2 py-1 rounded-full">{counselor.counselor_professional?.counselor_speciality}</span>
+
             </p>
-            <div className="flex items-center mb-2">
-              <Star className="w-4 h-4 text-yellow-400 mr-1" />
-              <span className="text-sm font-medium">
-                {counselor.similarityScore?.toFixed(2)}
-              </span>
-              <span className="text-sm text-gray-600 ml-1">
-                similarity score
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2 mb-2">
+            <div className="flex flex-wrap gap-2 mb-2 ">
               {counselor.counselor_professional?.career_specialization
                 .slice(0, 3)
                 .map((exp, index) => (
                   <span
                     key={index}
-                    className="text-xs px-2 py-1 bg-gray-200 rounded-full"
+                    className="text-xs px-2 py-1 bg-gray-200 rounded-full "
                   >
                     {exp}
                   </span>
                 ))}
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 font-bold">
               Experience: {counselor.counselor_professional?.year_of_experience}{" "}
               years
             </p>
+            <div className="flex items-start space-x-2 line-clamp-2 h-[3rem] overflow-hidden border-2 border-transparent backdrop-blur-md bg-white bg-opacity-50  ">
+
+              {counselor.counselor_professional?.bio}
+            </div>
           </div>
+
         </div>
       </div>
     </motion.div>
   );
 };
 
-const CounselorDetails = ({ counselor }) => {
+const CounselorDetails = ({counselor}) => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -263,28 +260,28 @@ const CounselorListings = ({ counselors, loading }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full sm:w-1/3 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <select
-            value={filterExpertise}
-            onChange={(e) => setFilterExpertise(e.target.value)}
-            className="w-full sm:w-1/3 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">All Expertise</option>
-            <option value="Career Planning">Career Planning</option>
-            <option value="Study Skills">Study Skills</option>
-            <option value="Stress Management">Stress Management</option>
-            <option value="Cultural Adjustment">Cultural Adjustment</option>
-          </select>
-          <select
-            value={filterLanguage}
-            onChange={(e) => setFilterLanguage(e.target.value)}
-            className="w-full sm:w-1/3 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">All Languages</option>
-            <option value="English">English</option>
-            <option value="Spanish">Spanish</option>
-            <option value="Mandarin">Mandarin</option>
-            <option value="French">French</option>
-          </select>
+          {/*<select*/}
+          {/*  value={filterExpertise}*/}
+          {/*  onChange={(e) => setFilterExpertise(e.target.value)}*/}
+          {/*  className="w-full sm:w-1/3 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"*/}
+          {/*>*/}
+          {/*  <option value="">All Expertise</option>*/}
+          {/*  <option value="Career Planning">Career Planning</option>*/}
+          {/*  <option value="Study Skills">Study Skills</option>*/}
+          {/*  <option value="Stress Management">Stress Management</option>*/}
+          {/*  <option value="Cultural Adjustment">Cultural Adjustment</option>*/}
+          {/*</select>*/}
+          {/*<select*/}
+          {/*  value={filterLanguage}*/}
+          {/*  onChange={(e) => setFilterLanguage(e.target.value)}*/}
+          {/*  className="w-full sm:w-1/3 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"*/}
+          {/*>*/}
+          {/*  <option value="">All Languages</option>*/}
+          {/*  <option value="English">English</option>*/}
+          {/*  <option value="Spanish">Spanish</option>*/}
+          {/*  <option value="Mandarin">Mandarin</option>*/}
+          {/*  <option value="French">French</option>*/}
+          {/*</select>*/}
         </div>
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 gap-6"

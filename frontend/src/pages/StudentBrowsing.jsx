@@ -72,7 +72,7 @@ const StudentBrowsing = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-100 px-6">
             <header className="text-blue-600 pt-6">
                 <div className="container mx-auto px-4">
                     <h1 className="text-4xl font-bold">Student Counseling Portal</h1>

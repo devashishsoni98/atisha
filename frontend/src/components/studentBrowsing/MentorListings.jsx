@@ -29,7 +29,7 @@ const MentorCard = ({ mentor, onSelect }) => {
               </span>
             </div>
             <p className="text-sm text-gray-600">
-              Experience: {mentor.mentor_professional[0].year_of_experience}{" "}
+              Experience: {mentor.mentor_professional.year_of_experience}{" "}
               years
             </p>
           </div>
@@ -161,10 +161,10 @@ const MentorDetails = ({ mentor }) => {
           setIsDialogOpen(false);
           return;
         } else {
-          addNotification(
-            "Failed to book the slot. Please try again.",
-            "error"
-          );
+          // addNotification(
+          //   "Failed to book the slot. Please try again.",
+          //   "error"
+          // );
           setIsDialogOpen(false);
         }
 
@@ -182,10 +182,10 @@ const MentorDetails = ({ mentor }) => {
           const updatedSlots = await fetchMentorSlots(mentor.user_id);
           setAvailableSlots(updatedSlots.available_slots || []);
         } else {
-          addNotification(
-            "An unexpected error occurred. Please try again.",
-            "error"
-          );
+          // addNotification(
+          //   "An unexpected error occurred. Please try again.",
+          //   "error"
+          // );
         }
       } catch (error) {
         console.error("Error during booking:", error);

@@ -4,7 +4,7 @@ const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const createMentor = async (req, res) => {
-    const {user_id, expertise, bio, certifications, degree, institution, year_of_experience, type, location, image_url} = req.body;
+    const {user_id, expertise, bio, certifications, degree, institution, year_of_experience, type, location, image_url, linkedin_profile } = req.body;
 
     // Validate required fields
     if (!user_id || !expertise || !certifications || !type) {
@@ -42,6 +42,7 @@ const createMentor = async (req, res) => {
                 bio: bio,
                 year_of_experience: year_of_experience,
                 type: type,
+                linkedin_profile: linkedin_profile,
             },
         });
 

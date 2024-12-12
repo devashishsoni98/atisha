@@ -166,6 +166,8 @@ const mentorRoutes = require('./routes/mentorRoutes');
 const sessionsReportsRoutes = require('./routes/sessionsReportsRoutes');
 const counselorBookingRoutes = require('./routes/counselorBookingRoutes');
 const mentorBookingRoutes = require('./routes/mentorBookingRoutes');
+const MentorMatchingRoutes = require('./routes/MentorMatchingRoutes');
+const careerLensRoutes = require('./routes/careerLensRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const meetingRoutes = require('./routes/meetingRoutes');
 const masterRoutes = require('./routes/masterRoutes');
@@ -185,6 +187,8 @@ const responseRoutes = require('./routes/responseRoutes');
 const fileRoutes = require('./routes/fileRoutes');
 const stuRoutes = require('./routes/stuRoutes');
 const schoolStudentsRoutes = require('./routes/schoolStudentsRoutes');
+const MentorMatchingRoutes = require('./routes/MentorMatchingRoutes');
+const careerLensRoutes = require('./routes/careerLensRoutes');
 
 // Use routes with a prefix
 app.use('/api/auth', userRoutes);
@@ -206,6 +210,8 @@ app.use('/api/career',careerRoutes);
 app.use('/api/webex',webexRoutes)
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/events', eventsRoutes);
+app.use('/api/mentor-matching', MentorMatchingRoutes);
+app.use('/api/careerLens', careerLensRoutes);
 app.use('/api/student-traits', studentTraitsRoutes);
 app.use('/api/activities', activityRoutes);
 app.use('/api/quizzes', quizRoutes);

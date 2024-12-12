@@ -259,6 +259,7 @@ model mentor_education {
 model mentor_professional {
   user_id            Int              @id
   bio                String?
+  linkedin_profile   String?
   year_of_experience Int?
   type               mentor_type_enum
   mentor             mentors          @relation(fields: [user_id], references: [user_id])
@@ -804,11 +805,19 @@ enum event_requests_status_enum {
 
 model career_lens {
   id              Int      @id @default(autoincrement())
-  name            String
-  skills          String[] @db.Text
-  props           String[] @db.Text
-  cons            String[] @db.Text
-  related_careers String[] @db.Text
-  salary          String   @db.Text
+  name            String?  @unique
+  description     String?
+  skills          String[] @db.Text // Required list of strings
+  pros            String[] @db.Text // Required list of strings
+  cons            String[] @db.Text // Required list of strings
+  related_careers String[] @db.Text // Required list of strings
+  salary          String?  @db.Text
+  trend           String? // Optional scalar
+  min_salary      Int?
+  max_salary      Int?
+  median_salary   Int?
+  currency        String?  @db.VarChar(10)
+  period          String?  @db.VarChar(20)
+
   @@map("career_lens")
 }

@@ -80,13 +80,13 @@ const QuestionCard = ({ question, onSubmit, onSkip, register, setValue, currentQ
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-blue-50 h-[55vh] border rounded-lg p-6 mb-6">
           <h2 className="font-bold mb-4">Question {currentQuestionNumber}:</h2> {/* Use currentQuestionNumber here */}
-          <p className="text-gray-800">{question.question}</p>
+          <p className="text-gray-800">{question?.question}</p>
         </div>
 
         <div className="h-[55vh] bg-blue-50 rounded-lg p-6 border">
           <h2 className="font-bold mb-4">Answers:</h2>
           <form onSubmit={onSubmit} className="space-y-3">
-            {question.options.map((option, index) => (
+            {question?.options.map((option, index) => (
               <label
                 key={index}
                 className="block bg-gray-300 hover:bg-blue-400 transition-colors rounded-lg p-3 cursor-pointer"

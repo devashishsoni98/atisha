@@ -117,7 +117,7 @@ export default function Home() {
             initial="initial"
             animate="animate"
           >
-            <Link to="/">
+            <Link to="/quiz">
               <motion.button
                 className="bg-white text-indigo-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-opacity-90 transition duration-300"
                 whileHover={{ scale: 1.05, boxShadow: "0px 0px 8px rgb(255,255,255)" }}
