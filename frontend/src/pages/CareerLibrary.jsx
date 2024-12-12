@@ -178,6 +178,13 @@ const CareerLibrary = () => {
     // useEffect(() => {
     //     const fetchResources = async () => {
     //         try {
+    //             const responses = await axios.post("https://gallant-antonelli-beautiful.lemme.cloud/api/cbd5c479-8093-460f-9904-f3ab66423f6a", {
+                    
+    //                     message: "Find scholarships in India that are available across the internet for students"
+                    
+    //             });
+    //             console.log(responses.data);
+                
     //             const response = await axios.post("https://wizardly-goldwasser-eloquent.lemme.cloud/api/6d24d0df-6d60-445c-8522-9fd043d8be26", {
     //                 message: "I want to scrape all components and study material on the website: https://ndl.iitkgp.ac.in/se_browse/educationalLevel. The navbar contains categories such as 'Class V,' 'Class VI,' 'Class VII,' etc. For each category, extract at least 10 entries, and for each entry, provide the following details:\n1. Name: Name of the component/item.\n2. Category: The category it belongs to.\n3. Field: Relevant field or subject (e.g., Physics, Mathematics, General Knowledge).\n4. Description: A brief description of the item or component.\n5. Link: Direct URL to the item. Ensure all links are absolute URLs (resolve any relative links using the this kind of url example https://ndl.iitkgp.ac.in/se_search?key=introduction-to-quantum-mechanics.\n\n Ensure the results are well-organized, categorized, and contain accurate details about each item."
     //             });

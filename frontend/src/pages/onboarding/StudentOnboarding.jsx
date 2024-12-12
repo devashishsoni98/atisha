@@ -592,7 +592,7 @@ const StudentOnboarding = () => {
               <ArrowRight className="ml-2 h-6 w-6" />
             </Link>
 
-            {roleType === "student" && studentTrait && studentTrait.traits_counter < 2 && (
+            {roleType === "student" && studentTrait && (
               <Link
                 to="/quiz"
                 className="inline-flex items-center px-8 py-4 border-2 border-purple-400 text-lg font-semibold rounded-full text-purple-700 bg-white hover:bg-purple-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"

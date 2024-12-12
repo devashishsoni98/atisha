@@ -1,17 +1,27 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { User, Building2, GraduationCap } from 'lucide-react';
+import { User, Building2, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux';
-import { setUser, setToken, setUserId, setUserType, setUserName } from '../store/userActions';
+import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setUser,
+  setToken,
+  setUserId,
+  setUserType,
+  setUserName,
+} from "../store/userActions";
 
 const SignUp = ({ setAuthType }) => {
   const dispatch = useDispatch();
   const [selectedType, setSelectedType] = useState("Student");
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const options = [
     { id: "Student", label: "Student", icon: GraduationCap },
@@ -20,53 +30,76 @@ const SignUp = ({ setAuthType }) => {
     { id: "Mentor", label: "Mentor", icon: User },
   ];
 
-const handleRegister = async (data) => {
-  const { fullName, email, password, confirmPassword } = data;
-  if (password !== confirmPassword) {
+  const handleRegister = async (data) => {
+    const { fullName, email, password, confirmPassword } = data;
+    if (password !== confirmPassword) {
       alert("Passwords do not match.");
       return;
-  }
+    }
 
-  const accountType = selectedType.toLowerCase();
-  const userData = { fullName, email, password, accountType };
-  console.log("Data sent to API:", userData);
+    const accountType = selectedType.toLowerCase();
+    const userData = { fullName, email, password, accountType };
+    console.log("Data sent to API:", userData);
 
-  try {
-      const response = await axios.post("http://localhost:4000/api/auth/users/signup", userData);
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/api/auth/users/signup",
+        userData
+      );
       const { userId, token, user } = response.data;
 
       const userName = user.name;
       // console.log(userName);
 
-    
-    dispatch(setToken(token)); // Store token in Redux
-    dispatch(setUserId(userId)); // Store user ID in localStorage
-    dispatch(setUserType(accountType)); // Store user type in localStorage
-    dispatch(setUserName(userName)); //store user name in redux
+      dispatch(setToken(token)); // Store token in Redux
+      dispatch(setUserId(userId)); // Store user ID in localStorage
+      dispatch(setUserType(accountType)); // Store user type in localStorage
+      dispatch(setUserName(userName)); //store user name in redux
 
       // Navigate based on account type
       if (accountType === "institute") {
-          navigate("/create-institute-profile", {
-              state: { userRole: accountType, userId: userId, userEmail: email, userName: fullName }
-          });
+        navigate("/create-institute-profile", {
+          state: {
+            userRole: accountType,
+            userId: userId,
+            userEmail: email,
+            userName: fullName,
+          },
+        });
       } else if (accountType === "counselor") {
-          navigate("/create-counselor-profile", {
-              state: { userRole: accountType, userId: userId, userEmail: email, userName: fullName }
-          });
+        navigate("/create-counselor-profile", {
+          state: {
+            userRole: accountType,
+            userId: userId,
+            userEmail: email,
+            userName: fullName,
+          },
+        });
       } else if (accountType === "mentor") {
-          navigate("/create-mentor-profile", {
-              state: { userRole: accountType, userId: userId, userEmail: email, userName: fullName }
-          });
-      } else { // Default case for "student"
-          navigate(`/create-student-profile`, {
-              state: { userRole: accountType, userId: userId, userEmail: email, userName: fullName }
-          });
+        navigate("/create-mentor-profile", {
+          state: {
+            userRole: accountType,
+            userId: userId,
+            userEmail: email,
+            userName: fullName,
+          },
+        });
+      } else {
+        // Default case for "student"
+        navigate(`/create-student-profile`, {
+          state: {
+            userRole: accountType,
+            userId: userId,
+            userEmail: email,
+            userName: fullName,
+          },
+        });
       }
-  } catch (error) {
+    } catch (error) {
       console.error("Error during registration:", error);
       alert("Registration failed. Please try again.");
-  }
-};
+    }
+  };
 
   return (
     <motion.div
@@ -75,19 +108,20 @@ const handleRegister = async (data) => {
       transition={{ duration: 0.5 }}
       className="flex justify-center items-center w-full min-h-screen"
       style={{
-        background: "linear-gradient(135deg, #EBF4FF 0%, #FFFFFF 50%, #FAF5FF 100%)",
+        background:
+          "linear-gradient(135deg, #EBF4FF 0%, #FFFFFF 50%, #FAF5FF 100%)",
         position: "relative",
       }}
     >
       {/* Background Pattern */}
-      <div 
+      <div
         className="absolute inset-0 opacity-10"
         style={{
           backgroundImage: `radial-gradient(circle at center, #4A5568 2px, transparent 2px)`,
-          backgroundSize: '24px 24px'
+          backgroundSize: "24px 24px",
         }}
       />
-      
+
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -109,10 +143,17 @@ const handleRegister = async (data) => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <h3 className="text-lg font-medium text-gray-700 mb-4">Create account as</h3>
+            <h3 className="text-lg font-medium text-gray-700 mb-4">
+              Create account as
+            </h3>
             <div className="flex flex-wrap gap-6 justify-center">
               {options.map(({ id, label, icon: Icon }) => (
-                <motion.div key={id} className="relative" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <motion.div
+                  key={id}
+                  className="relative"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <input
                     type="radio"
                     id={id}
@@ -147,7 +188,11 @@ const handleRegister = async (data) => {
                 className="w-full px-6 py-3 text-lg rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                 placeholder="Full Name"
               />
-              {errors.fullName && <span className="text-red-500 text-sm">{errors.fullName.message}</span>}
+              {errors.fullName && (
+                <span className="text-red-500 text-sm">
+                  {errors.fullName.message}
+                </span>
+              )}
             </div>
             <div className="space-y-2">
               <input
@@ -156,7 +201,11 @@ const handleRegister = async (data) => {
                 className="w-full px-6 py-3 text-lg rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                 placeholder="Email"
               />
-              {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
+              {errors.email && (
+                <span className="text-red-500 text-sm">
+                  {errors.email.message}
+                </span>
+              )}
             </div>
             <div className="space-y-2">
               <input
@@ -165,16 +214,26 @@ const handleRegister = async (data) => {
                 className="w-full px-6 py-3 text-lg rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                 placeholder="Password"
               />
-              {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
+              {errors.password && (
+                <span className="text-red-500 text-sm">
+                  {errors.password.message}
+                </span>
+              )}
             </div>
             <div className="space-y-2">
               <input
                 type="password"
-                {...register("confirmPassword", { required: "Confirm Password is required" })}
+                {...register("confirmPassword", {
+                  required: "Confirm Password is required",
+                })}
                 className="w-full px-6 py-3 text-lg rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                 placeholder="Confirm Password"
               />
-              {errors.confirmPassword && <span className="text-red-500 text-sm">{errors.confirmPassword.message}</span>}
+              {errors.confirmPassword && (
+                <span className="text-red-500 text-sm">
+                  {errors.confirmPassword.message}
+                </span>
+              )}
             </div>
           </motion.div>
 

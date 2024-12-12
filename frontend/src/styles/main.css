@@ -47,6 +47,22 @@
   height: 100vh;
 }
 
+.preview-container {
+  flex: 1;
+  padding: 10px;
+  background-color: #fff !important; /* Make background transparent */
+  color: #000; /* Set text color for better visibility */
+}
+
+.preview-container h2 {
+  color: #000; /* Optional: Set header color */
+}
+
+/* Optional: Style for Markdown content */
+.markdown-preview {
+  background-color: transparent; /* Ensure markdown preview is also transparent */
+}
+
 .center-2 {
   max-width: -moz-fit-content;
   max-width: fit-content;

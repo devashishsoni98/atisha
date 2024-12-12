@@ -57,6 +57,20 @@ const specializations = [
   { name: "Relationship", icon: <Users className="w-4 h-4" /> }
 ];
 
+
+const fadeIn = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+};
+
+const slideIn = {
+  initial: { x: -20, opacity: 0 },
+  animate: { x: 0, opacity: 1 },
+  exit: { x: 20, opacity: 0 },
+};
+
+
 export default function CounselorTrainingProgram() {
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [selectedSpecialization, setSelectedSpecialization] = useState("Mental Health");
@@ -145,25 +159,21 @@ export default function CounselorTrainingProgram() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8 relative">
-      <AnimatedBackground />
+    <div className=" bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative">
+      {/* <AnimatedBackground /> */}
       <div className="max-w-7xl mx-auto relative z-10">
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+        {/* <motion.h1
+          variants={slideIn}
           className="text-4xl font-bold text-center text-gray-900 mb-8"
         >
           Counselor Training Programs
-        </motion.h1>
+        </motion.h1> */}
         
         {selectedProgram ? (
           isCompleted ? (
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-lg shadow-xl p-8 max-w-2xl mx-auto"
+              variants={slideIn}
+              className="bg-white rounded-lg shadow-xl p-8 max-w-2xl mx-auto  "
             >
               <h2 className="text-2xl font-bold mb-4">Certificate of Completion</h2>
               <p className="text-gray-600 mb-6">Congratulations on your achievement!</p>
@@ -192,9 +202,7 @@ export default function CounselorTrainingProgram() {
             </motion.div>
           ) : (
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
+            variants={slideIn}
               className="bg-white rounded-lg shadow-xl p-8 max-w-4xl mx-auto"
             >
               <h2 className="text-2xl font-bold mb-2">{selectedProgram.level} Program</h2>
@@ -260,10 +268,8 @@ export default function CounselorTrainingProgram() {
           )
         ) : (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-lg shadow-xl p-8 max-w-6xl mx-auto"
+            variants={slideIn}
+            className="bg-white rounded-2xl shadow-xl p-8 max-w-6xl mx-auto  " 
           >
             <h2 className="text-2xl font-bold mb-2">Select Your Specialization</h2>
             <p className="text-gray-600 mb-6">Choose the area you want to focus on in your counseling career</p>

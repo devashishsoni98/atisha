@@ -99,7 +99,7 @@ const CounselorDetails = ({ counselor }) => {
         const response = await bookSlot(studentId, selectedSlot.id);
 
         if (response.message == "Booking request sent") {
-          alert("Booking request sent");
+          addNotification("Booking request sent","success");
           setIsDialogOpen(false);
           return;
         }
