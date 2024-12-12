@@ -40,6 +40,8 @@ import Level from "../components/Level.jsx";
 import OAuthCallback from "../pages/Callback.jsx";
 import CareerLens from "../pages/Lens.jsx";
 import SessionPreview from "../pages/SessionPreview.jsx";
+import CareerDetails from "../pages/CareerDetails.jsx";
+import GymTrainerCareer from "../pages/GymTrainerCareer.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -193,6 +195,14 @@ const Router = createBrowserRouter([
       {
         path: "/lens",
         element: <CareerLens />
+      },
+      {
+        path: "/lens-details",
+        element: <CareerDetails />
+      },
+      {
+        path: "/sample",
+        element: <GymTrainerCareer />
       },
       
     ],
