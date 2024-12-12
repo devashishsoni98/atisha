@@ -39,6 +39,7 @@ import CareerLibrary from "../pages/CareerLibrary.jsx";
 import Level from "../components/Level.jsx";
 import OAuthCallback from "../pages/Callback.jsx";
 import CareerLens from "../pages/Lens.jsx";
+import TypingSpeedTest from "../components/TypingSpeedTest.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -136,6 +137,10 @@ const Router = createBrowserRouter([
       {
         path: "/mentors-students/:id",
         element: <Mentors/>
+      },
+      {
+        path: "/type",
+        element: <TypingSpeedTest/>
       },
       {
         path: "/interactive-contents",

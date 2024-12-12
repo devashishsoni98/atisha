@@ -38,7 +38,7 @@ app.register_blueprint(quiz_bp, url_prefix='/quiz')
 app.register_blueprint(recommend_events_bp, url_prefix='/revents')
 app.register_blueprint(recommend_careers_bp, url_prefix='/rcareers')
 app.register_blueprint(career_lens_bp, url_prefix='/career-lens')
-app.register_blueprint(career_lens_bp, url_prefix='/lens')
+#app.register_blueprint(career_lens_bp, url_prefix='/lens')
 
 
 if __name__ == '__main__':
