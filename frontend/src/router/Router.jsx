@@ -39,6 +39,7 @@ import CareerLibrary from "../pages/CareerLibrary.jsx";
 import Level from "../components/Level.jsx";
 import OAuthCallback from "../pages/Callback.jsx";
 import CareerLens from "../pages/Lens.jsx";
+import TypingSpeedTest from "../components/TypingSpeedTest.jsx";
 import SessionPreview from "../pages/SessionPreview.jsx";
 import CareerDetails from "../pages/CareerDetails.jsx";
 import SingleMentorPage from "../components/SingleMentorBookings.jsx";
@@ -140,6 +141,10 @@ const Router = createBrowserRouter([
       {
         path: "/mentors-students/:id",
         element: <Mentors/>
+      },
+      {
+        path: "/type",
+        element: <TypingSpeedTest/>
       },
       {
         path: "/interactive-contents",
