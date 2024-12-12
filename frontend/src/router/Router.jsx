@@ -43,6 +43,7 @@ import TypingSpeedTest from "../components/TypingSpeedTest.jsx";
 import SessionPreview from "../pages/SessionPreview.jsx";
 import CareerDetails from "../pages/CareerDetails.jsx";
 import GymTrainerCareer from "../pages/GymTrainerCareer.jsx";
+import SingleMentorPage from "../pages/SingleMentorBookings.jsx";
 
 const Router = createBrowserRouter([
   {

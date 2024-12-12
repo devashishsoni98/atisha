@@ -10,7 +10,6 @@ import loadingGif from './assets/loading.gif';
 import botAvatar from './assets/main.gif';
 import NotificationProvider from './hooks/useNotifications';
 import MarkdownPreview from '@uiw/react-markdown-preview';
-
 // Create a separate component for the chat functionality
 function ChatBot() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -233,7 +232,7 @@ function App() {
   return (
     <div className="relative min-h-screen">
       <NotificationProvider>
-        
+
       <RouterProvider router={Router} />
       </NotificationProvider>
       <ChatBot />
