@@ -601,38 +601,36 @@ model Response {
   @@map("response")
 }
 
-
 model school_students {
-  id        Int       @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   name      String
   enrolNo   String
   schoolId  String
   class     Int
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   institute institute_info @relation(fields: [schoolId], references: [institute_code])
 }
 
 model institute_info {
-  user_id         Int    @id
+  user_id         Int                       @id
   name            String?
   image_url       String?
-  plot_no         String? @db.VarChar(50)
-  street          String? @db.VarChar(100)
-  city            String? @db.VarChar(50)
-  state           String? @db.VarChar(50)
+  plot_no         String?                   @db.VarChar(50)
+  street          String?                   @db.VarChar(100)
+  city            String?                   @db.VarChar(50)
+  state           String?                   @db.VarChar(50)
   contact_number  String?
   establish_year  Int?
   institute_type  institute_type_enum
   institute_board institute_board_type_enum
   student_body    String?
   website         String?
-  institute_code  String @unique
-  user            users  @relation(fields: [user_id], references: [id])
+  institute_code  String                    @unique
+  user            users                     @relation(fields: [user_id], references: [id])
 
   school_students school_students[]
 }
-
 
 // model institute_info {
 //   user_id         Int                       @id
@@ -667,7 +665,6 @@ model institute_info {
 
 //   @@map("school_students")
 // }
-
 
 // model institute_info {
 //   user_id         Int                       @id
@@ -734,7 +731,6 @@ model institute_info {
 
 //   @@map("school_students")
 // }
-
 
 enum role_type {
   student
@@ -820,4 +816,13 @@ model career_lens {
   period          String?  @db.VarChar(20)
 
   @@map("career_lens")
+}
+
+model push_notification {
+  id         Int      @id @default(autoincrement())
+  message    String
+  created_at DateTime @default(now())
+  is_read    Boolean  @default(false)
+
+  @@map("push_notification")
 }

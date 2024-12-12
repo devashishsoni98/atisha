@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
+import EventDetails from "./EventDetails.jsx";
 
 // Simulated API calls
 const getEventInvitations = async () => {

@@ -367,6 +367,17 @@ function EventsContent() {
                   {event.description && (
                     <p className="text-sm text-gray-600 mt-2">{event.description}</p>
                   )}
+
+                  {event.link && (
+                    <a
+                      href={event.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-blue-500 hover:underline text-white py-1 px-2 rounded-md my-2"
+                    >
+                      Join Event
+                    </a>
+                  )}
                 </motion.div>
               ))}
             </div>

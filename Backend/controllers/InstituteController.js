@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const {createNotification} = require("../services/pushNotificationServieces");
 const prisma = new PrismaClient();
 
 // API to fetch Institute Name and Code
@@ -159,6 +160,7 @@ const createOrUpdateInstitute = async (req, res) => {
             });
         }
 
+        await createNotification(`New institute registered. Name: ${instituteInfo?.name}`);
         res.status(201).json({
             message: "Institute and SPOC information created/updated successfully",
             instituteInfo,

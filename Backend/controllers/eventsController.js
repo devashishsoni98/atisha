@@ -1,6 +1,18 @@
 const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 
+
+
+const fetchAllEvent  = async (req, res) => {
+    try {
+        const events = await prisma.events.findMany();
+        res.status(200).json(events);
+    } catch (error) {
+        console.error('Error fetching events:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 // Fetch upcoming events (status = "scheduled" and start_date > current date)
 const fetchUpcomingEvents = async (req, res) => {
     try {
@@ -157,7 +169,28 @@ const fetchEventsForTomorrowAndToday = async (req, res) => {
 
 }
 
-
+const fetchUpcomingEventOfToday = async (req, res) => {
+    try {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        const events = await prisma.events.findMany({
+            where: {
+                start_date: {
+                    gte: today,
+                    lte: tomorrow,
+                },
+            },
+        });
+        res.status(200).json(events);
+        console.log(events);
+        console.log(today);
+        console.log(tomorrow);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: 'Error fetching events.'});
+    }
+}
 
 module.exports = {
     fetchUpcomingEvents,
@@ -165,5 +198,7 @@ module.exports = {
     fetchEventById,
     fetchEventRequestByCounselorId,
     fetchAcceptedEventByCounselorId,
-    fetchEventsForTomorrowAndToday
+    fetchEventsForTomorrowAndToday,
+    fetchUpcomingEventOfToday,
+    fetchAllEvent
 };

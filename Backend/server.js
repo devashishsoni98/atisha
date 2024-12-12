@@ -187,8 +187,11 @@ const responseRoutes = require('./routes/responseRoutes');
 const fileRoutes = require('./routes/fileRoutes');
 const stuRoutes = require('./routes/stuRoutes');
 const schoolStudentsRoutes = require('./routes/schoolStudentsRoutes');
-const MentorMatchingRoutes = require('./routes/MentorMatchingRoutes');
-const careerLensRoutes = require('./routes/careerLensRoutes');
+// const MentorMatchingRoutes = require('./routes/MentorMatchingRoutes');
+// const careerLensRoutes = require('./routes/careerLensRoutes');
+const pushNotificationsRoutes = require('./routes/pushNotificationRoutes');
+
+
 
 // Use routes with a prefix
 app.use('/api/auth', userRoutes);
@@ -218,6 +221,7 @@ app.use('/api/quizzes', quizRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/responses', responseRoutes);
 app.use('/api/school-students', schoolStudentsRoutes); // This line remains as per your request
+app.use('/api/push-notifications', pushNotificationsRoutes);
 
 // For inst student
 app.use('/api/files', upload.single('file'), fileRoutes);

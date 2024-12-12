@@ -7,6 +7,7 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import EventPreview from './components/EventPreview';
 import OAuthCallback from './components/callback';
+import EventDetails from "./components/EventDetails.jsx";
 function App() {
   return (
     <Provider store={store}>
@@ -17,6 +18,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/preview" element={<EventPreview />} />
+            <Route path="/event/:id" element={<EventDetails />} />
           </Route>
           <Route path="*" element={<Login />} />
           <Route path="/webex/callback" element={<OAuthCallback />}/>

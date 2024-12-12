@@ -437,7 +437,7 @@ def update_request_status():
                 if event['event_mode'].lower() in ['online', 'hybrid']:
                     print(f"Event {event_id} is {event['event_mode'].lower()}. Creating Webex meeting...")
                     meeting_payload = {
-                        "user_id": 2,
+                        "user_id": 12,
                         "title": event['name'],
                         "start": event['start_date'].isoformat(),
                         "duration": int(event['duration'] * 60),  # Convert hours to minutes
