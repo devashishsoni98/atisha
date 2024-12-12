@@ -25,8 +25,8 @@ genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-pro")
 
 # Database connection
-DATABASE_URL = "postgresql://postgres:amanjain17@localhost:5432/atisha_db"
-conn = psycopg2.connect(DATABASE_URL)
+DB_URL = os.getenv("DATABASE_URL")
+conn = psycopg2.connect(DB_URL)
 
 def generate_career_recommendations(holland_traits, big_five_traits, aptitude_status, iq_status):
     """Generates career recommendations using Gemini API."""

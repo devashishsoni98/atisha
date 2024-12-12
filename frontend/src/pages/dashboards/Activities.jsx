@@ -66,7 +66,7 @@ export default function Activities() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:4000/api/activities/create', {
+            const response = await fetch('http://localhost:4000/api/activities', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

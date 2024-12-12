@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { addHours } = require('date-fns');
+const { sendNotification } = require('../services/notificationService');
 
 // Set Availability
 const setMentorAvailability = async (req, res) => {
@@ -153,6 +154,7 @@ const bookMentorSlot = async (req, res) => {
             }
         });
 
+        sendNotification(mentor_id,"You have a request from student","","success");
         res.status(201).json({ message: "Booking request sent successfully", bookingDetails: response });
 
     } catch (err) {
