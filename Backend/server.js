@@ -151,7 +151,7 @@ app.use(express.json());
 // Configure CORS
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    origin: ['http://localhost:5173', 'http://localhost:5174','http://localhost:5175','http://localhost:5176'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })
@@ -185,8 +185,8 @@ const responseRoutes = require('./routes/responseRoutes');
 const fileRoutes = require('./routes/fileRoutes');
 const stuRoutes = require('./routes/stuRoutes');
 const schoolStudentsRoutes = require('./routes/schoolStudentsRoutes');
-// const MentorMatchingRoutes = require('./routes/MentorMatchingRoutes');
-// const careerLensRoutes = require('./routes/careerLensRoutes');
+const MentorMatchingRoutes = require('./routes/MentorMatchingRoutes');
+const careerLensRoutes = require('./routes/careerLensRoutes');
 const pushNotificationsRoutes = require('./routes/pushNotificationRoutes');
 
 

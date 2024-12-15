@@ -605,7 +605,7 @@ const StudentOnboarding = () => {
           </motion.div>
         </motion.div>
 
-<StudentTimeline/>
+{/* <StudentTimeline/> */}
         <motion.div 
           className="bg-white rounded-3xl shadow-xl p-8 mb-12"
           initial={{ opacity: 0, y: 20 }}
